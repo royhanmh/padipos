@@ -8,7 +8,7 @@ const LoginCardComponent = ({
 }) => {
   return (
     <div
-      className={`bg-white px-14 py-2 w-120 rounded-3xl shadow-lg ml-16 ${className}`}
+      className={`bg-white px-14 pb-10 w-120 rounded-3xl shadow-lg ml-16 ${className}`}
     >
       <div className="text-center">
         <img
