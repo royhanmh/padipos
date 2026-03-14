@@ -8,18 +8,21 @@ const LoginCardComponent = ({
 }) => {
   return (
     <div
-      className={`bg-white px-14 pb-10 w-120 rounded-3xl shadow-lg ml-16 ${className}`}
+      className={`bg-white w-full max-w-md mx-auto px-6 sm:px-10 pb-10 rounded-3xl shadow-lg md:ml-16 ${className}`}
     >
       <div className="text-center">
         <img
-          className="mx-auto w-32 h-32 object-contain"
+          className="mx-auto w-24 h-24 sm:w-32 sm:h-32 object-contain"
           src={logoSrc}
           alt={logoAlt}
         />
-        <h1 className="text-3xl text-black-500 font-semibold mb-2">{title}</h1>
+        <h1 className="text-2xl sm:text-3xl text-black font-semibold mb-2">
+          {title}
+        </h1>
         <p className="text-gray-400 text-sm">{subtitle}</p>
       </div>
-      <div className="mt-12 px-5">{children}</div>
+
+      <div className="mt-8 sm:mt-12 px-2 sm:px-5">{children}</div>
     </div>
   );
 };
