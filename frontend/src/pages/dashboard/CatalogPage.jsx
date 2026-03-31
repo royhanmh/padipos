@@ -256,12 +256,14 @@ const ReadOnlyField = ({ label, value, multiline = false }) => {
 
 const PanelFrame = ({ title, actions, children }) => {
   return (
-    <aside className="relative rounded-[10px] border border-[#F0F0F0] bg-white px-4 py-4 shadow-[0_14px_36px_rgba(25,45,88,0.05)] xl:sticky xl:top-4 2xl:rounded-[28px] 2xl:px-5 2xl:py-5 2xl:top-6">
+    <aside className="relative flex flex-col rounded-[10px] border border-[#F0F0F0] bg-white px-4 py-4 shadow-[0_14px_36px_rgba(25,45,88,0.05)] xl:sticky xl:top-4 xl:h-[calc(100vh-104px)] xl:min-h-[calc(100vh-104px)] 2xl:rounded-[28px] 2xl:px-5 2xl:py-5 2xl:top-6 2xl:h-[calc(100vh-120px)] 2xl:min-h-[calc(100vh-120px)]">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-[18px] font-semibold text-[#161616]">{title}</h2>
         <div className="flex items-center gap-3">{actions}</div>
       </div>
-      <div className="mt-6 border-t border-[#EFEFEF] pt-5">{children}</div>
+      <div className="mt-6 flex flex-1 flex-col border-t border-[#EFEFEF] pt-5 xl:min-h-0 xl:overflow-y-auto">
+        {children}
+      </div>
     </aside>
   );
 };
@@ -520,7 +522,7 @@ const CatalogPage = () => {
         </div>
       ) : (
         <div
-          className="rounded-[24px] border border-dashed border-[#4D7CFE] px-6 py-10 text-center"
+          className="rounded-[10px] border border-dashed border-[#4D7CFE] px-6 py-10 text-center"
           onDragOver={(event) => event.preventDefault()}
           onDrop={handleDropImage}
         >
@@ -713,7 +715,7 @@ const CatalogPage = () => {
         </button>
       }
     >
-      <div className="flex min-h-[620px] items-center justify-center px-4 text-center text-[#A2A2A2] 2xl:min-h-[760px]">
+      <div className="flex flex-1 items-center justify-center px-4 text-center text-[#A2A2A2]">
         <p className="text-[24px] font-medium 2xl:text-[28px]">Add Menu here</p>
       </div>
     </PanelFrame>
