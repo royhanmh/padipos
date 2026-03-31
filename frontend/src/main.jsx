@@ -7,6 +7,7 @@ import RequestResetPasswordPage from "./pages/kasir/RequestResetPasswordPage.jsx
 import ResetPasswordPage from "./pages/kasir/ResetPasswordPage.jsx";
 import DashboardLoginPage from "./pages/dashboard/DashboardLoginPage.jsx";
 import DashboardPage from "./pages/dashboard/DashboardPage.jsx";
+import CatalogPage from "./pages/dashboard/CatalogPage.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -18,6 +19,7 @@ createRoot(document.getElementById("root")).render(
       <Route path="reset/form" element={<ResetPasswordPage />} />
       <Route path="dashboard/login" element={<DashboardLoginPage />} />
       <Route path="dashboard" element={<DashboardPage />} />
+      <Route path="dashboard/catalog" element={<CatalogPage />} />
     </Routes>
   </BrowserRouter>,
 );

@@ -1,27 +1,57 @@
 import { PiMagnifyingGlassLight, PiSignOutLight } from "react-icons/pi";
 
-const TopbarLayout = () => {
+const defaultProfile = {
+  name: "John Doe",
+  role: "Admin",
+  image: "/images/UserImage.png",
+};
+
+const TopbarLayout = ({
+  searchValue = "",
+  searchPlaceholder = "Enter the keyword here...",
+  onSearchChange,
+  profile = defaultProfile,
+  showSearch = true,
+}) => {
+  const inputProps = onSearchChange
+    ? {
+        value: searchValue,
+        onChange: (event) => onSearchChange(event.target.value),
+      }
+    : {
+        defaultValue: searchValue,
+      };
+
   return (
-    <header className="flex items-center justify-between px-5 py-4">
-      <label className="relative block w-full max-w-125">
-        <PiMagnifyingGlassLight className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-[#A9A9A9]" />
-        <input
-          type="text"
-          placeholder="Enter the keyword here..."
-          className="h-10 w-full rounded-xl border border-[#D7D7D7] bg-transparent pl-10 pr-4 text-sm text-[#5F5F5F] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] focus:bg-white"
-        />
-      </label>
+    <header className="flex items-center justify-between gap-4 bg-white px-5 py-4">
+      {showSearch ? (
+        <label className="relative block w-full max-w-[530px]">
+          <PiMagnifyingGlassLight className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-[#A9A9A9]" />
+          <input
+            type="text"
+            placeholder={searchPlaceholder}
+            className="h-10 w-full rounded-xl border border-[#D7D7D7] bg-transparent pl-10 pr-4 text-sm text-[#5F5F5F] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] focus:bg-white"
+            {...inputProps}
+          />
+        </label>
+      ) : (
+        <div className="flex-1" />
+      )}
 
       <div className="ml-6 flex items-center gap-4">
         <div className="flex items-center gap-3">
           <img
-            src="/images/UserImage.png"
+            src={profile.image ?? defaultProfile.image}
             alt="User profile"
             className="h-12 w-12 rounded-full object-cover"
           />
           <div className="min-w-max">
-            <p className="text-base font-medium text-[#202020]">John Doe</p>
-            <p className="text-sm text-[#9C9C9C]">Admin</p>
+            <p className="text-base font-medium text-[#202020]">
+              {profile.name ?? defaultProfile.name}
+            </p>
+            <p className="text-sm text-[#9C9C9C]">
+              {profile.role ?? defaultProfile.role}
+            </p>
           </div>
         </div>
 
