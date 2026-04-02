@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   PiArrowUpRightLight,
-  PiCalendarBlankLight,
   PiCaretDownLight,
   PiXLight,
 } from "react-icons/pi";
+import DatePickerField from "../../features/sales-report/components/DatePickerField";
 import ExportMenu from "../../features/sales-report/components/ExportMenu";
 import PaginationControls from "../../features/sales-report/components/PaginationControls";
 import ReportFilterField from "../../features/sales-report/components/ReportFilterField";
@@ -176,31 +176,21 @@ const SalesReportPage = () => {
         <section className="mt-6 rounded-2xl border border-[#ECECEC] bg-white p-5 shadow-[0_10px_26px_rgba(25,45,88,0.06)] md:p-6">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(150px,0.85fr)_auto] lg:items-end">
             <ReportFilterField label="Start">
-              <div className="relative">
-                <input
-                  type="date"
-                  value={draftFilters.startDate}
-                  onChange={(event) =>
-                    handleFilterChange("startDate", event.target.value)
-                  }
-                  className="h-12 w-full rounded-xl border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition scheme-light focus:border-[#C7D6FF] md:h-13 md:px-5"
-                />
-                <PiCalendarBlankLight className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[20px] text-[#A8A8A8]" />
-              </div>
+              <DatePickerField
+                value={draftFilters.startDate}
+                onChange={(nextValue) => handleFilterChange("startDate", nextValue)}
+                placeholder="Select date"
+              />
             </ReportFilterField>
 
             <ReportFilterField label="Finish">
-              <div className="relative">
-                <input
-                  type="date"
-                  value={draftFilters.finishDate}
-                  onChange={(event) =>
-                    handleFilterChange("finishDate", event.target.value)
-                  }
-                  className="h-12 w-full rounded-xl border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition scheme-light focus:border-[#C7D6FF] md:h-13 md:px-5"
-                />
-                <PiCalendarBlankLight className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[20px] text-[#A8A8A8]" />
-              </div>
+              <DatePickerField
+                value={draftFilters.finishDate}
+                onChange={(nextValue) =>
+                  handleFilterChange("finishDate", nextValue)
+                }
+                placeholder="Select date"
+              />
             </ReportFilterField>
 
             <ReportFilterField label="Category">
