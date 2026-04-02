@@ -225,28 +225,28 @@ const createToastState = (message) => ({
 const FormField = ({ label, children, error }) => {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-medium text-[#4A4A4A]">
+      <span className="mb-2.5 block text-base font-medium text-[#4A4A4A]">
         {label}
       </span>
       {children}
-      {error ? <p className="mt-2 text-xs text-[#F04438]">{error}</p> : null}
+      {error ? <p className="mt-2 text-sm text-[#F04438]">{error}</p> : null}
     </label>
   );
 };
 
 const ReadOnlyField = ({ label, value, multiline = false }) => {
   const sharedClassName =
-    "w-full rounded-[10px] border border-[#D7D7D7] bg-white px-4 text-[15px] text-[#2B2B2B]";
+    "w-full rounded-[10px] border border-[#D7D7D7] bg-white px-4 text-[15px] text-[#2B2B2B] md:px-5 md:text-[16px]";
 
   return (
     <div>
-      <p className="mb-2 text-sm font-medium text-[#4A4A4A]">{label}</p>
+      <p className="mb-2.5 text-base font-medium text-[#4A4A4A]">{label}</p>
       {multiline ? (
-        <div className={`${sharedClassName} min-h-25 py-3 leading-8`}>
+        <div className={`${sharedClassName} min-h-28 py-4 leading-8 md:leading-9`}>
           {value}
         </div>
       ) : (
-        <div className={`${sharedClassName} flex h-11 items-center 2xl:h-12`}>
+        <div className={`${sharedClassName} flex h-12 items-center 2xl:h-12`}>
           {value}
         </div>
       )}
@@ -256,12 +256,12 @@ const ReadOnlyField = ({ label, value, multiline = false }) => {
 
 const PanelFrame = ({ title, actions, children }) => {
   return (
-    <aside className="relative flex flex-col rounded-[10px] border border-[#F0F0F0] bg-white px-4 py-4 shadow-[0_14px_36px_rgba(25,45,88,0.05)] xl:sticky xl:top-4 xl:h-[calc(100vh-104px)] xl:min-h-[calc(100vh-104px)] 2xl:rounded-[28px] 2xl:px-5 2xl:py-5 2xl:top-6 2xl:h-[calc(100vh-120px)] 2xl:min-h-[calc(100vh-120px)]">
+    <aside className="relative flex flex-col rounded-[10px] border border-[#F0F0F0] bg-white px-5 py-5 shadow-[0_14px_36px_rgba(25,45,88,0.05)] xl:sticky xl:top-4 xl:h-[calc(100vh-104px)] xl:min-h-[calc(100vh-104px)] 2xl:rounded-[28px] 2xl:px-5 2xl:py-5 2xl:top-6 2xl:h-[calc(100vh-120px)] 2xl:min-h-[calc(100vh-120px)]">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-[18px] font-semibold text-[#161616]">{title}</h2>
+        <h2 className="text-[20px] font-semibold text-[#161616]">{title}</h2>
         <div className="flex items-center gap-3">{actions}</div>
       </div>
-      <div className="mt-6 flex flex-1 flex-col border-t border-[#EFEFEF] pt-5 xl:min-h-0 xl:overflow-y-auto">
+      <div className="mt-7 flex flex-1 flex-col border-t border-[#EFEFEF] pt-6 xl:min-h-0 xl:overflow-y-auto">
         {children}
       </div>
     </aside>
@@ -508,13 +508,13 @@ const CatalogPage = () => {
           <img
             src={panelForm.image || DEFAULT_IMAGE}
             alt={panelForm.name || "Menu preview"}
-            className="h-44 w-full rounded-[22px] object-cover 2xl:h-55 2xl:rounded-[24px]"
+            className="h-48 w-full rounded-[22px] object-cover 2xl:h-55 2xl:rounded-[24px]"
           />
           <div className="mt-3 flex justify-center">
             <button
               type="button"
               onClick={handleChoosePhoto}
-              className="rounded-[10px] border border-[#4777F5] px-5 py-2 text-sm font-medium text-[#4777F5] transition hover:bg-[#F2F6FF]"
+              className="rounded-[10px] border border-[#4777F5] px-6 py-2.5 text-sm font-medium text-[#4777F5] transition hover:bg-[#F2F6FF] md:text-base"
             >
               Change Photo
             </button>
@@ -522,22 +522,22 @@ const CatalogPage = () => {
         </div>
       ) : (
         <div
-          className="rounded-[10px] border border-dashed border-[#4D7CFE] px-6 py-10 text-center"
+          className="rounded-[10px] border border-dashed border-[#4D7CFE] px-7 py-11 text-center"
           onDragOver={(event) => event.preventDefault()}
           onDrop={handleDropImage}
         >
           {panelForm.image !== DEFAULT_IMAGE ? (
-            <img
-              src={panelForm.image}
-              alt={panelForm.name || "Selected preview"}
-              className="h-40 w-full rounded-[18px] object-cover 2xl:h-48 2xl:rounded-[20px]"
-            />
-          ) : (
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-[#D8DDEA] text-[#373737]">
-              <PiUploadSimpleLight className="text-[28px]" />
-            </div>
-          )}
-          <p className="mt-5 text-sm text-[#2C2C2C]">
+              <img
+                src={panelForm.image}
+                alt={panelForm.name || "Selected preview"}
+                className="h-44 w-full rounded-[18px] object-cover 2xl:h-48 2xl:rounded-[20px]"
+              />
+            ) : (
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-[#D8DDEA] text-[#373737]">
+                <PiUploadSimpleLight className="text-[30px]" />
+              </div>
+            )}
+          <p className="mt-5 text-base text-[#2C2C2C]">
             {panelForm.image !== DEFAULT_IMAGE
               ? "Preview selected image"
               : "Drag and Drop your file here or"}
@@ -545,18 +545,18 @@ const CatalogPage = () => {
           <button
             type="button"
             onClick={handleChoosePhoto}
-            className="mt-4 rounded-[10px] bg-[#4777F5] px-5 py-2 text-sm font-medium text-white shadow-[0_10px_24px_rgba(71,119,245,0.22)] transition hover:brightness-105"
+            className="mt-4 rounded-[10px] bg-[#4777F5] px-6 py-2.5 text-sm font-medium text-white shadow-[0_10px_24px_rgba(71,119,245,0.22)] transition hover:brightness-105 md:text-base"
           >
             {panelForm.image !== DEFAULT_IMAGE ? "Change File" : "Choose File"}
           </button>
-          <p className="mt-3 text-xs text-[#9D9D9D]">
+          <p className="mt-3 text-sm text-[#9D9D9D]">
             {panelForm.imageName || "PNG, JPG, or WEBP up to 10MB"}
           </p>
         </div>
       )}
 
       {formErrors.image ? (
-        <p className="mt-2 text-xs text-[#F04438]">{formErrors.image}</p>
+        <p className="mt-2 text-sm text-[#F04438]">{formErrors.image}</p>
       ) : null}
     </div>
   );
@@ -571,11 +571,11 @@ const CatalogPage = () => {
           onClick={resetToEmptyPanel}
           className="text-[#3F3F3F] transition hover:text-[#151515]"
         >
-          <PiXLight className="text-[24px]" />
+          <PiXLight className="text-[26px]" />
         </button>
       }
     >
-      <form className="space-y-5" onSubmit={handleSubmit}>
+      <form className="space-y-6" onSubmit={handleSubmit}>
         {renderUploadArea({ isEdit })}
 
         <FormField label="Name" error={formErrors.name}>
@@ -584,7 +584,7 @@ const CatalogPage = () => {
             value={panelForm.name}
             onChange={(event) => handleFormChange("name", event.target.value)}
             placeholder="Enter name here..."
-            className="h-11 w-full rounded-[10px] border border-[#D7D7D7] px-4 text-[15px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] 2xl:h-12"
+            className="h-12 w-full rounded-[10px] border border-[#D7D7D7] px-4 text-[16px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5 2xl:h-12"
           />
         </FormField>
 
@@ -595,7 +595,7 @@ const CatalogPage = () => {
               onChange={(event) =>
                 handleFormChange("category", event.target.value)
               }
-              className="h-11 w-full appearance-none rounded-[10px] border border-[#D7D7D7] px-4 text-[15px] text-[#2B2B2B] outline-none transition focus:border-[#C8D8FF] 2xl:h-12"
+              className="h-12 w-full appearance-none rounded-[10px] border border-[#D7D7D7] px-4 text-[16px] text-[#2B2B2B] outline-none transition focus:border-[#C8D8FF] md:px-5 2xl:h-12"
             >
               {selectableCategories.map((category) => (
                 <option key={category.id} value={category.id}>
@@ -603,7 +603,7 @@ const CatalogPage = () => {
                 </option>
               ))}
             </select>
-            <PiCaretDownLight className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[20px] text-[#A8A8A8]" />
+            <PiCaretDownLight className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[22px] text-[#A8A8A8]" />
           </div>
         </FormField>
 
@@ -614,7 +614,7 @@ const CatalogPage = () => {
             value={panelForm.price}
             onChange={(event) => handleFormChange("price", event.target.value)}
             placeholder="Enter price here..."
-            className="h-11 w-full rounded-[10px] border border-[#D7D7D7] px-4 text-[15px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] 2xl:h-12"
+            className="h-12 w-full rounded-[10px] border border-[#D7D7D7] px-4 text-[16px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5 2xl:h-12"
           />
         </FormField>
 
@@ -626,13 +626,13 @@ const CatalogPage = () => {
             }
             rows="4"
             placeholder="Add description here..."
-            className="w-full rounded-[10px] border border-[#D7D7D7] px-4 py-3 text-[15px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF]"
+            className="w-full rounded-[10px] border border-[#D7D7D7] px-4 py-3.5 text-[16px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5"
           />
         </FormField>
 
         <button
           type="submit"
-          className="mt-8 flex h-12 w-full items-center justify-center rounded-[10px] bg-[#4777F5] text-lg font-medium text-white shadow-[0_12px_28px_rgba(71,119,245,0.24)] transition hover:brightness-105"
+          className="mt-9 flex h-[54px] w-full items-center justify-center rounded-[10px] bg-[#4777F5] text-[20px] font-medium text-white shadow-[0_12px_28px_rgba(71,119,245,0.24)] transition hover:brightness-105"
         >
           Save
         </button>
@@ -654,17 +654,17 @@ const CatalogPage = () => {
               type="button"
               aria-label="Delete menu"
               onClick={openDeleteDialog}
-              className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-[#FF3B30] text-[#FF3B30] transition hover:bg-[#FFF4F2]"
+              className="flex h-11 w-11 items-center justify-center rounded-[10px] border border-[#FF3B30] text-[#FF3B30] transition hover:bg-[#FFF4F2] md:h-12 md:w-12"
             >
-              <PiTrashLight className="text-[18px]" />
+              <PiTrashLight className="text-[20px]" />
             </button>
             <button
               type="button"
               aria-label="Edit menu"
               onClick={handleOpenEdit}
-              className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-[#FFB800] text-[#FFB800] transition hover:bg-[#FFF9E8]"
+              className="flex h-11 w-11 items-center justify-center rounded-[10px] border border-[#FFB800] text-[#FFB800] transition hover:bg-[#FFF9E8] md:h-12 md:w-12"
             >
-              <PiPencilSimpleLineLight className="text-[18px]" />
+              <PiPencilSimpleLineLight className="text-[20px]" />
             </button>
           </>
         }
@@ -673,16 +673,16 @@ const CatalogPage = () => {
           <img
             src={selectedMenu.image}
             alt={selectedMenu.name}
-            className="h-44 w-full rounded-[22px] object-cover 2xl:h-55 2xl:rounded-[24px]"
+            className="h-48 w-full rounded-[22px] object-cover 2xl:h-55 2xl:rounded-[24px]"
           />
 
           <ReadOnlyField label="Name" value={selectedMenu.name} />
 
           <div>
-            <p className="mb-2 text-sm font-medium text-[#4A4A4A]">Category</p>
-            <div className="relative flex h-11 items-center rounded-[10px] border border-[#D7D7D7] bg-white px-4 text-[15px] text-[#2B2B2B] 2xl:h-12">
+            <p className="mb-2.5 text-base font-medium text-[#4A4A4A]">Category</p>
+            <div className="relative flex h-12 items-center rounded-[10px] border border-[#D7D7D7] bg-white px-4 text-[16px] text-[#2B2B2B] md:px-5 2xl:h-12">
               {categoryMap[selectedMenu.category]?.shortLabel}
-              <PiCaretDownLight className="absolute right-4 text-[20px] text-[#A8A8A8]" />
+              <PiCaretDownLight className="absolute right-4 text-[22px] text-[#A8A8A8]" />
             </div>
           </div>
 
@@ -709,14 +709,14 @@ const CatalogPage = () => {
           type="button"
           onClick={handleOpenCreate}
           aria-label="Create menu"
-          className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#4777F5] text-white shadow-[0_12px_28px_rgba(71,119,245,0.24)] transition hover:brightness-105"
+          className="flex h-11 w-11 items-center justify-center rounded-[10px] bg-[#4777F5] text-white shadow-[0_12px_28px_rgba(71,119,245,0.24)] transition hover:brightness-105 md:h-12 md:w-12"
         >
-          <PiPlusLight className="text-[20px]" />
+          <PiPlusLight className="text-[22px]" />
         </button>
       }
     >
-      <div className="flex flex-1 items-center justify-center px-4 text-center text-[#A2A2A2]">
-        <p className="text-[24px] font-medium 2xl:text-[28px]">Add Menu here</p>
+      <div className="flex flex-1 items-center justify-center px-6 text-center text-[#A2A2A2]">
+        <p className="text-[26px] font-medium 2xl:text-[28px]">Add Menu here</p>
       </div>
     </PanelFrame>
   );
@@ -746,14 +746,14 @@ const CatalogPage = () => {
         searchPlaceholder: "Enter the keyword here...",
       }}
     >
-      <section className="min-h-full bg-[#F7F7F7] px-4 py-4 md:px-6 md:py-5">
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px] 2xl:gap-6 2xl:grid-cols-[minmax(0,1fr)_400px]">
+      <section className="min-h-full bg-[#F7F7F7] px-5 py-5 md:px-7 md:py-6">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] 2xl:gap-6 2xl:grid-cols-[minmax(0,1fr)_400px]">
           <div className="min-h-0">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <h1 className="text-[28px] font-semibold tracking-[-0.04em] text-[#161616] 2xl:text-[32px]">
+              <h1 className="text-[30px] font-semibold tracking-[-0.04em] text-[#161616] 2xl:text-[32px]">
                 List Menu
               </h1>
-              <p className="text-sm text-[#8E8E8E]">
+              <p className="text-base text-[#8E8E8E]">
                 Total{" "}
                 <span className="font-semibold text-[#3A3A3A]">
                   {menus.length}
@@ -762,7 +762,7 @@ const CatalogPage = () => {
               </p>
             </div>
 
-            <div className="mt-5 flex flex-wrap gap-3 justify-around ">
+            <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
               {categoryOptions.map((category) => {
                 const isActive = activeCategory === category.id;
                 const Icon = category.icon;
@@ -772,22 +772,22 @@ const CatalogPage = () => {
                     key={category.id}
                     type="button"
                     onClick={() => setActiveCategory(category.id)}
-                    className={`flex min-h-14 items-center justify-center gap-3 rounded-[10px] border px-4 text-base transition md:min-w-42 2xl:min-h-16 2xl:px-5 2xl:text-lg 2xl:md:min-w-52 ${
+                    className={`flex w-full min-h-[60px] items-center justify-center gap-3 rounded-[10px] border px-5 text-lg transition 2xl:min-h-16 2xl:px-5 2xl:text-lg ${
                       isActive
                         ? "border-[#4777F5] bg-[#4777F5] text-white shadow-[0_18px_35px_rgba(71,119,245,0.22)]"
                         : "border-[#D9DDE5] bg-white text-[#A7A7A7] hover:border-[#B8C9FF] hover:text-[#5C76B8]"
                     }`}
                   >
-                    {Icon ? <Icon className="text-[24px]" /> : null}
+                    {Icon ? <Icon className="text-[26px]" /> : null}
                     <span>{category.label}</span>
                   </button>
                 );
               })}
             </div>
 
-            <div className="mt-5 max-h-[calc(100vh-214px)] overflow-y-auto pr-1 2xl:mt-5 2xl:max-h-[calc(100vh-235px)]">
+            <div className="mt-6 max-h-[calc(100vh-214px)] overflow-y-auto pr-1 2xl:mt-5 2xl:max-h-[calc(100vh-235px)]">
               {filteredMenus.length > 0 ? (
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-4 2xl:grid-cols-4 2xl:gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-4 2xl:grid-cols-4 2xl:gap-4">
                   {filteredMenus.map((menu) => {
                     const category = categoryMap[menu.category];
                     const isSelected = selectedMenuId === menu.id;
@@ -804,7 +804,7 @@ const CatalogPage = () => {
                             handleSelectMenu(menu.id);
                           }
                         }}
-                        className={`flex h-[214px] cursor-pointer flex-col rounded-[10px] border bg-white p-2.5 shadow-[0_8px_24px_rgba(25,45,88,0.05)] transition 2xl:h-[220px] ${
+                        className={`flex min-h-[228px] cursor-pointer flex-col rounded-[10px] border bg-white p-3 shadow-[0_8px_24px_rgba(25,45,88,0.05)] transition 2xl:min-h-[236px] ${
                           isSelected
                             ? "border-[#4777F5] shadow-[0_14px_36px_rgba(71,119,245,0.18)]"
                             : "border-transparent hover:-translate-y-0.5 hover:border-[#DCE5FF]"
@@ -814,23 +814,23 @@ const CatalogPage = () => {
                           <img
                             src={menu.image}
                             alt={menu.name}
-                            className="h-[108px] w-full object-cover 2xl:h-[112px]"
+                            className="h-[116px] w-full object-cover 2xl:h-[120px]"
                           />
-                          <span className="absolute right-2.5 top-2.5 rounded-full bg-[#4D7CFE] px-3 py-1 text-xs font-medium text-white shadow-[0_8px_18px_rgba(77,124,254,0.24)]">
+                          <span className="absolute right-2.5 top-2.5 rounded-full bg-[#4D7CFE] px-3.5 py-1.5 text-sm font-medium text-white shadow-[0_8px_18px_rgba(77,124,254,0.24)]">
                             {category?.shortLabel ?? "Menu"}
                           </span>
                         </div>
 
-                        <div className="mt-2.5 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden 2xl:mt-3">
-                          <h2 className="line-clamp-1 break-words text-[16px] font-semibold leading-[1.25] tracking-[-0.03em] text-[#161616] 2xl:text-[17px]">
+                        <div className="mt-3 flex min-h-0 min-w-0 flex-1 flex-col 2xl:mt-3">
+                          <h2 className="line-clamp-1 break-words text-[17px] font-semibold leading-[1.25] tracking-[-0.03em] text-[#161616] 2xl:text-[18px]">
                             {menu.name}
                           </h2>
-                          <p className="mt-1 min-h-[34px] overflow-hidden break-words line-clamp-2 text-[12px] leading-[1.45] text-[#A0A0A0] 2xl:mt-1.5 2xl:min-h-[38px] 2xl:text-[13px] 2xl:leading-[1.5]">
+                          <p className="mt-1.5 min-h-[40px] overflow-hidden break-words line-clamp-2 text-[13px] leading-[1.45] text-[#A0A0A0] 2xl:mt-1.5 2xl:min-h-[38px] 2xl:text-[13px] 2xl:leading-[1.5]">
                             {menu.description}
                           </p>
 
                           <div className="mt-auto flex items-end justify-between gap-3 pt-1 2xl:pt-3">
-                            <p className="text-[12px] font-semibold text-[#3F74FF] 2xl:text-[13px]">
+                            <p className="text-[13px] font-semibold text-[#3F74FF] 2xl:text-[14px]">
                               {formatCurrency(menu.price)}
                               <span className="ml-1 font-normal text-[#B1B1B1]">
                                 /portion
@@ -843,13 +843,13 @@ const CatalogPage = () => {
                                 event.stopPropagation();
                                 handleSelectMenu(menu.id);
                               }}
-                              className={`flex h-8 w-8 items-center justify-center rounded-full border transition 2xl:h-9 2xl:w-9 ${
+                              className={`flex h-9 w-9 items-center justify-center rounded-full border transition 2xl:h-10 2xl:w-10 ${
                                 isSelected
                                   ? "border-[#4777F5] bg-[#4777F5] text-white"
                                   : "border-[#D8DDEA] text-[#6A6A6A] hover:border-[#B6C7FF] hover:text-[#4777F5]"
                               }`}
                             >
-                              <PiArrowUpRightLight className="text-[16px] 2xl:text-[18px]" />
+                              <PiArrowUpRightLight className="text-[18px] 2xl:text-[20px]" />
                             </button>
                           </div>
                         </div>
@@ -858,12 +858,12 @@ const CatalogPage = () => {
                   })}
                 </div>
               ) : (
-                <div className="flex min-h-80 items-center justify-center rounded-3xl border border-dashed border-[#D7DDEA] bg-white px-6 text-center">
+                <div className="flex min-h-84 items-center justify-center rounded-3xl border border-dashed border-[#D7DDEA] bg-white px-7 text-center">
                   <div>
-                    <p className="text-xl font-semibold text-[#2A2A2A]">
+                    <p className="text-2xl font-semibold text-[#2A2A2A]">
                       No menu matched your filters
                     </p>
-                    <p className="mt-2 text-sm text-[#9D9D9D]">
+                    <p className="mt-3 text-base text-[#9D9D9D]">
                       Try another keyword or switch to a different category.
                     </p>
                   </div>
@@ -875,9 +875,9 @@ const CatalogPage = () => {
           <div className="relative">
             {toast ? (
               <div className="mb-5 rounded-[10px] border border-[#EAEAEA] bg-white shadow-[0_16px_36px_rgba(25,45,88,0.08)]">
-                <div className="flex items-start gap-3 border-l-[3px] border-[#22C55E] px-5 py-5">
-                  <PiCheckCircleLight className="mt-0.5 text-[28px] text-[#16A34A]" />
-                  <p className="flex-1 text-[16px] text-[#171717] 2xl:text-[18px]">
+                <div className="flex items-start gap-4 border-l-[3px] border-[#22C55E] px-6 py-6">
+                  <PiCheckCircleLight className="mt-0.5 text-[30px] text-[#16A34A]" />
+                  <p className="flex-1 text-[17px] text-[#171717] 2xl:text-[18px]">
                     {toast.message}
                   </p>
                   <button
@@ -886,7 +886,7 @@ const CatalogPage = () => {
                     onClick={() => setToast(null)}
                     className="text-[#3F3F3F] transition hover:text-[#151515]"
                   >
-                    <PiXLight className="text-[18px]" />
+                    <PiXLight className="text-[20px]" />
                   </button>
                 </div>
               </div>
@@ -899,34 +899,34 @@ const CatalogPage = () => {
         {isDeleteDialogOpen ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(17,24,39,0.28)] px-4">
             <div
-              className="w-full max-w-[500px] rounded-[28px] bg-white px-7 py-8 text-center shadow-[0_22px_65px_rgba(17,24,39,0.2)]"
+              className="w-full max-w-[540px] rounded-[28px] bg-white px-8 py-9 text-center shadow-[0_22px_65px_rgba(17,24,39,0.2)]"
               role="dialog"
               aria-modal="true"
               aria-labelledby="delete-menu-title"
             >
-              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] border-2 border-[#FF1F0F] text-[#FF1F0F]">
-                <PiTrashLight className="text-[38px]" />
+              <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[24px] border-2 border-[#FF1F0F] text-[#FF1F0F]">
+                <PiTrashLight className="text-[40px]" />
               </div>
 
               <h3
                 id="delete-menu-title"
-                className="mx-auto mt-6 max-w-[320px] text-[28px] font-semibold leading-[1.35] tracking-[-0.03em] text-[#121212]"
+                className="mx-auto mt-7 max-w-[340px] text-[30px] font-semibold leading-[1.35] tracking-[-0.03em] text-[#121212]"
               >
                 Are you sure want to delete this file?
               </h3>
 
-              <div className="mt-8 grid grid-cols-2 gap-4">
+              <div className="mt-9 grid grid-cols-2 gap-5">
                 <button
                   type="button"
                   onClick={closeDeleteDialog}
-                  className="flex h-12 items-center justify-center rounded-[10px] border border-[#CFCFCF] text-lg font-medium text-[#252525] transition hover:bg-[#F8F8F8]"
+                  className="flex h-[54px] items-center justify-center rounded-[10px] border border-[#CFCFCF] text-[20px] font-medium text-[#252525] transition hover:bg-[#F8F8F8]"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={deleteMenu}
-                  className="flex h-12 items-center justify-center rounded-[10px] bg-[#FF1F0F] text-lg font-medium text-white transition hover:brightness-105"
+                  className="flex h-[54px] items-center justify-center rounded-[10px] bg-[#FF1F0F] text-[20px] font-medium text-white transition hover:brightness-105"
                 >
                   Delete
                 </button>

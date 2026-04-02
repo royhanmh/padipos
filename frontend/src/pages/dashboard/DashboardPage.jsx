@@ -134,14 +134,14 @@ const FilterField = ({ placeholder, icon, suffixIcon }) => {
   return (
     <button
       type="button"
-      className="flex h-11 min-w-45 items-center justify-between rounded-xl border border-[#E9E9E9] bg-white px-4 text-sm text-[#B8B8B8]"
+      className="flex h-12 min-w-48 items-center justify-between rounded-xl border border-[#E9E9E9] bg-white px-4 text-sm text-[#B8B8B8] md:min-w-52 md:px-5 md:text-base"
     >
       <span>{placeholder}</span>
       {icon
-        ? createElement(icon, { className: "text-[14px] text-[#BBBBBB]" })
+        ? createElement(icon, { className: "text-[16px] text-[#BBBBBB]" })
         : null}
       {suffixIcon
-        ? createElement(suffixIcon, { className: "text-[14px] text-[#BBBBBB]" })
+        ? createElement(suffixIcon, { className: "text-[16px] text-[#BBBBBB]" })
         : null}
     </button>
   );
@@ -170,29 +170,29 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout sidebarProps={{ activeItem: "dashboard" }}>
-      <section className="min-h-full bg-[#F7F7F7] px-6 py-4 md:px-8 md:py-5">
+      <section className="min-h-full bg-[#F7F7F7] px-5 py-5 md:px-8 md:py-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <h1 className="text-[24px] font-semibold tracking-[-0.03em] text-[#242424]">
+          <h1 className="text-[26px] font-semibold tracking-[-0.03em] text-[#242424] md:text-[28px]">
             Dashboard
           </h1>
-          <p className="text-sm text-[#757575]">
+          <p className="text-base text-[#757575]">
             Today, Senin 30 September 2024
           </p>
         </div>
 
-        <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
           {stats.map((stat) => (
             <StatCardComponent key={stat.label} {...stat} />
           ))}
         </div>
 
-        <section className="mt-4 rounded-xl border border-[#ECECEC] bg-white p-5 shadow-[0_12px_32px_rgba(25,45,88,0.05)]">
+        <section className="mt-5 rounded-xl border border-[#ECECEC] bg-white p-6 shadow-[0_12px_32px_rgba(25,45,88,0.05)] md:p-7">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-            <h2 className="text-[24px] font-semibold tracking-[-0.03em] text-[#242424]">
+            <h2 className="text-[26px] font-semibold tracking-[-0.03em] text-[#242424] md:text-[28px]">
               Total Omzet
             </h2>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
               <FilterField
                 placeholder="Start date"
                 icon={PiCalendarBlankLight}
@@ -208,7 +208,7 @@ const DashboardPage = () => {
             </div>
           </div>
 
-          <div className="mt-6 h-90 w-full">
+          <div className="mt-7 h-[380px] w-full md:h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={omzetData}
@@ -246,7 +246,7 @@ const DashboardPage = () => {
                   wrapperStyle={{ paddingTop: "18px" }}
                   iconType="square"
                   formatter={(value) => (
-                    <span className="text-xs text-[#4A4A4A]">{value}</span>
+                    <span className="text-sm text-[#4A4A4A]">{value}</span>
                   )}
                 />
                 <Bar
@@ -287,46 +287,46 @@ const DashboardPage = () => {
             onClick={closeCategoryModal}
           >
             <div
-              className="w-full max-w-105 rounded-xl bg-white shadow-[0_24px_60px_rgba(17,24,39,0.18)]"
+              className="w-full max-w-105 rounded-xl bg-white shadow-[0_24px_60px_rgba(17,24,39,0.18)] md:max-w-[500px]"
               onClick={(event) => event.stopPropagation()}
             >
-              <div className="flex items-center justify-between border-b border-[#EFEFEF] px-4 py-3">
-                <h3 className="text-[30px] font-semibold tracking-[-0.03em] text-[#212121]">
+              <div className="flex items-center justify-between border-b border-[#EFEFEF] px-5 py-4">
+                <h3 className="text-[32px] font-semibold tracking-[-0.03em] text-[#212121] md:text-[34px]">
                   {activeDetail.title}
                 </h3>
                 <button
                   type="button"
                   aria-label="Close popup"
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-[#646464] transition hover:bg-[#F6F6F6]"
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-[#646464] transition hover:bg-[#F6F6F6] md:h-10 md:w-10"
                   onClick={closeCategoryModal}
                 >
-                  <PiXLight className="text-[20px]" />
+                  <PiXLight className="text-[22px]" />
                 </button>
               </div>
 
-              <div className="px-4 py-3">
+              <div className="px-5 py-4">
                 <label className="relative block">
-                  <PiMagnifyingGlassLight className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#C2C2C2]" />
+                  <PiMagnifyingGlassLight className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-[#C2C2C2]" />
                   <input
                     type="text"
                     value={searchKeyword}
                     onChange={(event) => setSearchKeyword(event.target.value)}
                     placeholder="Enter the keyword here..."
-                    className="h-10 w-full rounded-xl border border-[#E9E9E9] bg-white pl-9 pr-3 text-sm text-[#4B4B4B] outline-none placeholder:text-[#D0D0D0] focus:border-[#C8D8FF]"
+                    className="h-11 w-full rounded-xl border border-[#E9E9E9] bg-white pl-10 pr-4 text-base text-[#4B4B4B] outline-none placeholder:text-[#D0D0D0] focus:border-[#C8D8FF] md:h-12 md:pl-11"
                   />
                 </label>
 
                 <div className="mt-4 overflow-hidden rounded-xl border border-[#F0F0F0]">
-                  <div className="grid grid-cols-[1fr_120px] bg-[#F7F7F7] px-4 py-2 text-xs font-semibold text-[#2F2F2F]">
+                  <div className="grid grid-cols-[1fr_132px] bg-[#F7F7F7] px-5 py-3 text-sm font-semibold text-[#2F2F2F]">
                     <p>Menu Name</p>
                     <p>Total Sales</p>
                   </div>
 
-                  <div className="max-h-70 overflow-y-auto">
+                  <div className="max-h-72 overflow-y-auto">
                     {filteredItems.map((item) => (
                       <div
                         key={item.name}
-                        className="grid grid-cols-[1fr_120px] border-t border-[#F3F3F3] px-4 py-3 text-sm text-[#313131]"
+                        className="grid grid-cols-[1fr_132px] border-t border-[#F3F3F3] px-5 py-4 text-base text-[#313131]"
                       >
                         <p>{item.name}</p>
                         <p>{item.totalSales}</p>

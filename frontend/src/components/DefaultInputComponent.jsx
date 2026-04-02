@@ -9,16 +9,16 @@ const DefaultInputComponent = ({
   value,
   onChange,
   helpText,
-  helpTextClassName = "text-[5px] text-gray-400 mt-1",
+  helpTextClassName = "mt-1.5 text-xs text-gray-400 md:mt-2 md:text-sm",
   ...rest
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const inputType = type === "password" && showPassword ? "text" : type;
 
   return (
-    <div className="flex flex-col mb-4">
+    <div className="mb-5 flex flex-col">
       {label && (
-        <label htmlFor={id} className="mb-1 text-gray-600 text-sm">
+        <label htmlFor={id} className="mb-1.5 text-sm text-gray-600 md:text-base">
           {label}
         </label>
       )}
@@ -30,10 +30,11 @@ const DefaultInputComponent = ({
           value={value}
           onChange={onChange}
           className="
+          min-h-11
           text-sm
             w-full
-            px-3
-            py-2
+            px-3.5
+            py-2.5
             border
             border-gray-300
             rounded-xl
@@ -44,7 +45,12 @@ const DefaultInputComponent = ({
             focus:border-transparent
             transition
             duration-200
-            pr-10
+            pr-11
+            md:min-h-12
+            md:px-4
+            md:py-3
+            md:pr-12
+            md:text-base
           "
           {...rest}
         />
@@ -52,14 +58,14 @@ const DefaultInputComponent = ({
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-blue-500 focus:outline-none"
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-blue-500 focus:outline-none md:right-4"
             tabIndex={-1}
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? (
-              <AiOutlineEye className="h-5 w-5" />
+              <AiOutlineEye className="h-5 w-5 md:h-6 md:w-6" />
             ) : (
-              <AiOutlineEyeInvisible className="h-5 w-5" />
+              <AiOutlineEyeInvisible className="h-5 w-5 md:h-6 md:w-6" />
             )}
           </button>
         )}

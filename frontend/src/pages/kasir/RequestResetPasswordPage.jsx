@@ -13,7 +13,7 @@ const RequestResetPasswordPage = () => {
         <LoginCardComponent
           title="Reset Password"
           subtitle="Please enter your registered email here!"
-          className="pb-20"
+          className="pb-20 md:pb-24"
         >
           <DefaultInputComponent
             type="email"
@@ -21,7 +21,7 @@ const RequestResetPasswordPage = () => {
             label="Email"
           />
           <Link to="/reset/form">
-            <PrimaryButtonComponent type="submit" className="mt-2">
+            <PrimaryButtonComponent type="submit" className="mt-3">
               Submit
             </PrimaryButtonComponent>
           </Link>

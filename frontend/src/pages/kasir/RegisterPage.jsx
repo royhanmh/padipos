@@ -32,10 +32,10 @@ const RegisterPage = () => {
             placeholder="Confirm Password"
           />
 
-          <PrimaryButtonComponent type="submit" className="mt-2">
+          <PrimaryButtonComponent type="submit" className="mt-3">
             Create Account
           </PrimaryButtonComponent>
-          <p className="text-sm text-gray-400 mt-4 text-center pb-5">
+          <p className="mt-5 pb-6 text-center text-base text-gray-400 md:text-[17px]">
             Already have an account?{" "}
             <Link to="/login" className="text-blue-500 hover:text-blue-600">
               Login

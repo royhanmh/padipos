@@ -29,14 +29,14 @@ const DashboardLoginPage = () => {
           helpText={
             <Link
               to="/reset"
-              className="text-sm text-gray-400 hover:text-gray-500"
+              className="text-base text-gray-400 hover:text-gray-500 md:text-[17px]"
             >
               Forget password?
             </Link>
           }
-          helpTextClassName="mt-2 text-right"
+          helpTextClassName="mt-2.5 text-right md:mt-3"
         />
-        <PrimaryButtonComponent type="submit" className="mt-2">
+        <PrimaryButtonComponent type="submit" className="mt-3">
           Login
         </PrimaryButtonComponent>
       </LoginCardComponent>

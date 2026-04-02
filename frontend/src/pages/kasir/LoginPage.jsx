@@ -29,17 +29,17 @@ const LoginPage = () => {
           helpText={
             <Link
               to="/reset"
-              className="text-sm text-gray-400 hover:text-gray-500"
+              className="text-base text-gray-400 hover:text-gray-500 md:text-[17px]"
             >
               Forget password?
             </Link>
           }
-          helpTextClassName="mt-2 text-right"
+          helpTextClassName="mt-2.5 text-right md:mt-3"
         />
-        <PrimaryButtonComponent type="submit" className="mt-2">
+        <PrimaryButtonComponent type="submit" className="mt-3">
           Login
         </PrimaryButtonComponent>
-        <p className="text-sm text-gray-400 mt-4 text-center pb-5">
+        <p className="mt-5 pb-6 text-center text-base text-gray-400 md:text-[17px]">
           Don't have an account?{" "}
           <Link to="/register" className="text-blue-500 hover:text-blue-600">
             Register

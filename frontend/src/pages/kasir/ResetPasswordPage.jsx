@@ -11,7 +11,7 @@ const ResetPasswordPage = () => {
         <LoginCardComponent
           title="Reset Password"
           subtitle="Please enter your new password and confirm!"
-          className="pb-20"
+          className="pb-20 md:pb-24"
         >
           <DefaultInputComponent
             type="password"
@@ -23,7 +23,7 @@ const ResetPasswordPage = () => {
             label="Confirm Password"
             placeholder="Confirm Password"
           />
-          <PrimaryButtonComponent type="submit" className="mt-2">
+          <PrimaryButtonComponent type="submit" className="mt-3">
             Reset Password
           </PrimaryButtonComponent>
         </LoginCardComponent>
