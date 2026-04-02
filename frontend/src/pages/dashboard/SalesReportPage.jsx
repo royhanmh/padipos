@@ -183,7 +183,7 @@ const SalesReportPage = () => {
                   onChange={(event) =>
                     handleFilterChange("startDate", event.target.value)
                   }
-                  className="h-12 w-full rounded-xl border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition [color-scheme:light] focus:border-[#C7D6FF] md:h-[52px] md:px-5"
+                  className="h-12 w-full rounded-xl border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition scheme-light focus:border-[#C7D6FF] md:h-13 md:px-5"
                 />
                 <PiCalendarBlankLight className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[20px] text-[#A8A8A8]" />
               </div>
@@ -197,7 +197,7 @@ const SalesReportPage = () => {
                   onChange={(event) =>
                     handleFilterChange("finishDate", event.target.value)
                   }
-                  className="h-12 w-full rounded-xl border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition [color-scheme:light] focus:border-[#C7D6FF] md:h-[52px] md:px-5"
+                  className="h-12 w-full rounded-xl border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition scheme-light focus:border-[#C7D6FF] md:h-13 md:px-5"
                 />
                 <PiCalendarBlankLight className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[20px] text-[#A8A8A8]" />
               </div>
@@ -210,7 +210,7 @@ const SalesReportPage = () => {
                   onChange={(event) =>
                     handleFilterChange("category", event.target.value)
                   }
-                  className="h-12 w-full appearance-none rounded-xl border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] md:h-[52px] md:px-5"
+                  className="h-12 w-full appearance-none rounded-xl border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] md:h-13 md:px-5"
                 >
                   {CATEGORY_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -229,7 +229,7 @@ const SalesReportPage = () => {
                   onChange={(event) =>
                     handleFilterChange("orderType", event.target.value)
                   }
-                  className="h-12 w-full appearance-none rounded-xl border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] md:h-[52px] md:px-5"
+                  className="h-12 w-full appearance-none rounded-xl border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] md:h-13 md:px-5"
                 >
                   {ORDER_TYPE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -244,7 +244,7 @@ const SalesReportPage = () => {
             <button
               type="button"
               onClick={applySearchFilter}
-              className="h-[52px] w-full min-w-0 rounded-xl bg-[#4D7CFE] px-7 text-[22px] font-medium text-white transition hover:brightness-105 2xl:min-w-44"
+              className="h-13 w-full min-w-0 rounded-xl bg-[#4D7CFE] px-7 text-[22px] font-medium text-white transition hover:brightness-105 2xl:min-w-44"
             >
               Search
             </button>
@@ -261,7 +261,7 @@ const SalesReportPage = () => {
 
           <div className="mt-5 overflow-hidden rounded-xl border border-[#EFEFEF]">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[980px] border-collapse">
+              <table className="w-full min-w-245 border-collapse">
                 <thead className="bg-[#F2F2F2] text-left">
                   <tr className="text-[17px] font-semibold text-[#1F1F1F]">
                     <th className="px-6 py-5">No Order</th>
@@ -351,7 +351,7 @@ const SalesReportPage = () => {
           onClick={closeDetailModal}
         >
           <div
-            className="relative w-full max-w-[620px] origin-center scale-70 rounded-[22px] bg-white px-10 py-10 shadow-[0_22px_60px_rgba(17,24,39,0.22)] md:px-9 md:py-10"
+            className="relative w-full max-w-155 origin-center scale-70 rounded-[22px] bg-white px-10 py-10 shadow-[0_22px_60px_rgba(17,24,39,0.22)] md:px-9 md:py-10"
             onClick={(event) => event.stopPropagation()}
           >
             <button
@@ -367,8 +367,8 @@ const SalesReportPage = () => {
               Transaction Detail
             </h2>
 
-            <div className="mx-auto mt-7 w-full max-w-[410px]">
-              <div className="overflow-hidden rounded-t-[2px] bg-[#F3F3F3] px-5 py-5">
+            <div className="mx-auto mt-7 w-full max-w-102.5">
+              <div className="overflow-hidden rounded-t-xs bg-[#F3F3F3] px-5 py-5">
                 <p className="text-[13px] text-[#8E8E8E]">
                   No Order{" "}
                   <span className="text-[#666666]">
