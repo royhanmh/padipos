@@ -242,7 +242,9 @@ const ReadOnlyField = ({ label, value, multiline = false }) => {
     <div>
       <p className="mb-2.5 text-base font-medium text-[#4A4A4A]">{label}</p>
       {multiline ? (
-        <div className={`${sharedClassName} min-h-28 py-4 leading-8 md:leading-9`}>
+        <div
+          className={`${sharedClassName} min-h-28 py-4 leading-8 md:leading-9`}
+        >
           {value}
         </div>
       ) : (
@@ -527,16 +529,16 @@ const CatalogPage = () => {
           onDrop={handleDropImage}
         >
           {panelForm.image !== DEFAULT_IMAGE ? (
-              <img
-                src={panelForm.image}
-                alt={panelForm.name || "Selected preview"}
-                className="h-44 w-full rounded-[18px] object-cover 2xl:h-48 2xl:rounded-[20px]"
-              />
-            ) : (
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-[#D8DDEA] text-[#373737]">
-                <PiUploadSimpleLight className="text-[30px]" />
-              </div>
-            )}
+            <img
+              src={panelForm.image}
+              alt={panelForm.name || "Selected preview"}
+              className="h-44 w-full rounded-[18px] object-cover 2xl:h-48 2xl:rounded-[20px]"
+            />
+          ) : (
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-[#D8DDEA] text-[#373737]">
+              <PiUploadSimpleLight className="text-[30px]" />
+            </div>
+          )}
           <p className="mt-5 text-base text-[#2C2C2C]">
             {panelForm.image !== DEFAULT_IMAGE
               ? "Preview selected image"
@@ -679,7 +681,9 @@ const CatalogPage = () => {
           <ReadOnlyField label="Name" value={selectedMenu.name} />
 
           <div>
-            <p className="mb-2.5 text-base font-medium text-[#4A4A4A]">Category</p>
+            <p className="mb-2.5 text-base font-medium text-[#4A4A4A]">
+              Category
+            </p>
             <div className="relative flex h-12 items-center rounded-[10px] border border-[#D7D7D7] bg-white px-4 text-[16px] text-[#2B2B2B] md:px-5 2xl:h-12">
               {categoryMap[selectedMenu.category]?.shortLabel}
               <PiCaretDownLight className="absolute right-4 text-[22px] text-[#A8A8A8]" />
@@ -877,7 +881,7 @@ const CatalogPage = () => {
               <div className="mb-5 rounded-[10px] border border-[#EAEAEA] bg-white shadow-[0_16px_36px_rgba(25,45,88,0.08)]">
                 <div className="flex items-start gap-4 border-l-[3px] border-[#22C55E] px-6 py-6">
                   <PiCheckCircleLight className="mt-0.5 text-[30px] text-[#16A34A]" />
-                  <p className="flex-1 text-base text-[#171717]">
+                  <p className="flex-1 text-base text-[#171717] mt-1.5">
                     {toast.message}
                   </p>
                   <button
@@ -940,4 +944,3 @@ const CatalogPage = () => {
 };
 
 export default CatalogPage;
-
