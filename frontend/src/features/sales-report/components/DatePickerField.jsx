@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { PiCalendarBlankLight, PiCaretLeftBold, PiCaretRightBold } from "react-icons/pi";
+import {
+  PiCalendarBlankLight,
+  PiCaretDownLight,
+  PiCaretLeftBold,
+  PiCaretRightBold,
+} from "react-icons/pi";
 
 const MONTH_OPTIONS = [
   { value: 0, label: "January" },
@@ -17,6 +22,7 @@ const MONTH_OPTIONS = [
 ];
 
 const WEEKDAY_LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const BRAND_BLUE = "#3572EF";
 
 const pad2 = (value) => String(value).padStart(2, "0");
 
@@ -62,6 +68,7 @@ const DatePickerField = ({
   placeholder = "Select date",
   minYear = 2020,
   maxYear = 2035,
+  disabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -153,11 +160,19 @@ const DatePickerField = ({
   };
 
   const handlePickDate = (day) => {
+    if (disabled) {
+      return;
+    }
+
     onChange(toValueString(day));
     setIsOpen(false);
   };
 
   const toggleCalendar = () => {
+    if (disabled) {
+      return;
+    }
+
     setIsOpen((currentOpen) => {
       const nextOpen = !currentOpen;
 
@@ -176,46 +191,65 @@ const DatePickerField = ({
       <button
         type="button"
         onClick={toggleCalendar}
-        className={`h-12 w-full rounded-xl border border-[#DCDCDC] px-4 pr-10 text-left text-base outline-none transition md:h-13 md:px-5 ${
-          selectedDate ? "text-[#535353]" : "text-[#B6B6B6]"
+        disabled={disabled}
+        aria-haspopup="dialog"
+        aria-expanded={isOpen}
+        className={`h-12 w-full rounded-xl border px-4 pr-10 text-left text-base outline-none transition md:h-13 md:px-5 ${
+          disabled
+            ? "cursor-not-allowed border-[#E8E8E8] bg-[#F7F7F7] text-[#C6C6C6]"
+            : isOpen
+              ? "border-[#A9C4FF] bg-white shadow-[0_0_0_2px_rgba(53,114,239,0.14)]"
+              : "border-[#DCDCDC] bg-white"
+        } ${
+          selectedDate && !disabled ? "text-[#535353]" : "text-[#B6B6B6]"
         }`}
       >
         <span>{displayValue}</span>
-        <PiCalendarBlankLight className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[20px] text-[#A8A8A8]" />
+        <PiCalendarBlankLight
+          className={`pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[20px] ${
+            disabled ? "text-[#D5D5D5]" : "text-[#A8A8A8]"
+          }`}
+        />
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 top-[calc(100%+8px)] z-40 w-[290px] overflow-hidden rounded-xl border border-[#E6E6E6] bg-white shadow-[0_16px_36px_rgba(22,33,58,0.14)]">
+        <div className="absolute left-0 top-[calc(100%+8px)] z-40 w-[304px] overflow-hidden rounded-xl border border-[#E6EAF3] bg-white shadow-[0_16px_36px_rgba(21,33,62,0.14)]">
           <div className="grid grid-cols-[1fr_1fr_auto_auto] gap-2 border-b border-[#F0F0F0] px-3 py-3">
-            <select
-              value={viewDate.getMonth()}
-              onChange={handleMonthChange}
-              className="h-8 rounded-md border border-[#E2E2E2] px-2 text-xs text-[#595959] outline-none"
-            >
-              {MONTH_OPTIONS.map((month) => (
-                <option key={month.value} value={month.value}>
-                  {month.label}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={viewDate.getMonth()}
+                onChange={handleMonthChange}
+                className="h-8 w-full appearance-none rounded-md border border-[#E2E6ED] bg-white px-2 pr-6 text-xs text-[#595959] outline-none"
+              >
+                {MONTH_OPTIONS.map((month) => (
+                  <option key={month.value} value={month.value}>
+                    {month.label}
+                  </option>
+                ))}
+              </select>
+              <PiCaretDownLight className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[14px] text-[#9BA3B3]" />
+            </div>
 
-            <select
-              value={viewDate.getFullYear()}
-              onChange={handleYearChange}
-              className="h-8 rounded-md border border-[#E2E2E2] px-2 text-xs text-[#595959] outline-none"
-            >
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={viewDate.getFullYear()}
+                onChange={handleYearChange}
+                className="h-8 w-full appearance-none rounded-md border border-[#E2E6ED] bg-white px-2 pr-6 text-xs text-[#595959] outline-none"
+              >
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+              <PiCaretDownLight className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[14px] text-[#9BA3B3]" />
+            </div>
 
             <button
               type="button"
               aria-label="Previous month"
               onClick={goPrevMonth}
-              className="flex h-8 w-8 items-center justify-center rounded-md border border-[#E2E2E2] text-[#6C6C6C] transition hover:bg-[#F8F8F8]"
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-[#E2E6ED] text-[#77829A] transition hover:bg-[#F8FAFF]"
             >
               <PiCaretLeftBold className="text-[11px]" />
             </button>
@@ -224,13 +258,16 @@ const DatePickerField = ({
               type="button"
               aria-label="Next month"
               onClick={goNextMonth}
-              className="flex h-8 w-8 items-center justify-center rounded-md border border-[#E2E2E2] text-[#6C6C6C] transition hover:bg-[#F8F8F8]"
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-[#E2E6ED] text-[#77829A] transition hover:bg-[#F8FAFF]"
             >
               <PiCaretRightBold className="text-[11px]" />
             </button>
           </div>
 
-          <div className="bg-[#4777F5] px-3 py-2 text-center text-xs font-medium text-white">
+          <div
+            className="px-3 py-2 text-center text-xs font-medium text-white"
+            style={{ backgroundColor: BRAND_BLUE }}
+          >
             {MONTH_OPTIONS[viewDate.getMonth()].label} {viewDate.getFullYear()}
           </div>
 
@@ -239,7 +276,7 @@ const DatePickerField = ({
               {WEEKDAY_LABELS.map((label) => (
                 <span
                   key={label}
-                  className="flex h-7 items-center justify-center text-[11px] font-medium text-[#8A8A8A]"
+                  className="flex h-7 items-center justify-center text-[11px] font-medium text-[#8A8F9D]"
                 >
                   {label}
                 </span>
@@ -258,13 +295,14 @@ const DatePickerField = ({
                     key={dayValue}
                     type="button"
                     onClick={() => handlePickDate(day)}
-                    className={`flex h-8 items-center justify-center rounded-md text-xs transition ${
+                    className={`flex h-8 items-center justify-center rounded-md border text-xs transition ${
                       isSelected
-                        ? "bg-[#4777F5] font-medium text-white"
+                        ? "border-transparent font-medium text-white"
                         : isCurrentMonth
-                          ? "text-[#4D4D4D] hover:bg-[#F3F6FF]"
-                          : "text-[#C8C8C8] hover:bg-[#F6F6F6]"
-                    } ${isToday && !isSelected ? "font-semibold text-[#4777F5]" : ""}`}
+                          ? "border-transparent text-[#4D4D4D] hover:bg-[#F3F6FF]"
+                          : "border-transparent text-[#C8C8C8] hover:bg-[#F6F6F6]"
+                    } ${isToday && !isSelected ? "border-[#C9D9FB] font-semibold text-[#3E6FED]" : ""}`}
+                    style={isSelected ? { backgroundColor: BRAND_BLUE } : undefined}
                   >
                     {day.getDate()}
                   </button>
