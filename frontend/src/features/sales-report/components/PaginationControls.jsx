@@ -20,13 +20,13 @@ const PaginationControls = ({ page, totalPages, onPageChange }) => {
   const pages = buildPageItems(totalPages, page);
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2">
       <button
         type="button"
         aria-label="Previous page"
         disabled={page <= 1}
         onClick={() => onPageChange(page - 1)}
-        className={`flex h-9 w-9 items-center justify-center rounded-xl text-sm transition md:h-10 md:w-10 ${
+        className={`flex h-11 w-11 items-center justify-center rounded-xl text-base transition ${
           page <= 1
             ? "cursor-not-allowed bg-[#EFEFEF] text-[#C2C2C2]"
             : "bg-[#F2F2F2] text-[#8A8A8A] hover:bg-[#E9E9E9]"
@@ -39,7 +39,7 @@ const PaginationControls = ({ page, totalPages, onPageChange }) => {
         item === "ellipsis" ? (
           <span
             key={`ellipsis-${index}`}
-            className="flex h-9 min-w-9 items-center justify-center rounded-xl bg-[#F1F1F1] px-2.5 text-sm text-[#8A8A8A] md:h-10 md:min-w-10"
+            className="flex h-11 min-w-11 items-center justify-center rounded-xl bg-[#F1F1F1] px-2.5 text-base text-[#8A8A8A]"
           >
             ...
           </span>
@@ -48,9 +48,9 @@ const PaginationControls = ({ page, totalPages, onPageChange }) => {
             key={item}
             type="button"
             onClick={() => onPageChange(item)}
-            className={`flex h-9 w-9 items-center justify-center rounded-xl text-sm transition md:h-10 md:w-10 md:text-base ${
+            className={`flex h-11 w-11 items-center justify-center rounded-xl text-base transition ${
               item === page
-                ? "bg-[#4D7CFE] text-white"
+                ? "bg-[#3572EF] text-white"
                 : "bg-[#F1F1F1] text-[#8A8A8A] hover:bg-[#E9EDF9] hover:text-[#3A63D4]"
             }`}
           >
@@ -64,10 +64,10 @@ const PaginationControls = ({ page, totalPages, onPageChange }) => {
         aria-label="Next page"
         disabled={page >= totalPages}
         onClick={() => onPageChange(page + 1)}
-        className={`flex h-9 w-9 items-center justify-center rounded-xl text-sm transition md:h-10 md:w-10 ${
+        className={`flex h-11 w-11 items-center justify-center rounded-xl text-base transition ${
           page >= totalPages
             ? "cursor-not-allowed bg-[#EFEFEF] text-[#C2C2C2]"
-            : "bg-[#4D7CFE] text-white hover:brightness-105"
+            : "bg-[#3572EF] text-white hover:brightness-105"
         }`}
       >
         <PiCaretRightBold />
@@ -77,3 +77,4 @@ const PaginationControls = ({ page, totalPages, onPageChange }) => {
 };
 
 export default PaginationControls;
+

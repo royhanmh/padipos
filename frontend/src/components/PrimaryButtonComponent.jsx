@@ -7,7 +7,7 @@ const PrimaryButtonComponent = ({
   return (
     <button
       type={type}
-      className={`min-h-11 w-full rounded-xl px-5 py-3 text-sm font-medium text-white transition duration-200 hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-[#3572EF] focus:ring-offset-1 md:min-h-12 md:px-6 md:py-3.5 md:text-base ${className}`}
+      className={`flex h-12 w-full items-center justify-center rounded-[10px] px-6 text-base font-medium text-white transition duration-200 hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-[#3572EF] focus:ring-offset-1 md:h-13 ${className}`}
       style={{ backgroundColor: "#3572EF" }}
       {...rest}
     >

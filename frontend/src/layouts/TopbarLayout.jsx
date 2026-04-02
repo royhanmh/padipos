@@ -58,7 +58,7 @@ const TopbarLayout = ({
         <button
           type="button"
           aria-label="Sign out"
-          className="flex h-11 w-11 items-center justify-center rounded-full text-[#FF3B30] transition hover:bg-[#FFF0EF] md:h-12 md:w-12"
+          className="flex h-11 w-11 items-center justify-center rounded-full text-[#FF3333] transition hover:bg-[#FFF0EF] md:h-12 md:w-12"
         >
           <PiSignOutLight className="text-[26px] md:text-[28px]" />
         </button>
@@ -68,3 +68,4 @@ const TopbarLayout = ({
 };
 
 export default TopbarLayout;
+

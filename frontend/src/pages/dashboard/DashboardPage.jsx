@@ -261,7 +261,7 @@ const DashboardPage = () => {
                 <Bar
                   dataKey="beverage"
                   name="Beverage"
-                  fill="#4D7CFE"
+                  fill="#3572EF"
                   radius={[3, 3, 0, 0]}
                   maxBarSize={22}
                   cursor="pointer"
@@ -270,7 +270,7 @@ const DashboardPage = () => {
                 <Bar
                   dataKey="dessert"
                   name="Dessert"
-                  fill="#C8D7FB"
+                  fill="#C2D4FA"
                   radius={[3, 3, 0, 0]}
                   maxBarSize={22}
                   cursor="pointer"
@@ -344,3 +344,4 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
+

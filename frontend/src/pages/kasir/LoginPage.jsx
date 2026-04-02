@@ -29,7 +29,7 @@ const LoginPage = () => {
           helpText={
             <Link
               to="/reset"
-              className="text-base text-gray-400 hover:text-gray-500 md:text-[17px]"
+              className="text-base text-[#919191] hover:text-[#5E5E5E] md:text-[17px]"
             >
               Forget password?
             </Link>
@@ -39,9 +39,9 @@ const LoginPage = () => {
         <PrimaryButtonComponent type="submit" className="mt-3">
           Login
         </PrimaryButtonComponent>
-        <p className="mt-5 pb-6 text-center text-base text-gray-400 md:text-[17px]">
+        <p className="mt-5 pb-6 text-center text-base text-[#919191] md:text-[17px]">
           Don't have an account?{" "}
-          <Link to="/register" className="text-blue-500 hover:text-blue-600">
+          <Link to="/register" className="text-[#3572EF] hover:text-[#1255DE]">
             Register
           </Link>
         </p>

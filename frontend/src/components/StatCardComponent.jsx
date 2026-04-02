@@ -7,7 +7,7 @@ const StatCardComponent = ({ icon, label, value, accent = false }) => {
       <p className="text-[13px] font-medium md:text-sm">{label}</p>
       <div className="mt-4 flex items-center justify-between gap-3.5">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg text-[#4D7CFE] md:h-10 md:w-10">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg text-[#3572EF] md:h-10 md:w-10">
             {icon
               ? createElement(icon, { className: "text-[32px] md:text-[34px]" })
               : null}
@@ -18,7 +18,7 @@ const StatCardComponent = ({ icon, label, value, accent = false }) => {
         </div>
 
         {accent && (
-          <PiArrowUpRightLight className="self-end text-[16px] text-[#7EA4FF]" />
+          <PiArrowUpRightLight className="self-end text-[16px] text-[#6392F3]" />
         )}
       </div>
     </article>
@@ -26,3 +26,4 @@ const StatCardComponent = ({ icon, label, value, accent = false }) => {
 };
 
 export default StatCardComponent;
+

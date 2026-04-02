@@ -9,7 +9,7 @@ const DashboardLayout = ({
 }) => {
   return (
     <>
-      <div className="grid h-screen grid-cols-[88px_1fr] grid-rows-[80px_1fr]">
+      <div className="grid h-screen grid-cols-[96px_minmax(0,1fr)] grid-rows-[auto_1fr]">
         <SidebarLayout {...sidebarProps} />
         <TopbarLayout {...topbarProps} />
         <div className={contentClassName}>{children}</div>

@@ -25,8 +25,8 @@ const defaultItems = [
 const itemClassName = (isActive) =>
   `flex h-10 w-10 items-center justify-center rounded-2xl transition ${
     isActive
-      ? "text-[#4D7CFE]"
-      : "text-[#B9C8EA] hover:bg-white hover:text-[#7EA4FF]"
+      ? "text-[#3572EF]"
+      : "text-[#B9C8EA] hover:bg-white hover:text-[#6392F3]"
   }`;
 
 const SidebarLayout = ({ activeItem = "dashboard", items = defaultItems }) => {
@@ -40,7 +40,7 @@ const SidebarLayout = ({ activeItem = "dashboard", items = defaultItems }) => {
         />
       </div>
       <div className="flex w-full justify-center border-b-2 border-[#F7F7F7] py-4">
-        <PiArrowCircleRightLight className="text-[32px] text-[#4D7CFE]" />
+        <PiArrowCircleRightLight className="text-[32px] text-[#3572EF]" />
       </div>
 
       <nav className="mt-6 flex flex-1 flex-col items-center justify-between">
@@ -70,7 +70,7 @@ const SidebarLayout = ({ activeItem = "dashboard", items = defaultItems }) => {
                 {isActive && (
                   <span
                     aria-hidden="true"
-                    className="absolute -right-6 top-1/2 h-8 w-1 -translate-y-1/2 rounded-l-full bg-[#4D7CFE]"
+                    className="absolute right-0 top-1/2 h-8 w-1 -translate-y-1/2 rounded-l-full bg-[#3572EF]"
                   />
                 )}
               </li>
@@ -83,3 +83,4 @@ const SidebarLayout = ({ activeItem = "dashboard", items = defaultItems }) => {
 };
 
 export default SidebarLayout;
+

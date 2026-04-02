@@ -178,7 +178,9 @@ const SalesReportPage = () => {
             <ReportFilterField label="Start">
               <DatePickerField
                 value={draftFilters.startDate}
-                onChange={(nextValue) => handleFilterChange("startDate", nextValue)}
+                onChange={(nextValue) =>
+                  handleFilterChange("startDate", nextValue)
+                }
                 placeholder="Select date"
               />
             </ReportFilterField>
@@ -234,7 +236,7 @@ const SalesReportPage = () => {
             <button
               type="button"
               onClick={applySearchFilter}
-              className="h-13 w-full min-w-0 rounded-xl bg-[#4D7CFE] px-7 text-[22px] font-medium text-white transition hover:brightness-105 2xl:min-w-44"
+              className="h-13 w-full min-w-0 rounded-xl bg-[#3572EF] px-7 text-base font-medium text-white transition hover:brightness-105 2xl:min-w-44"
             >
               Search
             </button>
@@ -253,7 +255,7 @@ const SalesReportPage = () => {
             <div className="overflow-x-auto">
               <table className="w-full min-w-245 border-collapse">
                 <thead className="bg-[#F2F2F2] text-left">
-                  <tr className="text-[17px] font-semibold text-[#1F1F1F]">
+                  <tr className="text-base font-semibold text-[#1F1F1F]">
                     <th className="px-6 py-5">No Order</th>
                     <th className="px-6 py-5">Order Date</th>
                     <th className="px-6 py-5">Order Type</th>
@@ -267,7 +269,7 @@ const SalesReportPage = () => {
                     paginatedOrders.map((order) => (
                       <tr
                         key={order.id}
-                        className="border-t border-[#F0F0F0] text-[17px] text-[#353535]"
+                        className="border-t border-[#F0F0F0] text-base text-[#353535]"
                       >
                         <td className="px-6 py-5">{order.orderNumber}</td>
                         <td className="px-6 py-5">
@@ -285,7 +287,7 @@ const SalesReportPage = () => {
                             type="button"
                             aria-label={`Open order ${order.orderNumber}`}
                             onClick={() => setSelectedOrder(order)}
-                            className="text-[#4D7CFE] transition hover:text-[#2957DA]"
+                            className="text-[#3572EF] transition hover:text-[#1255DE]"
                           >
                             <PiArrowUpRightLight className="inline text-[26px]" />
                           </button>
@@ -296,7 +298,7 @@ const SalesReportPage = () => {
                     <tr className="border-t border-[#F0F0F0]">
                       <td
                         colSpan={6}
-                        className="px-5 py-11 text-center text-lg text-[#939393]"
+                        className="px-5 py-11 text-center text-base text-[#939393]"
                       >
                         No transactions matched the selected filters.
                       </td>
@@ -307,7 +309,7 @@ const SalesReportPage = () => {
             </div>
 
             <div className="flex flex-col gap-4 border-t border-[#EFEFEF] px-6 py-5 md:flex-row md:items-center md:justify-between">
-              <label className="flex items-center gap-3 text-lg text-[#5E5E5E]">
+              <label className="flex items-center gap-3 text-base text-[#5E5E5E]">
                 <span>Show:</span>
                 <select
                   value={rowsPerPage}
@@ -341,7 +343,7 @@ const SalesReportPage = () => {
           onClick={closeDetailModal}
         >
           <div
-            className="relative w-full max-w-155 origin-center scale-70 rounded-[22px] bg-white px-10 py-10 shadow-[0_22px_60px_rgba(17,24,39,0.22)] md:px-9 md:py-10"
+            className="relative w-full max-w-155 rounded-[28px] bg-white px-10 py-10 shadow-[0_22px_60px_rgba(17,24,39,0.2)] md:px-9 md:py-10 xl:scale-80"
             onClick={(event) => event.stopPropagation()}
           >
             <button
@@ -353,7 +355,7 @@ const SalesReportPage = () => {
               <PiXLight className="text-[26px]" />
             </button>
 
-            <h2 className="text-center text-[36px] font-semibold tracking-[-0.03em] text-[#111111] pt-20">
+            <h2 className="pt-4 text-center text-[36px] font-semibold tracking-[-0.03em] text-[#111111]">
               Transaction Detail
             </h2>
 
@@ -432,11 +434,11 @@ const SalesReportPage = () => {
                   </p>
                 </div>
 
-                <div className="mt-3 flex items-center justify-between text-[17px] text-[#585858]">
+                <div className="mt-3 flex items-center justify-between text-base text-[#585858]">
                   <p>Diterima</p>
                   <p>{formatCurrency(selectedOrder.amountPaid)}</p>
                 </div>
-                <div className="mt-2.5 flex items-center justify-between text-[17px] text-[#585858] pb-10">
+                <div className="mt-2.5 flex items-center justify-between pb-10 text-base text-[#585858]">
                   <p>Kembalian</p>
                   <p>{formatCurrency(selectedOrder.change)}</p>
                 </div>

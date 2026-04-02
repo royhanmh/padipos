@@ -29,7 +29,7 @@ const DashboardLoginPage = () => {
           helpText={
             <Link
               to="/reset"
-              className="text-base text-gray-400 hover:text-gray-500 md:text-[17px]"
+              className="text-base text-[#919191] hover:text-[#5E5E5E] md:text-[17px]"
             >
               Forget password?
             </Link>

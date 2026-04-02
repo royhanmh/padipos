@@ -35,9 +35,9 @@ const RegisterPage = () => {
           <PrimaryButtonComponent type="submit" className="mt-3">
             Create Account
           </PrimaryButtonComponent>
-          <p className="mt-5 pb-6 text-center text-base text-gray-400 md:text-[17px]">
+          <p className="mt-5 pb-6 text-center text-base text-[#919191] md:text-[17px]">
             Already have an account?{" "}
-            <Link to="/login" className="text-blue-500 hover:text-blue-600">
+            <Link to="/login" className="text-[#3572EF] hover:text-[#1255DE]">
               Login
             </Link>
           </p>

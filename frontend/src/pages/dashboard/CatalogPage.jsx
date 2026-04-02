@@ -514,7 +514,7 @@ const CatalogPage = () => {
             <button
               type="button"
               onClick={handleChoosePhoto}
-              className="rounded-[10px] border border-[#4777F5] px-6 py-2.5 text-sm font-medium text-[#4777F5] transition hover:bg-[#F2F6FF] md:text-base"
+              className="rounded-[10px] border border-[#3572EF] px-6 py-2.5 text-sm font-medium text-[#3572EF] transition hover:bg-[#F2F6FF] md:text-base"
             >
               Change Photo
             </button>
@@ -522,7 +522,7 @@ const CatalogPage = () => {
         </div>
       ) : (
         <div
-          className="rounded-[10px] border border-dashed border-[#4D7CFE] px-7 py-11 text-center"
+          className="rounded-[10px] border border-dashed border-[#3572EF] px-7 py-11 text-center"
           onDragOver={(event) => event.preventDefault()}
           onDrop={handleDropImage}
         >
@@ -545,7 +545,7 @@ const CatalogPage = () => {
           <button
             type="button"
             onClick={handleChoosePhoto}
-            className="mt-4 rounded-[10px] bg-[#4777F5] px-6 py-2.5 text-sm font-medium text-white shadow-[0_10px_24px_rgba(71,119,245,0.22)] transition hover:brightness-105 md:text-base"
+            className="mt-4 rounded-[10px] bg-[#3572EF] px-6 py-2.5 text-sm font-medium text-white shadow-[0_10px_24px_rgba(53,114,239,0.22)] transition hover:brightness-105 md:text-base"
           >
             {panelForm.image !== DEFAULT_IMAGE ? "Change File" : "Choose File"}
           </button>
@@ -632,7 +632,7 @@ const CatalogPage = () => {
 
         <button
           type="submit"
-          className="mt-9 flex h-[54px] w-full items-center justify-center rounded-[10px] bg-[#4777F5] text-[20px] font-medium text-white shadow-[0_12px_28px_rgba(71,119,245,0.24)] transition hover:brightness-105"
+          className="mt-9 flex h-[54px] w-full items-center justify-center rounded-[10px] bg-[#3572EF] text-base font-medium text-white shadow-[0_12px_28px_rgba(53,114,239,0.24)] transition hover:brightness-105"
         >
           Save
         </button>
@@ -654,7 +654,7 @@ const CatalogPage = () => {
               type="button"
               aria-label="Delete menu"
               onClick={openDeleteDialog}
-              className="flex h-11 w-11 items-center justify-center rounded-[10px] border border-[#FF3B30] text-[#FF3B30] transition hover:bg-[#FFF4F2] md:h-12 md:w-12"
+              className="flex h-11 w-11 items-center justify-center rounded-[10px] border border-[#FF3333] text-[#FF3333] transition hover:bg-[#FFF4F2] md:h-12 md:w-12"
             >
               <PiTrashLight className="text-[20px]" />
             </button>
@@ -709,7 +709,7 @@ const CatalogPage = () => {
           type="button"
           onClick={handleOpenCreate}
           aria-label="Create menu"
-          className="flex h-11 w-11 items-center justify-center rounded-[10px] bg-[#4777F5] text-white shadow-[0_12px_28px_rgba(71,119,245,0.24)] transition hover:brightness-105 md:h-12 md:w-12"
+          className="flex h-11 w-11 items-center justify-center rounded-[10px] bg-[#3572EF] text-white shadow-[0_12px_28px_rgba(53,114,239,0.24)] transition hover:brightness-105 md:h-12 md:w-12"
         >
           <PiPlusLight className="text-[22px]" />
         </button>
@@ -774,7 +774,7 @@ const CatalogPage = () => {
                     onClick={() => setActiveCategory(category.id)}
                     className={`flex w-full min-h-[60px] items-center justify-center gap-3 rounded-[10px] border px-5 text-lg transition 2xl:min-h-16 2xl:px-5 2xl:text-lg ${
                       isActive
-                        ? "border-[#4777F5] bg-[#4777F5] text-white shadow-[0_18px_35px_rgba(71,119,245,0.22)]"
+                        ? "border-[#3572EF] bg-[#3572EF] text-white shadow-[0_18px_35px_rgba(53,114,239,0.22)]"
                         : "border-[#D9DDE5] bg-white text-[#A7A7A7] hover:border-[#B8C9FF] hover:text-[#5C76B8]"
                     }`}
                   >
@@ -804,9 +804,9 @@ const CatalogPage = () => {
                             handleSelectMenu(menu.id);
                           }
                         }}
-                        className={`flex min-h-[228px] cursor-pointer flex-col rounded-[10px] border bg-white p-3 shadow-[0_8px_24px_rgba(25,45,88,0.05)] transition 2xl:min-h-[236px] ${
+                        className={`flex min-h-[208px] cursor-pointer flex-col rounded-[10px] border bg-white p-3 shadow-[0_8px_24px_rgba(25,45,88,0.05)] transition 2xl:min-h-[214px] ${
                           isSelected
-                            ? "border-[#4777F5] shadow-[0_14px_36px_rgba(71,119,245,0.18)]"
+                            ? "border-[#3572EF] shadow-[0_14px_36px_rgba(53,114,239,0.18)]"
                             : "border-transparent hover:-translate-y-0.5 hover:border-[#DCE5FF]"
                         }`}
                       >
@@ -816,7 +816,7 @@ const CatalogPage = () => {
                             alt={menu.name}
                             className="h-[116px] w-full object-cover 2xl:h-[120px]"
                           />
-                          <span className="absolute right-2.5 top-2.5 rounded-full bg-[#4D7CFE] px-3.5 py-1.5 text-sm font-medium text-white shadow-[0_8px_18px_rgba(77,124,254,0.24)]">
+                          <span className="absolute right-2.5 top-2.5 rounded-full bg-[#3572EF] px-3.5 py-1.5 text-sm font-medium text-white shadow-[0_8px_18px_rgba(53,114,239,0.24)]">
                             {category?.shortLabel ?? "Menu"}
                           </span>
                         </div>
@@ -830,7 +830,7 @@ const CatalogPage = () => {
                           </p>
 
                           <div className="mt-auto flex items-end justify-between gap-3 pt-1 2xl:pt-3">
-                            <p className="text-[13px] font-semibold text-[#3F74FF] 2xl:text-[14px]">
+                            <p className="text-[13px] font-semibold text-[#3572EF] 2xl:text-[14px]">
                               {formatCurrency(menu.price)}
                               <span className="ml-1 font-normal text-[#B1B1B1]">
                                 /portion
@@ -845,8 +845,8 @@ const CatalogPage = () => {
                               }}
                               className={`flex h-9 w-9 items-center justify-center rounded-full border transition 2xl:h-10 2xl:w-10 ${
                                 isSelected
-                                  ? "border-[#4777F5] bg-[#4777F5] text-white"
-                                  : "border-[#D8DDEA] text-[#6A6A6A] hover:border-[#B6C7FF] hover:text-[#4777F5]"
+                                  ? "border-[#3572EF] bg-[#3572EF] text-white"
+                                  : "border-[#D8DDEA] text-[#6A6A6A] hover:border-[#B6C7FF] hover:text-[#3572EF]"
                               }`}
                             >
                               <PiArrowUpRightLight className="text-[18px] 2xl:text-[20px]" />
@@ -877,7 +877,7 @@ const CatalogPage = () => {
               <div className="mb-5 rounded-[10px] border border-[#EAEAEA] bg-white shadow-[0_16px_36px_rgba(25,45,88,0.08)]">
                 <div className="flex items-start gap-4 border-l-[3px] border-[#22C55E] px-6 py-6">
                   <PiCheckCircleLight className="mt-0.5 text-[30px] text-[#16A34A]" />
-                  <p className="flex-1 text-[17px] text-[#171717] 2xl:text-[18px]">
+                  <p className="flex-1 text-base text-[#171717]">
                     {toast.message}
                   </p>
                   <button
@@ -904,7 +904,7 @@ const CatalogPage = () => {
               aria-modal="true"
               aria-labelledby="delete-menu-title"
             >
-              <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[24px] border-2 border-[#FF1F0F] text-[#FF1F0F]">
+              <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[24px] border-2 border-[#FF3333] text-[#FF3333]">
                 <PiTrashLight className="text-[40px]" />
               </div>
 
@@ -919,14 +919,14 @@ const CatalogPage = () => {
                 <button
                   type="button"
                   onClick={closeDeleteDialog}
-                  className="flex h-[54px] items-center justify-center rounded-[10px] border border-[#CFCFCF] text-[20px] font-medium text-[#252525] transition hover:bg-[#F8F8F8]"
+                  className="flex h-[54px] items-center justify-center rounded-[10px] border border-[#CFCFCF] text-base font-medium text-[#252525] transition hover:bg-[#F8F8F8]"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={deleteMenu}
-                  className="flex h-[54px] items-center justify-center rounded-[10px] bg-[#FF1F0F] text-[20px] font-medium text-white transition hover:brightness-105"
+                  className="flex h-[54px] items-center justify-center rounded-[10px] bg-[#FF3333] text-base font-medium text-white transition hover:brightness-105"
                 >
                   Delete
                 </button>
@@ -940,3 +940,4 @@ const CatalogPage = () => {
 };
 
 export default CatalogPage;
+

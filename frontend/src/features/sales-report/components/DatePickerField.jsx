@@ -184,7 +184,9 @@ const DatePickerField = ({
     });
   };
 
-  const displayValue = selectedDate ? toDisplayString(selectedDate) : placeholder;
+  const displayValue = selectedDate
+    ? toDisplayString(selectedDate)
+    : placeholder;
 
   return (
     <div ref={wrapperRef} className="relative">
@@ -200,9 +202,7 @@ const DatePickerField = ({
             : isOpen
               ? "border-[#A9C4FF] bg-white shadow-[0_0_0_2px_rgba(53,114,239,0.14)]"
               : "border-[#DCDCDC] bg-white"
-        } ${
-          selectedDate && !disabled ? "text-[#535353]" : "text-[#B6B6B6]"
-        }`}
+        } ${selectedDate && !disabled ? "text-[#535353]" : "text-[#B6B6B6]"}`}
       >
         <span>{displayValue}</span>
         <PiCalendarBlankLight
@@ -213,7 +213,7 @@ const DatePickerField = ({
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 top-[calc(100%+8px)] z-40 w-[304px] overflow-hidden rounded-xl border border-[#E6EAF3] bg-white shadow-[0_16px_36px_rgba(21,33,62,0.14)]">
+        <div className="absolute left-0 top-[calc(100%+8px)] z-40 w-76 overflow-hidden rounded-xl border border-[#E6EAF3] bg-white shadow-[0_16px_36px_rgba(21,33,62,0.14)]">
           <div className="grid grid-cols-[1fr_1fr_auto_auto] gap-2 border-b border-[#F0F0F0] px-3 py-3">
             <div className="relative">
               <select
@@ -302,7 +302,9 @@ const DatePickerField = ({
                           ? "border-transparent text-[#4D4D4D] hover:bg-[#F3F6FF]"
                           : "border-transparent text-[#C8C8C8] hover:bg-[#F6F6F6]"
                     } ${isToday && !isSelected ? "border-[#C9D9FB] font-semibold text-[#3E6FED]" : ""}`}
-                    style={isSelected ? { backgroundColor: BRAND_BLUE } : undefined}
+                    style={
+                      isSelected ? { backgroundColor: BRAND_BLUE } : undefined
+                    }
                   >
                     {day.getDate()}
                   </button>
