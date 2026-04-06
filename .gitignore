@@ -1,2 +1,42 @@
-# Project memory file must stay local only.
+# Local Agent Memory and Dev Tests (Do not commit)
 codex.md
+codex.txt
+agents.md
+test.rest
+test.txt
+test.http
+
+# Environment Variables (Secrets)
+.env
+.env.local
+.env.*.local
+
+# Node Dependencies
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build outputs
+dist/
+dist-ssr/
+
+# Local configuration
+*.local
+
+# Editor directories and OS files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
