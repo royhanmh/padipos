@@ -50,110 +50,34 @@ const categoryMap = categoryOptions.reduce((collection, category) => {
   return collection;
 }, {});
 
-const initialMenus = [
-  {
-    id: 1,
-    name: "Gado-gado Special",
-    category: "food",
-    description:
-      "Vegetables, egg, tempe, tofu, ketupat, peanut sauce, and crackers.",
-    price: 20000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 2,
-    name: "Ayam Geprek Sambal Ijo",
-    category: "food",
-    description: "Crispy chicken, green sambal, cucumber, and warm rice.",
-    price: 28000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 3,
-    name: "Nasi Goreng Kampung",
-    category: "food",
-    description: "Savory fried rice with shredded chicken, egg, and crackers.",
-    price: 25000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 4,
-    name: "Sate Ayam Lilit",
-    category: "food",
-    description: "Grilled chicken satay with peanut glaze and lontong.",
-    price: 32000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 5,
-    name: "Es Teh Lemon",
-    category: "beverage",
-    description: "Cold brewed tea with fresh lemon slices and light sweetness.",
-    price: 12000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 6,
-    name: "Kopi Susu Aren",
-    category: "beverage",
-    description: "Espresso, palm sugar milk, and creamy foam.",
-    price: 18000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 7,
-    name: "Matcha Latte",
-    category: "beverage",
-    description: "Earthy matcha with chilled milk and silky texture.",
-    price: 22000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 8,
-    name: "Strawberry Yakult",
-    category: "beverage",
-    description: "Sweet strawberry blend with sparkling probiotic finish.",
-    price: 19000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 9,
-    name: "Banana Caramel Cake",
-    category: "dessert",
-    description: "Soft banana sponge with caramel cream topping.",
-    price: 24000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 10,
-    name: "Klepon Cake Slice",
-    category: "dessert",
-    description: "Pandan cake layered with coconut and palm sugar cream.",
-    price: 26000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 11,
-    name: "Chocolate Lava Cup",
-    category: "dessert",
-    description: "Warm chocolate center with vanilla cream and crumbs.",
-    price: 23000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 12,
-    name: "Pisang Goreng Madu",
-    category: "dessert",
-    description: "Fried banana fritters with honey drizzle and cheese.",
-    price: 21000,
-    image: DEFAULT_IMAGE,
-  },
-];
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000/api";
+
+const requestApi = async (path, options = {}) => {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+    ...options,
+  });
+
+  const isJsonResponse = response.headers
+    .get("content-type")
+    ?.includes("application/json");
+  const responseData = isJsonResponse ? await response.json() : null;
+
+  if (!response.ok) {
+    throw new Error(responseData?.message ?? "Request failed.");
+  }
+
+  return responseData;
+};
 
 const createEmptyFormState = () => ({
-  name: "",
+  title: "",
   category: "food",
   price: "",
+  quantity: "",
   description: "",
   image: DEFAULT_IMAGE,
   imageName: "",
@@ -181,10 +105,18 @@ const parsePriceInput = (value) => {
   return digitsOnly ? Number(digitsOnly) : 0;
 };
 
+const formatQuantityInput = (value) => value.replace(/\D/g, "");
+
+const parseQuantityInput = (value) => {
+  const digitsOnly = value.replace(/\D/g, "");
+  return digitsOnly ? Number(digitsOnly) : NaN;
+};
+
 const mapMenuToFormState = (menu) => ({
-  name: menu.name,
+  title: menu.title,
   category: menu.category,
   price: formatPriceInput(String(menu.price)),
+  quantity: String(menu.quantity),
   description: menu.description,
   image: menu.image || DEFAULT_IMAGE,
   imageName: "",
@@ -193,16 +125,20 @@ const mapMenuToFormState = (menu) => ({
 const validateFormState = (formState) => {
   const nextErrors = {};
 
-  if (!formState.name.trim()) {
-    nextErrors.name = "Name is required.";
+  if (!formState.title.trim()) {
+    nextErrors.title = "Title is required.";
   }
 
   if (!formState.description.trim()) {
     nextErrors.description = "Description is required.";
   }
 
-  if (parsePriceInput(formState.price) <= 0) {
-    nextErrors.price = "Price must be greater than zero.";
+  if (formState.price.trim() === "") {
+    nextErrors.price = "Price is required.";
+  }
+
+  if (!Number.isInteger(parseQuantityInput(formState.quantity))) {
+    nextErrors.quantity = "Quantity is required.";
   }
 
   return nextErrors;
@@ -271,21 +207,23 @@ const PanelFrame = ({ title, actions, children }) => {
 };
 
 const CatalogPage = () => {
-  const [menus, setMenus] = useState(initialMenus);
+  const [menus, setMenus] = useState([]);
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchValue, setSearchValue] = useState("");
-  const [selectedMenuId, setSelectedMenuId] = useState(null);
+  const [selectedMenuUuid, setSelectedMenuUuid] = useState(null);
   const [panelMode, setPanelMode] = useState(PANEL_MODE.EMPTY);
   const [panelForm, setPanelForm] = useState(createEmptyFormState);
   const [formErrors, setFormErrors] = useState({});
   const [toast, setToast] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [requestError, setRequestError] = useState("");
 
   const fileInputRef = useRef(null);
 
   const selectedMenu = useMemo(
-    () => menus.find((menu) => menu.id === selectedMenuId) ?? null,
-    [menus, selectedMenuId],
+    () => menus.find((menu) => menu.uuid === selectedMenuUuid) ?? null,
+    [menus, selectedMenuUuid],
   );
 
   const filteredMenus = useMemo(() => {
@@ -296,7 +234,7 @@ const CatalogPage = () => {
         activeCategory === "all" || menu.category === activeCategory;
       const matchesSearch =
         normalizedSearch.length === 0 ||
-        menu.name.toLowerCase().includes(normalizedSearch) ||
+        menu.title.toLowerCase().includes(normalizedSearch) ||
         menu.description.toLowerCase().includes(normalizedSearch) ||
         categoryMap[menu.category]?.label
           .toLowerCase()
@@ -318,9 +256,41 @@ const CatalogPage = () => {
     return () => window.clearTimeout(timeoutId);
   }, [toast]);
 
+  useEffect(() => {
+    let isActive = true;
+
+    const loadProducts = async () => {
+      try {
+        const products = await requestApi("/products");
+
+        if (!isActive) {
+          return;
+        }
+
+        setMenus(products);
+      } catch (error) {
+        if (!isActive) {
+          return;
+        }
+
+        setRequestError(error.message);
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadProducts();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
   const resetToEmptyPanel = () => {
     setPanelMode(PANEL_MODE.EMPTY);
-    setSelectedMenuId(null);
+    setSelectedMenuUuid(null);
     setPanelForm(createEmptyFormState());
     setFormErrors({});
     setIsDeleteDialogOpen(false);
@@ -328,13 +298,13 @@ const CatalogPage = () => {
 
   const handleOpenCreate = () => {
     setPanelMode(PANEL_MODE.CREATE);
-    setSelectedMenuId(null);
+    setSelectedMenuUuid(null);
     setPanelForm(createEmptyFormState());
     setFormErrors({});
   };
 
-  const handleSelectMenu = (menuId) => {
-    setSelectedMenuId(menuId);
+  const handleSelectMenu = (menuUuid) => {
+    setSelectedMenuUuid(menuUuid);
     setPanelMode(PANEL_MODE.DETAIL);
     setFormErrors({});
   };
@@ -352,7 +322,12 @@ const CatalogPage = () => {
   const handleFormChange = (field, value) => {
     setPanelForm((currentState) => ({
       ...currentState,
-      [field]: field === "price" ? formatPriceInput(value) : value,
+      [field]:
+        field === "price"
+          ? formatPriceInput(value)
+          : field === "quantity"
+            ? formatQuantityInput(value)
+            : value,
     }));
     setFormErrors((currentErrors) => ({
       ...currentErrors,
@@ -405,7 +380,7 @@ const CatalogPage = () => {
     setToast(createToastState(message));
   };
 
-  const createMenu = () => {
+  const createMenu = async () => {
     const nextErrors = validateFormState(panelForm);
 
     if (Object.keys(nextErrors).length > 0) {
@@ -413,21 +388,30 @@ const CatalogPage = () => {
       return;
     }
 
-    const nextMenu = {
-      id: Date.now(),
-      name: panelForm.name.trim(),
-      category: panelForm.category,
-      description: panelForm.description.trim(),
-      price: parsePriceInput(panelForm.price),
-      image: panelForm.image || DEFAULT_IMAGE,
-    };
+    setRequestError("");
 
-    setMenus((currentMenus) => [nextMenu, ...currentMenus]);
-    resetToEmptyPanel();
-    showSuccessToast("New menu successfully added!");
+    try {
+      const nextMenu = await requestApi("/products", {
+        method: "POST",
+        body: JSON.stringify({
+          image: panelForm.image || DEFAULT_IMAGE,
+          title: panelForm.title.trim(),
+          description: panelForm.description.trim(),
+          price: parsePriceInput(panelForm.price),
+          category: panelForm.category,
+          quantity: parseQuantityInput(panelForm.quantity),
+        }),
+      });
+
+      setMenus((currentMenus) => [nextMenu, ...currentMenus]);
+      resetToEmptyPanel();
+      showSuccessToast("New menu successfully added!");
+    } catch (error) {
+      setRequestError(error.message);
+    }
   };
 
-  const updateMenu = () => {
+  const updateMenu = async () => {
     if (!selectedMenu) {
       return;
     }
@@ -439,35 +423,54 @@ const CatalogPage = () => {
       return;
     }
 
-    setMenus((currentMenus) =>
-      currentMenus.map((menu) =>
-        menu.id === selectedMenu.id
-          ? {
-            ...menu,
-            name: panelForm.name.trim(),
-            category: panelForm.category,
-            description: panelForm.description.trim(),
-            price: parsePriceInput(panelForm.price),
-            image: panelForm.image || DEFAULT_IMAGE,
-          }
-          : menu,
-      ),
-    );
+    setRequestError("");
 
-    resetToEmptyPanel();
-    showSuccessToast("Menu successfully updated!");
+    try {
+      const updatedMenu = await requestApi(`/products/${selectedMenu.uuid}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          image: panelForm.image || DEFAULT_IMAGE,
+          title: panelForm.title.trim(),
+          description: panelForm.description.trim(),
+          price: parsePriceInput(panelForm.price),
+          category: panelForm.category,
+          quantity: parseQuantityInput(panelForm.quantity),
+        }),
+      });
+
+      setMenus((currentMenus) =>
+        currentMenus.map((menu) =>
+          menu.uuid === selectedMenu.uuid ? updatedMenu : menu,
+        ),
+      );
+
+      resetToEmptyPanel();
+      showSuccessToast("Menu successfully updated!");
+    } catch (error) {
+      setRequestError(error.message);
+    }
   };
 
-  const deleteMenu = () => {
+  const deleteMenu = async () => {
     if (!selectedMenu) {
       return;
     }
 
-    setMenus((currentMenus) =>
-      currentMenus.filter((menu) => menu.id !== selectedMenu.id),
-    );
-    resetToEmptyPanel();
-    showSuccessToast("Menu successfully deleted!");
+    setRequestError("");
+
+    try {
+      await requestApi(`/products/${selectedMenu.uuid}`, {
+        method: "DELETE",
+      });
+
+      setMenus((currentMenus) =>
+        currentMenus.filter((menu) => menu.uuid !== selectedMenu.uuid),
+      );
+      resetToEmptyPanel();
+      showSuccessToast("Menu successfully deleted!");
+    } catch (error) {
+      setRequestError(error.message);
+    }
   };
 
   const openDeleteDialog = () => {
@@ -482,16 +485,16 @@ const CatalogPage = () => {
     setIsDeleteDialogOpen(false);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (panelMode === PANEL_MODE.CREATE) {
-      createMenu();
+      await createMenu();
       return;
     }
 
     if (panelMode === PANEL_MODE.EDIT) {
-      updateMenu();
+      await updateMenu();
     }
   };
 
@@ -509,7 +512,7 @@ const CatalogPage = () => {
         <div>
           <img
             src={panelForm.image || DEFAULT_IMAGE}
-            alt={panelForm.name || "Menu preview"}
+            alt={panelForm.title || "Menu preview"}
             className="h-48 w-full rounded-[22px] object-cover 2xl:h-55 2xl:rounded-[24px]"
           />
           <div className="mt-3 flex justify-center">
@@ -531,7 +534,7 @@ const CatalogPage = () => {
           {panelForm.image !== DEFAULT_IMAGE ? (
             <img
               src={panelForm.image}
-              alt={panelForm.name || "Selected preview"}
+              alt={panelForm.title || "Selected preview"}
               className="h-44 w-full rounded-[18px] object-cover 2xl:h-48 2xl:rounded-[20px]"
             />
           ) : (
@@ -580,12 +583,12 @@ const CatalogPage = () => {
       <form className="space-y-6" onSubmit={handleSubmit}>
         {renderUploadArea({ isEdit })}
 
-        <FormField label="Name" error={formErrors.name}>
+        <FormField label="Title" error={formErrors.title}>
           <input
             type="text"
-            value={panelForm.name}
-            onChange={(event) => handleFormChange("name", event.target.value)}
-            placeholder="Enter name here..."
+            value={panelForm.title}
+            onChange={(event) => handleFormChange("title", event.target.value)}
+            placeholder="Enter title here..."
             className="h-12 w-full rounded-[10px] border border-[#D7D7D7] px-4 text-[16px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5 2xl:h-12"
           />
         </FormField>
@@ -616,6 +619,19 @@ const CatalogPage = () => {
             value={panelForm.price}
             onChange={(event) => handleFormChange("price", event.target.value)}
             placeholder="Enter price here..."
+            className="h-12 w-full rounded-[10px] border border-[#D7D7D7] px-4 text-[16px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5 2xl:h-12"
+          />
+        </FormField>
+
+        <FormField label="Quantity" error={formErrors.quantity}>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={panelForm.quantity}
+            onChange={(event) =>
+              handleFormChange("quantity", event.target.value)
+            }
+            placeholder="Enter quantity here..."
             className="h-12 w-full rounded-[10px] border border-[#D7D7D7] px-4 text-[16px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5 2xl:h-12"
           />
         </FormField>
@@ -674,11 +690,11 @@ const CatalogPage = () => {
         <div className="space-y-5">
           <img
             src={selectedMenu.image}
-            alt={selectedMenu.name}
+            alt={selectedMenu.title}
             className="h-48 w-full rounded-[22px] object-cover 2xl:h-55 2xl:rounded-[24px]"
           />
 
-          <ReadOnlyField label="Name" value={selectedMenu.name} />
+          <ReadOnlyField label="Title" value={selectedMenu.title} />
 
           <div>
             <p className="mb-2.5 text-base font-medium text-[#4A4A4A]">
@@ -693,6 +709,11 @@ const CatalogPage = () => {
           <ReadOnlyField
             label="Price"
             value={formatPriceInput(String(selectedMenu.price))}
+          />
+
+          <ReadOnlyField
+            label="Quantity"
+            value={String(selectedMenu.quantity)}
           />
 
           <ReadOnlyField
@@ -731,11 +752,13 @@ const CatalogPage = () => {
     }
 
     if (panelMode === PANEL_MODE.DETAIL) {
-      return renderDetailPanel();
+      return selectedMenu ? renderDetailPanel() : renderEmptyPanel();
     }
 
     if (panelMode === PANEL_MODE.EDIT) {
-      return renderMenuForm({ title: "Edit Menu", isEdit: true });
+      return selectedMenu
+        ? renderMenuForm({ title: "Edit Menu", isEdit: true })
+        : renderEmptyPanel();
     }
 
     return renderEmptyPanel();
@@ -789,22 +812,33 @@ const CatalogPage = () => {
             </div>
 
             <div className="mt-6 max-h-[calc(100vh-214px)] overflow-y-auto pr-1 2xl:mt-5 2xl:max-h-[calc(100vh-235px)]">
-              {filteredMenus.length > 0 ? (
+              {isLoading ? (
+                <div className="flex min-h-84 items-center justify-center rounded-3xl border border-dashed border-[#D7DDEA] bg-white px-7 text-center">
+                  <div>
+                    <p className="text-2xl font-semibold text-[#2A2A2A]">
+                      Loading products...
+                    </p>
+                    <p className="mt-3 text-base text-[#9D9D9D]">
+                      Fetching the product list from the backend.
+                    </p>
+                  </div>
+                </div>
+              ) : filteredMenus.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-4 2xl:grid-cols-4 2xl:gap-4">
                   {filteredMenus.map((menu) => {
                     const category = categoryMap[menu.category];
-                    const isSelected = selectedMenuId === menu.id;
+                    const isSelected = selectedMenuUuid === menu.uuid;
 
                     return (
                       <article
-                        key={menu.id}
+                        key={menu.uuid}
                         role="button"
                         tabIndex={0}
-                        onClick={() => handleSelectMenu(menu.id)}
+                        onClick={() => handleSelectMenu(menu.uuid)}
                         onKeyDown={(event) => {
                           if (event.key === "Enter" || event.key === " ") {
                             event.preventDefault();
-                            handleSelectMenu(menu.id);
+                            handleSelectMenu(menu.uuid);
                           }
                         }}
                         className={`flex min-h-[208px] cursor-pointer flex-col rounded-[10px] border bg-white p-3 shadow-[0_8px_24px_rgba(25,45,88,0.05)] transition 2xl:min-h-[214px] ${isSelected
@@ -815,7 +849,7 @@ const CatalogPage = () => {
                         <div className="relative overflow-hidden rounded-[10px]">
                           <img
                             src={menu.image}
-                            alt={menu.name}
+                            alt={menu.title}
                             className="h-[116px] w-full object-cover 2xl:h-[120px]"
                           />
                           <span className="absolute right-2.5 top-2.5 rounded-full bg-[#3572EF] px-3.5 py-1.5 text-sm font-medium text-white shadow-[0_8px_18px_rgba(53,114,239,0.24)]">
@@ -825,25 +859,30 @@ const CatalogPage = () => {
 
                         <div className="mt-3 flex min-h-0 min-w-0 flex-1 flex-col 2xl:mt-3">
                           <h2 className="line-clamp-1 break-words text-[17px] font-semibold leading-[1.25] tracking-[-0.03em] text-[#161616] 2xl:text-[18px]">
-                            {menu.name}
+                            {menu.title}
                           </h2>
                           <p className="mt-1.5 min-h-[40px] overflow-hidden break-words line-clamp-2 text-[13px] leading-[1.45] text-[#A0A0A0] 2xl:mt-1.5 2xl:min-h-[38px] 2xl:text-[13px] 2xl:leading-[1.5]">
                             {menu.description}
                           </p>
 
                           <div className="mt-auto flex items-end justify-between gap-3 pt-1 2xl:pt-3">
-                            <p className="text-[13px] font-semibold text-[#3572EF] 2xl:text-[14px]">
-                              {formatCurrency(menu.price)}
-                              <span className="ml-1 font-normal text-[#B1B1B1]">
-                                /portion
-                              </span>
-                            </p>
+                            <div>
+                              <p className="text-[13px] font-semibold text-[#3572EF] 2xl:text-[14px]">
+                                {formatCurrency(menu.price)}
+                                <span className="ml-1 font-normal text-[#B1B1B1]">
+                                  /portion
+                                </span>
+                              </p>
+                              <p className="mt-1 text-[12px] text-[#8F8F8F]">
+                                Stock {menu.quantity}
+                              </p>
+                            </div>
                             <button
                               type="button"
-                              aria-label={`Open ${menu.name}`}
+                              aria-label={`Open ${menu.title}`}
                               onClick={(event) => {
                                 event.stopPropagation();
-                                handleSelectMenu(menu.id);
+                                handleSelectMenu(menu.uuid);
                               }}
                               className={`flex h-9 w-9 items-center justify-center rounded-full border transition 2xl:h-10 2xl:w-10 ${isSelected
                                   ? "border-[#3572EF] bg-[#3572EF] text-white"
@@ -862,10 +901,14 @@ const CatalogPage = () => {
                 <div className="flex min-h-84 items-center justify-center rounded-3xl border border-dashed border-[#D7DDEA] bg-white px-7 text-center">
                   <div>
                     <p className="text-2xl font-semibold text-[#2A2A2A]">
-                      No menu matched your filters
+                      {requestError
+                        ? "Products could not be loaded"
+                        : "No menu matched your filters"}
                     </p>
                     <p className="mt-3 text-base text-[#9D9D9D]">
-                      Try another keyword or switch to a different category.
+                      {requestError
+                        ? requestError
+                        : "Try another keyword or switch to a different category."}
                     </p>
                   </div>
                 </div>
@@ -890,6 +933,12 @@ const CatalogPage = () => {
                     <PiXLight className="text-[20px]" />
                   </button>
                 </div>
+              </div>
+            ) : null}
+
+            {requestError ? (
+              <div className="mb-5 rounded-[10px] border border-[#FAD7DB] bg-[#FFF7F8] px-6 py-5 text-base text-[#B42318]">
+                {requestError}
               </div>
             ) : null}
 
