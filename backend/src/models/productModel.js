@@ -1,78 +1,64 @@
-import { randomUUID } from "node:crypto";
-import { db } from "../database.js";
+import { Product } from "./index.js";
 
-const cloneProduct = (product) => ({ ...product });
+const toPlain = (instance) => instance.get({ plain: true });
 
-const findActiveProductIndex = (uuid) =>
-  db.products.findIndex(
-    (product) => product.uuid === uuid && product.deleted_at === null,
-  );
+export const listProducts = async () => {
+  const products = await Product.findAll({
+    order: [["created_at", "DESC"]],
+  });
 
-export const listProducts = () =>
-  db.products
-    .filter((product) => product.deleted_at === null)
-    .map(cloneProduct);
-
-export const getProductByUuid = (uuid) => {
-  const product = db.products.find(
-    (item) => item.uuid === uuid && item.deleted_at === null,
-  );
-
-  return product ? cloneProduct(product) : null;
+  return products.map(toPlain);
 };
 
-export const createProduct = (payload) => {
-  const timestamp = new Date().toISOString();
-  const product = {
-    id: db.getNextProductId(),
-    uuid: randomUUID(),
+export const getProductByUuid = async (uuid) => {
+  const product = await Product.findOne({
+    where: { uuid },
+  });
+
+  return product ? toPlain(product) : null;
+};
+
+export const createProduct = async (payload) => {
+  const product = await Product.create({
     image: payload.image,
     title: payload.title,
     description: payload.description,
     price: payload.price,
     category: payload.category,
     quantity: payload.quantity,
-    created_at: timestamp,
-    updated_at: timestamp,
-    deleted_at: null,
-  };
+  });
 
-  db.products.unshift(product);
-  return cloneProduct(product);
+  return toPlain(product);
 };
 
-export const updateProductByUuid = (uuid, payload) => {
-  const index = findActiveProductIndex(uuid);
+export const updateProductByUuid = async (uuid, payload) => {
+  const product = await Product.findOne({
+    where: { uuid },
+  });
 
-  if (index === -1) {
+  if (!product) {
     return null;
   }
 
-  const currentProduct = db.products[index];
-  const nextProduct = {
-    ...currentProduct,
-    ...payload,
-    updated_at: new Date().toISOString(),
-  };
+  Object.assign(product, payload);
+  await product.save();
 
-  db.products[index] = nextProduct;
-  return cloneProduct(nextProduct);
+  return toPlain(product);
 };
 
-export const softDeleteProductByUuid = (uuid) => {
-  const index = findActiveProductIndex(uuid);
+export const softDeleteProductByUuid = async (uuid) => {
+  const product = await Product.findOne({
+    where: { uuid },
+  });
 
-  if (index === -1) {
+  if (!product) {
     return null;
   }
 
-  const timestamp = new Date().toISOString();
-  const nextProduct = {
-    ...db.products[index],
-    updated_at: timestamp,
-    deleted_at: timestamp,
-  };
+  await product.destroy();
 
-  db.products[index] = nextProduct;
-  return cloneProduct(nextProduct);
+  return {
+    ...toPlain(product),
+    deleted_at: product.deleted_at ?? new Date().toISOString(),
+  };
 };

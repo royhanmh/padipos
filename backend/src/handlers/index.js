@@ -4,4 +4,4 @@ export {
   getProductByUuidHandler,
   listProductsHandler,
   updateProductHandler,
-} from "./productHandlers.js";
+} from "./product.js";

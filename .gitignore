@@ -1,3 +1,5 @@
 # Project memory file must stay local only.
 codex.md
+codex.txt
+test.rest
 node_modules/
