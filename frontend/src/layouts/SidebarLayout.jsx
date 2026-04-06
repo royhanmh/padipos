@@ -10,15 +10,25 @@ import {
 } from "react-icons/pi";
 
 const defaultItems = [
-  { id: "dashboard", icon: PiGridFourLight, label: "Dashboard", href: "/dashboard" },
-  { id: "catalog", icon: PiBowlFoodLight, label: "Catalog", href: "/dashboard/catalog" },
+  {
+    id: "dashboard",
+    icon: PiGridFourLight,
+    label: "Dashboard",
+    href: "/dashboard",
+  },
+  {
+    id: "catalog",
+    icon: PiBowlFoodLight,
+    label: "Catalog",
+    href: "/dashboard/catalog",
+  },
   {
     id: "orders",
     icon: PiReceiptLight,
     label: "Orders",
     href: "/dashboard/sales-report",
   },
-  { id: "files", icon: PiFileLight, label: "Files" },
+
   {
     id: "settings",
     icon: PiGearSixLight,
@@ -99,4 +109,3 @@ const SidebarLayout = ({
 };
 
 export default SidebarLayout;
-
