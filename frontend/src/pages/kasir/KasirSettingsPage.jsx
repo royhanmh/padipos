@@ -1,8 +1,6 @@
-import { useMemo } from "react";
 import { PiBasketLight, PiGearSixLight, PiReceiptLight } from "react-icons/pi";
 import CashierOrderArchiveControl from "../../features/cashier-order-archive/components/CashierOrderArchiveControl";
-import SalesReportView from "../../features/sales-report/components/SalesReportView";
-import { MOCK_SALES_ORDERS } from "../../features/sales-report/data/mockSalesOrders";
+import SettingsView from "../../features/settings/components/SettingsView";
 
 const CASHIER_PROFILE = {
   name: "John Doe",
@@ -10,19 +8,11 @@ const CASHIER_PROFILE = {
   image: "/images/UserImage.png",
 };
 
-const KasirSalesReportPage = () => {
-  const cashierOrders = useMemo(() => {
-    return MOCK_SALES_ORDERS.filter(
-      (order) => order.cashierName === CASHIER_PROFILE.name,
-    );
-  }, []);
-
+const KasirSettingsPage = () => {
   return (
-    <SalesReportView
-      orders={cashierOrders}
-      pageTitle="Sales Report"
+    <SettingsView
       layoutSidebarProps={{
-        activeItem: "orders",
+        activeItem: "settings",
         variant: "kasir",
         items: [
           {
@@ -49,13 +39,15 @@ const KasirSalesReportPage = () => {
         profile: CASHIER_PROFILE,
         beforeProfile: <CashierOrderArchiveControl />,
       }}
-      exportConfig={{
-        title: "Sales Report",
-        filenamePrefix: "cashier-sales-report",
-        cashierName: CASHIER_PROFILE.name,
+      accountDefaults={{
+        email: "johndoe@gmail.com",
+        username: CASHIER_PROFILE.name,
+        role: CASHIER_PROFILE.role,
+        status: "Active",
+        avatar: CASHIER_PROFILE.image,
       }}
     />
   );
 };
 
-export default KasirSalesReportPage;
+export default KasirSettingsPage;

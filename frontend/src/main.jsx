@@ -7,6 +7,7 @@ import RequestResetPasswordPage from "./pages/kasir/RequestResetPasswordPage.jsx
 import ResetPasswordPage from "./pages/kasir/ResetPasswordPage.jsx";
 import KasirCatalogPage from "./pages/kasir/KasirCatalogPage.jsx";
 import KasirSalesReportPage from "./pages/kasir/KasirSalesReportPage.jsx";
+import KasirSettingsPage from "./pages/kasir/KasirSettingsPage.jsx";
 import DashboardLoginPage from "./pages/dashboard/DashboardLoginPage.jsx";
 import DashboardPage from "./pages/dashboard/DashboardPage.jsx";
 import CatalogPage from "./pages/dashboard/CatalogPage.jsx";
@@ -24,6 +25,7 @@ createRoot(document.getElementById("root")).render(
       <Route path="kasir" element={<Navigate to="/kasir/catalog" replace />} />
       <Route path="kasir/catalog" element={<KasirCatalogPage />} />
       <Route path="kasir/sales-report" element={<KasirSalesReportPage />} />
+      <Route path="kasir/settings" element={<KasirSettingsPage />} />
       <Route path="dashboard/login" element={<DashboardLoginPage />} />
       <Route path="dashboard" element={<DashboardPage />} />
       <Route path="dashboard/catalog" element={<CatalogPage />} />
