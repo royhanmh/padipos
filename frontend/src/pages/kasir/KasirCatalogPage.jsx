@@ -766,82 +766,84 @@ const KasirCatalogPage = () => {
                   </div>
                 </div>
 
-                <div className="mt-4 relative rounded-[12px] bg-[#F7F7F7] pb-4 pt-4">
-                  <div className="px-5">
-                    <div className="flex items-center justify-between text-[13px] text-[#737373]">
-                      <p>Sub Total</p>
-                      <p>{formatCurrency(itemsSubtotal(cartItems))}</p>
-                    </div>
-                    <div className="mt-2.5 flex items-center justify-between text-[13px] text-[#737373]">
-                      <p>Tax</p>
-                      <p>{formatCurrency(tax)}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="relative mt-5 mb-1 h-px w-full">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-dashed border-[#DADADA]"></div>
-                    </div>
-                    <div className="absolute -left-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-white"></div>
-                    <div className="absolute -right-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-white"></div>
-                  </div>
-
-                  <div className="px-5 pt-3">
-                    <div className="flex items-center justify-between">
-                      <p className="text-[16px] text-[#383838]">Total</p>
-                      <p className="text-[24px] font-bold text-[#1F1F1F]">
-                        {formatCurrency(total)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
                 <div className="mt-4">
-                  <p className="text-[13px] text-[#3D3D3D]">Select Nominal</p>
-                  <div className="mt-3 grid grid-cols-3 gap-2">
-                    {NOMINAL_OPTIONS.map((nominal) => {
-                      const isActive = selectedNominal === nominal;
-                      return (
-                        <button
-                          key={nominal}
-                          type="button"
-                          onClick={() => {
-                            setSelectedNominal(nominal);
-                            setCustomNominal(formatNominalInput(String(nominal)));
-                          }}
-                          className={`h-[36px] rounded-[8px] border text-[13px] ${isActive
-                              ? "border-[#3572EF] bg-[#3572EF] text-white"
-                              : "border-[#CCCCCC] text-[#A8A8A8]"
-                            }`}
-                        >
-                          {formatCurrency(nominal)}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <input
-                    type="text"
-                    value={customNominal}
-                    onChange={(event) => {
-                      setSelectedNominal(0);
-                      setCustomNominal(formatNominalInput(event.target.value));
-                    }}
-                    placeholder="Enter Nominal here..."
-                    className="mt-3 h-[36px] w-full border-b border-[#DCDCDC] bg-transparent px-1 text-center text-[13px] text-[#2F2F2F] placeholder:text-[#B3B3B3] outline-none"
-                  />
-                </div>
+                  <div className="relative rounded-[12px] bg-[#F7F7F7] pb-4 pt-4">
+                    <div className="px-5">
+                      <div className="flex items-center justify-between text-[13px] text-[#737373]">
+                        <p>Sub Total</p>
+                        <p>{formatCurrency(itemsSubtotal(cartItems))}</p>
+                      </div>
+                      <div className="mt-2.5 flex items-center justify-between text-[13px] text-[#737373]">
+                        <p>Tax</p>
+                        <p>{formatCurrency(tax)}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="relative mt-5 mb-1 h-px w-full">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-dashed border-[#DADADA]"></div>
+                      </div>
+                      <div className="absolute -left-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-white"></div>
+                      <div className="absolute -right-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-white"></div>
+                    </div>
 
-                <button
-                  type="button"
-                  onClick={submitPay}
-                  disabled={!canPay}
-                  className={`mt-5 h-[46px] w-full rounded-[10px] text-[16px] font-medium ${canPay
-                      ? "bg-[#3572EF] text-white"
-                      : "bg-[#B6B6B8] text-[#ECECEC]"
-                    }`}
-                >
-                  Pay
-                </button>
+                    <div className="px-5 pt-3">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[16px] text-[#383838]">Total</p>
+                        <p className="text-[24px] font-bold text-[#1F1F1F]">
+                          {formatCurrency(total)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <p className="text-[13px] text-[#3D3D3D]">Select Nominal</p>
+                    <div className="mt-3 grid grid-cols-3 gap-2">
+                      {NOMINAL_OPTIONS.map((nominal) => {
+                        const isActive = selectedNominal === nominal;
+                        return (
+                          <button
+                            key={nominal}
+                            type="button"
+                            onClick={() => {
+                              setSelectedNominal(nominal);
+                              setCustomNominal(formatNominalInput(String(nominal)));
+                            }}
+                            className={`h-[36px] rounded-[8px] border text-[13px] transition ${isActive
+                                ? "border-[#3572EF] bg-[#3572EF] text-white"
+                                : "border-[#CCCCCC] text-[#A8A8A8] hover:border-[#3572EF] hover:text-[#3572EF]"
+                              }`}
+                          >
+                            {formatCurrency(nominal)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <input
+                      type="text"
+                      value={customNominal}
+                      onChange={(event) => {
+                        setSelectedNominal(0);
+                        setCustomNominal(formatNominalInput(event.target.value));
+                      }}
+                      placeholder="Enter custom nominal here..."
+                      className="mt-3 h-[36px] w-full border-b border-[#DCDCDC] bg-transparent px-1 text-center text-[13px] text-[#2F2F2F] placeholder:text-[#B3B3B3] outline-none transition focus:border-[#3572EF]"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={submitPay}
+                    disabled={!canPay}
+                    className={`mt-4 h-[44px] w-full rounded-[10px] text-[16px] font-medium transition ${canPay
+                        ? "bg-[#3572EF] text-white hover:brightness-105 shadow-[0_4px_12px_rgba(53,114,239,0.2)]"
+                        : "bg-[#B6B6B8] text-[#ECECEC]"
+                      }`}
+                  >
+                    Pay
+                  </button>
+                </div>
               </div>
             )}
           </aside>
