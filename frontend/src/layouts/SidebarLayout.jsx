@@ -27,14 +27,25 @@ const defaultItems = [
   },
 ];
 
-const itemClassName = (isActive) =>
-  `flex h-10 w-10 items-center justify-center rounded-2xl transition ${
+const itemClassName = (isActive, variant) => {
+  if (variant === "kasir") {
+    return `flex h-10 w-10 items-center justify-center rounded-2xl transition ${
+      isActive ? "text-[#3572EF]" : "text-[#C2C2C2] hover:text-[#A1A1A1]"
+    }`;
+  }
+
+  return `flex h-10 w-10 items-center justify-center rounded-2xl transition ${
     isActive
       ? "text-[#3572EF]"
       : "text-[#B9C8EA] hover:bg-white hover:text-[#6392F3]"
   }`;
+};
 
-const SidebarLayout = ({ activeItem = "dashboard", items = defaultItems }) => {
+const SidebarLayout = ({
+  activeItem = "dashboard",
+  items = defaultItems,
+  variant = "dashboard",
+}) => {
   return (
     <aside className="row-span-2 flex min-h-screen flex-col items-center border-r border-[#EEF2F8] bg-white px-4 py-5">
       <div className="flex w-full justify-center border-b-2 border-[#F7F7F7] pb-4">
@@ -54,7 +65,7 @@ const SidebarLayout = ({ activeItem = "dashboard", items = defaultItems }) => {
             const isActive = id === activeItem;
             const sharedProps = {
               "aria-label": label,
-              className: itemClassName(isActive),
+              className: itemClassName(isActive, variant),
             };
 
             return (
@@ -75,7 +86,7 @@ const SidebarLayout = ({ activeItem = "dashboard", items = defaultItems }) => {
                 {isActive && (
                   <span
                     aria-hidden="true"
-                    className="absolute right-0 top-1/2 h-8 w-1 -translate-y-1/2 rounded-l-full bg-[#3572EF]"
+                    className="absolute right-0 top-1/2 h-9 w-1 -translate-y-1/2 rounded-l-full bg-[#3572EF]"
                   />
                 )}
               </li>

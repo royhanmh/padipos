@@ -12,6 +12,7 @@ const TopbarLayout = ({
   onSearchChange,
   profile = defaultProfile,
   showSearch = true,
+  beforeProfile = null,
 }) => {
   const inputProps = onSearchChange
     ? {
@@ -39,6 +40,8 @@ const TopbarLayout = ({
       )}
 
       <div className="ml-6 flex items-center gap-4 md:ml-8 md:gap-5">
+        {beforeProfile}
+
         <div className="flex items-center gap-4">
           <img
             src={profile.image ?? defaultProfile.image}

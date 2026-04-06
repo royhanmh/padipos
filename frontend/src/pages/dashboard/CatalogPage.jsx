@@ -443,13 +443,13 @@ const CatalogPage = () => {
       currentMenus.map((menu) =>
         menu.id === selectedMenu.id
           ? {
-              ...menu,
-              name: panelForm.name.trim(),
-              category: panelForm.category,
-              description: panelForm.description.trim(),
-              price: parsePriceInput(panelForm.price),
-              image: panelForm.image || DEFAULT_IMAGE,
-            }
+            ...menu,
+            name: panelForm.name.trim(),
+            category: panelForm.category,
+            description: panelForm.description.trim(),
+            price: parsePriceInput(panelForm.price),
+            image: panelForm.image || DEFAULT_IMAGE,
+          }
           : menu,
       ),
     );
@@ -776,11 +776,10 @@ const CatalogPage = () => {
                     key={category.id}
                     type="button"
                     onClick={() => setActiveCategory(category.id)}
-                    className={`flex w-full min-h-[60px] items-center justify-center gap-3 rounded-[10px] border px-5 text-lg transition 2xl:min-h-16 2xl:px-5 2xl:text-lg ${
-                      isActive
+                    className={`flex w-full min-h-[60px] items-center justify-center gap-3 rounded-[10px] border px-5 text-lg transition 2xl:min-h-16 2xl:px-5 2xl:text-lg ${isActive
                         ? "border-[#3572EF] bg-[#3572EF] text-white shadow-[0_18px_35px_rgba(53,114,239,0.22)]"
                         : "border-[#D9DDE5] bg-white text-[#A7A7A7] hover:border-[#B8C9FF] hover:text-[#5C76B8]"
-                    }`}
+                      }`}
                   >
                     {Icon ? <Icon className="text-[26px]" /> : null}
                     <span>{category.label}</span>
@@ -808,11 +807,10 @@ const CatalogPage = () => {
                             handleSelectMenu(menu.id);
                           }
                         }}
-                        className={`flex min-h-[208px] cursor-pointer flex-col rounded-[10px] border bg-white p-3 shadow-[0_8px_24px_rgba(25,45,88,0.05)] transition 2xl:min-h-[214px] ${
-                          isSelected
+                        className={`flex min-h-[208px] cursor-pointer flex-col rounded-[10px] border bg-white p-3 shadow-[0_8px_24px_rgba(25,45,88,0.05)] transition 2xl:min-h-[214px] ${isSelected
                             ? "border-[#3572EF] shadow-[0_14px_36px_rgba(53,114,239,0.18)]"
                             : "border-transparent hover:-translate-y-0.5 hover:border-[#DCE5FF]"
-                        }`}
+                          }`}
                       >
                         <div className="relative overflow-hidden rounded-[10px]">
                           <img
@@ -847,11 +845,10 @@ const CatalogPage = () => {
                                 event.stopPropagation();
                                 handleSelectMenu(menu.id);
                               }}
-                              className={`flex h-9 w-9 items-center justify-center rounded-full border transition 2xl:h-10 2xl:w-10 ${
-                                isSelected
+                              className={`flex h-9 w-9 items-center justify-center rounded-full border transition 2xl:h-10 2xl:w-10 ${isSelected
                                   ? "border-[#3572EF] bg-[#3572EF] text-white"
                                   : "border-[#D8DDEA] text-[#6A6A6A] hover:border-[#B6C7FF] hover:text-[#3572EF]"
-                              }`}
+                                }`}
                             >
                               <PiArrowUpRightLight className="text-[18px] 2xl:text-[20px]" />
                             </button>
