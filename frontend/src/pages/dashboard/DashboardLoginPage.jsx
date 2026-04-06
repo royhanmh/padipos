@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
+import AuthPageShell from "../../components/AuthPageShell";
 import DefaultInputComponent from "../../components/DefaultInputComponent";
 import PrimaryButtonComponent from "../../components/PrimaryButtonComponent";
 import LoginCardComponent from "../../components/LoginCardComponent";
@@ -8,10 +9,7 @@ const DashboardLoginPage = () => {
   const [password, setPassword] = useState("");
 
   return (
-    <div
-      className="bg-cover bg-center min-h-screen flex items-center"
-      style={{ backgroundImage: "url('/images/background.png')" }}
-    >
+    <AuthPageShell>
       <LoginCardComponent>
         <DefaultInputComponent
           type="text"
@@ -40,7 +38,7 @@ const DashboardLoginPage = () => {
           Login
         </PrimaryButtonComponent>
       </LoginCardComponent>
-    </div>
+    </AuthPageShell>
   );
 };
 

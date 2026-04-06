@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Auth pages use this as a CSS background; preload avoids late fetch after React mounts -->
+    <!-- Auth pages use this as a CSS background; preload it early for first paint -->
     <link
       rel="preload"
       as="image"
-      href="/images/background.png"
-      type="image/png"
+      href="/images/background-optimized.jpg"
+      type="image/jpeg"
       fetchpriority="high"
     />
     <title>frontend</title>

@@ -9,6 +9,7 @@ import DashboardLoginPage from "./pages/dashboard/DashboardLoginPage.jsx";
 import DashboardPage from "./pages/dashboard/DashboardPage.jsx";
 import CatalogPage from "./pages/dashboard/CatalogPage.jsx";
 import SalesReportPage from "./pages/dashboard/SalesReportPage.jsx";
+import SettingsPage from "./pages/dashboard/SettingsPage.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -22,6 +23,7 @@ createRoot(document.getElementById("root")).render(
       <Route path="dashboard" element={<DashboardPage />} />
       <Route path="dashboard/catalog" element={<CatalogPage />} />
       <Route path="dashboard/sales-report" element={<SalesReportPage />} />
+      <Route path="dashboard/settings" element={<SettingsPage />} />
     </Routes>
   </BrowserRouter>,
 );

@@ -19,7 +19,12 @@ const defaultItems = [
     href: "/dashboard/sales-report",
   },
   { id: "files", icon: PiFileLight, label: "Files" },
-  { id: "settings", icon: PiGearSixLight, label: "Settings" },
+  {
+    id: "settings",
+    icon: PiGearSixLight,
+    label: "Settings",
+    href: "/dashboard/settings",
+  },
 ];
 
 const itemClassName = (isActive) =>
