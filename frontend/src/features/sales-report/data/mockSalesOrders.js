@@ -2,6 +2,7 @@ const createOrder = ({
   id,
   orderNumber,
   orderDate,
+  cashierName,
   orderType,
   tableNumber = null,
   category,
@@ -20,6 +21,7 @@ const createOrder = ({
     id,
     orderNumber,
     orderDate,
+    cashierName,
     orderType,
     tableNumber,
     category,
@@ -32,6 +34,8 @@ const createOrder = ({
     change: amountPaid - total,
   };
 };
+
+const CASHIER_NAMES = ["John Doe", "Sarah Wijaya", "Andi Pratama"];
 
 const sampleRows = [
   {
@@ -278,6 +282,7 @@ export const MOCK_SALES_ORDERS = sampleRows.map((row, index) =>
   createOrder({
     id: index + 1,
     orderNumber: `ORDR#${String(1234567890 + index)}`,
+    cashierName: CASHIER_NAMES[index % CASHIER_NAMES.length],
     ...row,
   }),
 );

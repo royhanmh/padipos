@@ -440,8 +440,18 @@ const KasirCatalogPage = () => {
         activeItem: "catalog",
         variant: "kasir",
         items: [
-          { id: "catalog", icon: PiBasketLight, label: "Catalog" },
-          { id: "orders", icon: PiReceiptLight, label: "Orders" },
+          {
+            id: "catalog",
+            icon: PiBasketLight,
+            label: "Catalog",
+            href: "/kasir/catalog",
+          },
+          {
+            id: "orders",
+            icon: PiReceiptLight,
+            label: "Orders",
+            href: "/kasir/sales-report",
+          },
           { id: "settings", icon: PiGearSixLight, label: "Settings" },
         ],
       }}

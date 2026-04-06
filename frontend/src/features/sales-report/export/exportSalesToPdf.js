@@ -13,7 +13,13 @@ import {
   getOrderTypeLabel,
 } from "../utils/reportFormatters";
 
-export const exportSalesToPdf = (rows, filters) => {
+export const exportSalesToPdf = (rows, filters, exportConfig = {}) => {
+  const {
+    title = "Sales Report",
+    filenamePrefix = "sales-report",
+    cashierName,
+  } = exportConfig;
+
   const doc = new jsPDF({
     orientation: "landscape",
     unit: "pt",
@@ -21,7 +27,7 @@ export const exportSalesToPdf = (rows, filters) => {
   });
 
   doc.setFontSize(18);
-  doc.text("Sales Report", 40, 42);
+  doc.text(title, 40, 42);
 
   doc.setFontSize(10);
   const metadata = [
@@ -30,6 +36,7 @@ export const exportSalesToPdf = (rows, filters) => {
     `Finish Date: ${formatFilterDate(filters.finishDate)}`,
     `Category: ${formatFilterValue(filters.category, CATEGORY_OPTIONS)}`,
     `Order Type: ${formatFilterValue(filters.orderType, ORDER_TYPE_OPTIONS)}`,
+    ...(cashierName ? [`Cashier: ${cashierName}`] : []),
     `Total Rows: ${rows.length}`,
   ];
 
@@ -84,6 +91,6 @@ export const exportSalesToPdf = (rows, filters) => {
     },
   });
 
-  const filename = `sales-report-${createExportTimestamp()}.pdf`;
+  const filename = `${filenamePrefix}-${createExportTimestamp()}.pdf`;
   doc.save(filename);
 };

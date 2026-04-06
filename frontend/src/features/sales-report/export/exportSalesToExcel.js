@@ -12,14 +12,21 @@ import {
   getOrderTypeLabel,
 } from "../utils/reportFormatters";
 
-export const exportSalesToExcel = (rows, filters) => {
+export const exportSalesToExcel = (rows, filters, exportConfig = {}) => {
+  const {
+    title = "Sales Report",
+    filenamePrefix = "sales-report",
+    cashierName,
+  } = exportConfig;
+
   const worksheetData = [
-    ["Sales Report"],
+    [title],
     ["Generated At", formatGeneratedAt()],
     ["Start Date", formatFilterDate(filters.startDate)],
     ["Finish Date", formatFilterDate(filters.finishDate)],
     ["Category", formatFilterValue(filters.category, CATEGORY_OPTIONS)],
     ["Order Type", formatFilterValue(filters.orderType, ORDER_TYPE_OPTIONS)],
+    ...(cashierName ? [["Cashier", cashierName]] : []),
     ["Total Rows", rows.length],
     [],
     [
@@ -57,8 +64,8 @@ export const exportSalesToExcel = (rows, filters) => {
   ];
 
   const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Sales Report");
+  XLSX.utils.book_append_sheet(workbook, worksheet, title);
 
-  const filename = `sales-report-${createExportTimestamp()}.xlsx`;
+  const filename = `${filenamePrefix}-${createExportTimestamp()}.xlsx`;
   XLSX.writeFile(workbook, filename);
 };
