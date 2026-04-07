@@ -7,6 +7,7 @@ import {
   updateProductByUuid,
 } from "../models/productModel.js";
 import { PRODUCT_CATEGORIES } from "../types/product.js";
+import { uploadImage, deleteImage } from "../libs/cloudinary.js";
 
 const createProductSchema = Joi.object({
   image: Joi.string().trim().min(1).required(),
@@ -70,6 +71,10 @@ export const createProductHandler = async (req, res, next) => {
       return;
     }
 
+    if (value.image && value.image.startsWith("data:image/")) {
+      value.image = await uploadImage(value.image);
+    }
+
     const product = await createProduct(value);
     res.status(201).json(product);
   } catch (error) {
@@ -92,11 +97,24 @@ export const updateProductHandler = async (req, res, next) => {
       return;
     }
 
+    let oldProductImage = null;
+    if (value.image && value.image.startsWith("data:image/")) {
+      const existingProduct = await getProductByUuid(req.params.uuid);
+      if (existingProduct) {
+        oldProductImage = existingProduct.image;
+      }
+      value.image = await uploadImage(value.image);
+    }
+
     const product = await updateProductByUuid(req.params.uuid, value);
 
     if (!product) {
       res.status(404).json({ message: "Product not found." });
       return;
+    }
+
+    if (oldProductImage) {
+      deleteImage(oldProductImage).catch(console.error);
     }
 
     res.json(product);
@@ -112,6 +130,10 @@ export const deleteProductHandler = async (req, res, next) => {
     if (!product) {
       res.status(404).json({ message: "Product not found." });
       return;
+    }
+
+    if (product.image) {
+      deleteImage(product.image).catch(console.error);
     }
 
     res.json({
