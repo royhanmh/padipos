@@ -5,7 +5,7 @@ import routes from "./routes/index.js";
 import { prepareSchema } from "./prepareSchema.js";
 
 const FRONTEND_ORIGIN =
-  process.env.FRONTEND_ORIGIN ?? "http://localhost:5173";
+  (process.env.FRONTEND_ORIGIN ?? "http://localhost:5173").replace(/\/$/, "");
 
 export const createApp = () => {
   const app = express();
@@ -13,6 +13,7 @@ export const createApp = () => {
   app.use(
     cors({
       origin: FRONTEND_ORIGIN,
+      credentials: true,
     }),
   );
   app.use(express.json());
