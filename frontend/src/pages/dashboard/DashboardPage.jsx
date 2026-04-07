@@ -45,18 +45,21 @@ const stats = [
     value: "500",
     icon: PiBowlFoodLight,
     accent: true,
+    categoryKey: "food",
   },
   {
     label: "Beverages",
     value: "300",
     icon: PiCoffeeLight,
     accent: true,
+    categoryKey: "beverage",
   },
   {
     label: "Desserts",
     value: "200",
     icon: PiCookieLight,
     accent: true,
+    categoryKey: "dessert",
   },
 ];
 
@@ -182,7 +185,15 @@ const DashboardPage = () => {
 
         <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
           {stats.map((stat) => (
-            <StatCardComponent key={stat.label} {...stat} />
+            <StatCardComponent
+              key={stat.label}
+              {...stat}
+              onClick={
+                stat.categoryKey
+                  ? () => openCategoryModal(stat.categoryKey)
+                  : undefined
+              }
+            />
           ))}
         </div>
 
@@ -255,8 +266,6 @@ const DashboardPage = () => {
                   fill="#1C49A6"
                   radius={[3, 3, 0, 0]}
                   maxBarSize={22}
-                  cursor="pointer"
-                  onClick={() => openCategoryModal("food")}
                 />
                 <Bar
                   dataKey="beverage"
@@ -264,8 +273,6 @@ const DashboardPage = () => {
                   fill="#3572EF"
                   radius={[3, 3, 0, 0]}
                   maxBarSize={22}
-                  cursor="pointer"
-                  onClick={() => openCategoryModal("beverage")}
                 />
                 <Bar
                   dataKey="dessert"
@@ -273,8 +280,6 @@ const DashboardPage = () => {
                   fill="#C2D4FA"
                   radius={[3, 3, 0, 0]}
                   maxBarSize={22}
-                  cursor="pointer"
-                  onClick={() => openCategoryModal("dessert")}
                 />
               </BarChart>
             </ResponsiveContainer>
