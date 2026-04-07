@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 import {
   PiArrowUpRightLight,
   PiBookmarkSimpleLight,
@@ -16,11 +17,10 @@ import {
   PiXLight,
 } from "react-icons/pi";
 import CashierOrderArchiveControl from "../../features/cashier-order-archive/components/CashierOrderArchiveControl";
-import {
-  clearPendingArchiveRestore,
-  readPendingArchiveRestore,
-} from "../../features/cashier-order-archive/utils/archiveRestoreStorage";
 import DashboardLayout from "../../layouts/DashboardLayout";
+import { useProductsStore } from "../../stores/productsStore";
+import { useTransactionsStore } from "../../stores/transactionsStore";
+import { useArchiveStore } from "../../stores/archiveStore";
 
 const ORDER_TYPE = { DINE_IN: "dine-in", TAKE_AWAY: "take-away" };
 const TAX_AMOUNT = 5000;
@@ -155,6 +155,8 @@ const createOrderNumber = () => `ORDR#${Date.now().toString().slice(-10)}`;
 const cartKey = (menuId, note) => `${menuId}-${note.trim().toLowerCase()}`;
 
 const KasirCatalogPage = () => {
+  const addArchive = useArchiveStore((state) => state.addArchive);
+  
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchValue, setSearchValue] = useState("");
   const [orderType, setOrderType] = useState(ORDER_TYPE.DINE_IN);
@@ -229,28 +231,35 @@ const KasirCatalogPage = () => {
     setOrderNumber(order.orderNumber);
     setCustomerName(order.customerName);
     setTableNumber(order.tableNumber || "");
-    setCartItems(
-      order.items.map((item) => ({
-        ...item,
-        key: cartKey(item.menuId, item.note || ""),
-        id: `${item.id}-${Date.now()}`,
-      })),
-    );
+    setCartItems(order.cartItems || []);
     const nextNominal = order.amountPaid || 0;
     setSelectedNominal(nextNominal);
     setCustomNominal(nextNominal ? formatNominalInput(String(nextNominal)) : "");
   };
 
-  useEffect(() => {
-    const pendingOrder = readPendingArchiveRestore();
-
-    if (!pendingOrder) {
+  const handleSaveToArchive = () => {
+    if (cartItems.length === 0 && !customerName) {
+      alert("Order is empty, nothing to archive.");
       return;
     }
-
-    restoreArchiveOrder(pendingOrder);
-    clearPendingArchiveRestore();
-  }, []);
+    
+    addArchive({
+      id: Date.now().toString(),
+      orderNumber,
+      orderType,
+      customerName,
+      tableNumber,
+      cartItems,
+      amountPaid: explicitNominal
+    });
+    
+    setCartItems([]);
+    setCustomerName("");
+    setTableNumber("");
+    setSelectedNominal(0);
+    setCustomNominal("");
+    setOrderNumber(createOrderNumber());
+  };
 
   const submitPay = () => {
     if (!canPay) return;
@@ -398,7 +407,7 @@ const KasirCatalogPage = () => {
           image: "/images/UserImage.png",
         },
         beforeProfile: (
-          <CashierOrderArchiveControl onRestoreOrder={restoreArchiveOrder} />
+          <CashierOrderArchiveControl onRestore={restoreArchiveOrder} />
         ),
       }}
     >
@@ -506,6 +515,7 @@ const KasirCatalogPage = () => {
               <button
                 type="button"
                 aria-label="Save order"
+                onClick={handleSaveToArchive}
                 className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#3572EF] text-[#3572EF] hover:bg-[#F0F5FF] transition"
               >
                 <PiBookmarkSimpleLight className="text-[18px]" />

@@ -1,42 +1,112 @@
-import { useState } from "react";
-import { Link } from "react-router";
+import { useMemo, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router";
+import { useShallow } from "zustand/react/shallow";
 import AuthPageShell from "../../components/AuthPageShell";
 import DefaultInputComponent from "../../components/DefaultInputComponent";
-import PrimaryButtonComponent from "../../components/PrimaryButtonComponent";
 import LoginCardComponent from "../../components/LoginCardComponent";
+import PrimaryButtonComponent from "../../components/PrimaryButtonComponent";
+import { getHomePathForRole, useAuthStore } from "../../stores/authStore";
 
 const LoginPage = () => {
-  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { loginCashier, isSubmitting, error, clearError } = useAuthStore(
+    useShallow((state) => ({
+      loginCashier: state.loginCashier,
+      isSubmitting: state.isSubmitting,
+      error: state.error,
+      clearError: state.clearError,
+    })),
+  );
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const nextPath = useMemo(() => {
+    const requestedPath = location.state?.from?.pathname;
+    return requestedPath && requestedPath.startsWith("/kasir")
+      ? requestedPath
+      : getHomePathForRole("cashier");
+  }, [location.state]);
+
+  const handleChange = (field, value) => {
+    setForm((current) => ({ ...current, [field]: value }));
+    setFieldErrors((current) => ({ ...current, [field]: "" }));
+    clearError();
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const nextErrors = {};
+
+    if (!form.email.trim()) {
+      nextErrors.email = "Email is required.";
+    }
+
+    if (!form.password.trim()) {
+      nextErrors.password = "Password is required.";
+    }
+
+    if (Object.keys(nextErrors).length > 0) {
+      setFieldErrors(nextErrors);
+      return;
+    }
+
+    try {
+      const response = await loginCashier({
+        email: form.email.trim(),
+        password: form.password,
+      });
+      navigate(nextPath, { replace: true });
+      return response;
+    } catch {
+      return null;
+    }
+  };
 
   return (
     <AuthPageShell>
       <LoginCardComponent>
-        <DefaultInputComponent
-          type="text"
-          placeholder="Username"
-          label="Username"
-          id="username"
-        />
-        <DefaultInputComponent
-          id="password"
-          label="Password"
-          type="password"
-          placeholder="Enter your password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          helpText={
-            <Link
-              to="/reset"
-              className="text-base text-[#919191] hover:text-[#5E5E5E] md:text-[17px]"
-            >
-              Forget password?
-            </Link>
-          }
-          helpTextClassName="mt-2.5 text-right md:mt-3"
-        />
-        <PrimaryButtonComponent type="submit" className="mt-3">
-          Login
-        </PrimaryButtonComponent>
+        <form onSubmit={handleSubmit}>
+          <DefaultInputComponent
+            id="email"
+            type="email"
+            placeholder="cashier@example.com"
+            label="Email"
+            value={form.email}
+            onChange={(event) => handleChange("email", event.target.value)}
+            error={fieldErrors.email}
+          />
+          <DefaultInputComponent
+            id="password"
+            label="Password"
+            type="password"
+            placeholder="Enter your password"
+            value={form.password}
+            onChange={(event) => handleChange("password", event.target.value)}
+            error={fieldErrors.password}
+            helpText={
+              <Link
+                to="/reset"
+                className="text-base text-[#919191] hover:text-[#5E5E5E] md:text-[17px]"
+              >
+                Forget password?
+              </Link>
+            }
+            helpTextClassName="mt-2.5 text-right md:mt-3"
+          />
+
+          {error ? (
+            <p className="mb-4 rounded-[10px] border border-[#FAD7DB] bg-[#FFF7F8] px-4 py-3 text-sm text-[#B42318] md:text-base">
+              {error}
+            </p>
+          ) : null}
+
+          <PrimaryButtonComponent type="submit" className="mt-3" disabled={isSubmitting}>
+            {isSubmitting ? "Logging in..." : "Login"}
+          </PrimaryButtonComponent>
+        </form>
+
         <p className="mt-5 pb-6 text-center text-base text-[#919191] md:text-[17px]">
           Don't have an account?{" "}
           <Link to="/register" className="text-[#3572EF] hover:text-[#1255DE]">

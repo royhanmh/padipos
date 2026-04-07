@@ -7,7 +7,9 @@ import {
 import { TRANSACTION_ORDER_TYPES } from "../types/transaction.js";
 
 const transactionItemSchema = Joi.object({
-  product_uuid: Joi.string().guid({ version: ["uuidv4", "uuidv5", "uuidv1", "uuidv3"] }).required(),
+  product_uuid: Joi.string()
+    .guid({ version: ["uuidv4", "uuidv5", "uuidv1", "uuidv3"] })
+    .required(),
   quantity: Joi.number().integer().positive().required(),
   notes: Joi.string().trim().allow("", null).max(1000),
 });
@@ -22,6 +24,7 @@ const createTransactionSchema = Joi.object({
     then: Joi.number().integer().positive().required(),
     otherwise: Joi.number().integer().positive().allow(null).optional(),
   }),
+  amount_paid: Joi.number().integer().min(0).required(),
   items: Joi.array().items(transactionItemSchema).min(1).required(),
 });
 
@@ -38,6 +41,7 @@ const normalizeCreatePayload = (value) => ({
   order_type: value.order_type,
   customer_name: value.customer_name.trim(),
   table_number: value.order_type === "take-away" ? null : value.table_number,
+  amount_paid: value.amount_paid,
   items: value.items.map((item) => ({
     product_uuid: item.product_uuid,
     quantity: item.quantity,

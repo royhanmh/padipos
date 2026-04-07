@@ -1,6 +1,7 @@
 import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { sequelize, Product, Admin, Cashier } from "./models/index.js";
+import { prepareSchema } from "./prepareSchema.js";
 
 const seedProducts = [
   {
@@ -110,7 +111,8 @@ const seed = async () => {
     await sequelize.authenticate();
     console.log("Database connection established.");
 
-    await sequelize.sync();
+    await prepareSchema();
+    await sequelize.sync({ alter: true });
     console.log("Database synced.");
 
     // Seed products
@@ -138,3 +140,5 @@ const seed = async () => {
 };
 
 seed();
+
+

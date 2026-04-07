@@ -46,8 +46,13 @@ export default (sequelize) =>
         allowNull: false,
         defaultValue: 0,
       },
+      amount_paid: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
       order_number: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
     },
@@ -60,3 +65,4 @@ export default (sequelize) =>
       deletedAt: "deleted_at",
     },
   );
+

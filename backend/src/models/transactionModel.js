@@ -1,6 +1,8 @@
 import { Cashier, Product, Transaction, TransactionItem, sequelize } from "./index.js";
 import { TRANSACTION_TAX_AMOUNT } from "../types/transaction.js";
 
+const CATEGORY_ORDER = ["food", "beverage", "dessert"];
+
 const transactionInclude = [
   {
     model: Cashier,
@@ -16,6 +18,7 @@ const transactionInclude = [
       "quantity",
       "subtotal_item",
       "product_title",
+      "product_category",
       "unit_price",
       "created_at",
       "updated_at",
@@ -42,8 +45,40 @@ const createError = (message, status) => {
   return error;
 };
 
+const collectCategories = (items = []) =>
+  CATEGORY_ORDER.filter((category) =>
+    items.some((item) => item.product_category === category),
+  );
+
+const getDisplayCategory = (categories) => {
+  if (categories.length === 0) {
+    return null;
+  }
+
+  if (categories.length === 1) {
+    return categories[0];
+  }
+
+  return "mixed";
+};
+
 const toTransactionResponse = (instance) => {
   const plain = instance.get({ plain: true });
+  const items = (plain.items ?? []).map((item) => ({
+    uuid: item.uuid,
+    product_uuid: item.product?.uuid ?? null,
+    product_title: item.product_title,
+    product_category: item.product_category,
+    unit_price: item.unit_price,
+    quantity: item.quantity,
+    notes: item.notes,
+    subtotal_item: item.subtotal_item,
+    created_at: item.created_at,
+    updated_at: item.updated_at,
+  }));
+  const categories = collectCategories(items);
+  const amountPaid = Number(plain.amount_paid);
+  const total = Number(plain.total);
 
   return {
     uuid: plain.uuid,
@@ -53,7 +88,11 @@ const toTransactionResponse = (instance) => {
     table_number: plain.table_number,
     subtotal: plain.subtotal,
     tax: plain.tax,
-    total: plain.total,
+    total,
+    amount_paid: amountPaid,
+    change: amountPaid - total,
+    categories,
+    display_category: getDisplayCategory(categories),
     created_at: plain.created_at,
     updated_at: plain.updated_at,
     cashier: plain.cashier
@@ -62,17 +101,7 @@ const toTransactionResponse = (instance) => {
           username: plain.cashier.username,
         }
       : null,
-    items: (plain.items ?? []).map((item) => ({
-      uuid: item.uuid,
-      product_uuid: item.product?.uuid ?? null,
-      product_title: item.product_title,
-      unit_price: item.unit_price,
-      quantity: item.quantity,
-      notes: item.notes,
-      subtotal_item: item.subtotal_item,
-      created_at: item.created_at,
-      updated_at: item.updated_at,
-    })),
+    items,
   };
 };
 
@@ -93,7 +122,7 @@ const findTransactionInstance = async (where, options = {}) => {
   });
 };
 
-const generateOrderNumber = () => Date.now();
+const generateOrderNumber = () => Number(Date.now() % 2000000000);
 
 export const createTransaction = async ({ cashierUuid, payload }) => {
   return sequelize.transaction(async (dbTransaction) => {
@@ -111,7 +140,7 @@ export const createTransaction = async ({ cashierUuid, payload }) => {
 
     const products = await Product.findAll({
       where: { uuid: requestedProductUuids },
-      attributes: ["id", "uuid", "title", "price"],
+      attributes: ["id", "uuid", "title", "price", "category"],
       transaction: dbTransaction,
     });
 
@@ -132,6 +161,7 @@ export const createTransaction = async ({ cashierUuid, payload }) => {
         product_id: product.id,
         product_uuid: product.uuid,
         product_title: product.title,
+        product_category: product.category,
         unit_price: product.price,
         quantity: item.quantity,
         notes: item.notes ?? null,
@@ -145,6 +175,11 @@ export const createTransaction = async ({ cashierUuid, payload }) => {
     );
     const tax = subtotal > 0 ? TRANSACTION_TAX_AMOUNT : 0;
     const total = subtotal + tax;
+    const amountPaid = payload.amount_paid;
+
+    if (amountPaid < total) {
+      throw createError("Amount paid must be greater than or equal to the total.", 400);
+    }
 
     const createdTransaction = await Transaction.create(
       {
@@ -155,6 +190,7 @@ export const createTransaction = async ({ cashierUuid, payload }) => {
         subtotal,
         tax,
         total,
+        amount_paid: amountPaid,
         order_number: generateOrderNumber(),
       },
       { transaction: dbTransaction },
@@ -165,6 +201,7 @@ export const createTransaction = async ({ cashierUuid, payload }) => {
         transaction_id: createdTransaction.id,
         product_id: item.product_id,
         product_title: item.product_title,
+        product_category: item.product_category,
         unit_price: item.unit_price,
         notes: item.notes,
         quantity: item.quantity,
@@ -220,3 +257,4 @@ export const getTransactionByUuid = async ({ transactionUuid, role, userUuid }) 
   const transaction = await findTransactionInstance(where);
   return transaction ? toTransactionResponse(transaction) : null;
 };
+

@@ -1,25 +1,32 @@
-import { useMemo } from "react";
+import { useEffect } from "react";
 import { PiBasketLight, PiGearSixLight, PiReceiptLight } from "react-icons/pi";
+import { useShallow } from "zustand/react/shallow";
 import CashierOrderArchiveControl from "../../features/cashier-order-archive/components/CashierOrderArchiveControl";
 import SalesReportView from "../../features/sales-report/components/SalesReportView";
-import { MOCK_SALES_ORDERS } from "../../features/sales-report/data/mockSalesOrders";
-
-const CASHIER_PROFILE = {
-  name: "John Doe",
-  role: "Cashier",
-  image: "/images/UserImage.png",
-};
+import { toReportOrders } from "../../lib/transactionAdapters";
+import { useAuthStore } from "../../stores/authStore";
+import { useTransactionsStore } from "../../stores/transactionsStore";
 
 const KasirSalesReportPage = () => {
-  const cashierOrders = useMemo(() => {
-    return MOCK_SALES_ORDERS.filter(
-      (order) => order.cashierName === CASHIER_PROFILE.name,
-    );
-  }, []);
+  const user = useAuthStore((state) => state.user);
+  const { transactions, isLoading, error, fetchTransactions } = useTransactionsStore(
+    useShallow((state) => ({
+      transactions: state.transactions,
+      isLoading: state.isLoading,
+      error: state.error,
+      fetchTransactions: state.fetchTransactions,
+    })),
+  );
+
+  useEffect(() => {
+    void fetchTransactions();
+  }, [fetchTransactions]);
 
   return (
     <SalesReportView
-      orders={cashierOrders}
+      orders={toReportOrders(transactions)}
+      isLoading={isLoading}
+      errorMessage={error}
       pageTitle="Sales Report"
       layoutSidebarProps={{
         activeItem: "orders",
@@ -46,13 +53,12 @@ const KasirSalesReportPage = () => {
         ],
       }}
       layoutTopbarProps={{
-        profile: CASHIER_PROFILE,
         beforeProfile: <CashierOrderArchiveControl />,
       }}
       exportConfig={{
         title: "Sales Report",
         filenamePrefix: "cashier-sales-report",
-        cashierName: CASHIER_PROFILE.name,
+        cashierName: user?.username,
       }}
     />
   );

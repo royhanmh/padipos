@@ -27,6 +27,10 @@ export default (sequelize) =>
         type: DataTypes.STRING,
         allowNull: false,
       },
+      product_category: {
+        type: DataTypes.ENUM("food", "beverage", "dessert"),
+        allowNull: false,
+      },
       unit_price: {
         type: DataTypes.INTEGER,
         allowNull: false,

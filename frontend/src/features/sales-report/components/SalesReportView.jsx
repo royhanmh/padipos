@@ -4,10 +4,7 @@ import {
   PiCaretDownLight,
   PiXLight,
 } from "react-icons/pi";
-import {
-  exportSalesToExcel,
-  exportSalesToPdf,
-} from "../export";
+import { exportSalesToExcel, exportSalesToPdf } from "../export";
 import {
   CATEGORY_OPTIONS,
   ORDER_TYPE_OPTIONS,
@@ -52,8 +49,22 @@ const toDateAtEndOfDay = (value) => {
   return new Date(`${value}T23:59:59`);
 };
 
+const matchesCategoryFilter = (order, category) => {
+  if (category === "all") {
+    return true;
+  }
+
+  if (Array.isArray(order.categories) && order.categories.length > 0) {
+    return order.categories.includes(category);
+  }
+
+  return order.category === category;
+};
+
 const SalesReportView = ({
   orders,
+  isLoading = false,
+  errorMessage = "",
   pageTitle = "Sales Report",
   layoutSidebarProps,
   layoutTopbarProps,
@@ -77,9 +88,7 @@ const SalesReportView = ({
         const orderDate = new Date(order.orderDate);
         const matchesStartDate = startDate ? orderDate >= startDate : true;
         const matchesFinishDate = finishDate ? orderDate <= finishDate : true;
-        const matchesCategory =
-          appliedFilters.category === "all" ||
-          order.category === appliedFilters.category;
+        const matchesCategory = matchesCategoryFilter(order, appliedFilters.category);
         const matchesOrderType =
           appliedFilters.orderType === "all" ||
           order.orderType === appliedFilters.orderType;
@@ -96,10 +105,7 @@ const SalesReportView = ({
       });
   }, [appliedFilters, orders]);
 
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredOrders.length / rowsPerPage),
-  );
+  const totalPages = Math.max(1, Math.ceil(filteredOrders.length / rowsPerPage));
 
   const paginatedOrders = useMemo(() => {
     const startIndex = (page - 1) * rowsPerPage;
@@ -181,6 +187,18 @@ const SalesReportView = ({
     return "Take Away";
   };
 
+  const renderTableState = () => {
+    if (isLoading) {
+      return "Loading transactions...";
+    }
+
+    if (errorMessage) {
+      return errorMessage;
+    }
+
+    return "No transactions matched the selected filters.";
+  };
+
   return (
     <DashboardLayout
       sidebarProps={layoutSidebarProps}
@@ -195,13 +213,17 @@ const SalesReportView = ({
         </div>
 
         <section className="mt-6 rounded-2xl border border-[#ECECEC] bg-white p-5 shadow-[0_10px_26px_rgba(25,45,88,0.06)] md:p-6">
+          {errorMessage ? (
+            <div className="mb-5 rounded-xl border border-[#FAD7DB] bg-[#FFF7F8] px-4 py-3 text-sm text-[#B42318] md:text-base">
+              {errorMessage}
+            </div>
+          ) : null}
+
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(150px,0.85fr)_auto] lg:items-end">
             <ReportFilterField label="Start">
               <DatePickerField
                 value={draftFilters.startDate}
-                onChange={(nextValue) =>
-                  handleFilterChange("startDate", nextValue)
-                }
+                onChange={(nextValue) => handleFilterChange("startDate", nextValue)}
                 placeholder="Select date"
               />
             </ReportFilterField>
@@ -209,9 +231,7 @@ const SalesReportView = ({
             <ReportFilterField label="Finish">
               <DatePickerField
                 value={draftFilters.finishDate}
-                onChange={(nextValue) =>
-                  handleFilterChange("finishDate", nextValue)
-                }
+                onChange={(nextValue) => handleFilterChange("finishDate", nextValue)}
                 placeholder="Select date"
               />
             </ReportFilterField>
@@ -220,9 +240,7 @@ const SalesReportView = ({
               <div className="relative">
                 <select
                   value={draftFilters.category}
-                  onChange={(event) =>
-                    handleFilterChange("category", event.target.value)
-                  }
+                  onChange={(event) => handleFilterChange("category", event.target.value)}
                   className="h-12 w-full appearance-none rounded-xl border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] md:h-13 md:px-5"
                 >
                   {CATEGORY_OPTIONS.map((option) => (
@@ -239,9 +257,7 @@ const SalesReportView = ({
               <div className="relative">
                 <select
                   value={draftFilters.orderType}
-                  onChange={(event) =>
-                    handleFilterChange("orderType", event.target.value)
-                  }
+                  onChange={(event) => handleFilterChange("orderType", event.target.value)}
                   className="h-12 w-full appearance-none rounded-xl border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] md:h-13 md:px-5"
                 >
                   {ORDER_TYPE_OPTIONS.map((option) => (
@@ -267,7 +283,7 @@ const SalesReportView = ({
               onToggle={() => setIsExportOpen((currentOpen) => !currentOpen)}
               onExportExcel={handleExportExcel}
               onExportPdf={handleExportPdf}
-              disabled={filteredOrders.length === 0}
+              disabled={filteredOrders.length === 0 || isLoading}
               menuRef={exportMenuRef}
             />
           </div>
@@ -289,19 +305,13 @@ const SalesReportView = ({
                   {paginatedOrders.length > 0 ? (
                     paginatedOrders.map((order) => (
                       <tr
-                        key={order.id}
+                        key={order.id ?? order.uuid ?? order.orderNumber}
                         className="border-t border-[#F0F0F0] text-base text-[#353535]"
                       >
                         <td className="px-6 py-5">{order.orderNumber}</td>
-                        <td className="px-6 py-5">
-                          {formatSalesOrderDate(order.orderDate)}
-                        </td>
-                        <td className="px-6 py-5">
-                          {getOrderTypeLabel(order.orderType)}
-                        </td>
-                        <td className="px-6 py-5">
-                          {getCategoryLabel(order.category)}
-                        </td>
+                        <td className="px-6 py-5">{formatSalesOrderDate(order.orderDate)}</td>
+                        <td className="px-6 py-5">{getOrderTypeLabel(order.orderType)}</td>
+                        <td className="px-6 py-5">{getCategoryLabel(order.category)}</td>
                         <td className="px-6 py-5">{order.customerName}</td>
                         <td className="px-6 py-5 text-center">
                           <button
@@ -317,11 +327,8 @@ const SalesReportView = ({
                     ))
                   ) : (
                     <tr className="border-t border-[#F0F0F0]">
-                      <td
-                        colSpan={6}
-                        className="px-5 py-11 text-center text-base text-[#939393]"
-                      >
-                        No transactions matched the selected filters.
+                      <td colSpan={6} className="px-5 py-11 text-center text-base text-[#939393]">
+                        {renderTableState()}
                       </td>
                     </tr>
                   )}
@@ -334,9 +341,7 @@ const SalesReportView = ({
                 <span>Show:</span>
                 <select
                   value={rowsPerPage}
-                  onChange={(event) =>
-                    handleRowsPerPageChange(event.target.value)
-                  }
+                  onChange={(event) => handleRowsPerPageChange(event.target.value)}
                   className="h-9 rounded-lg border border-[#E0E0E0] bg-white px-3 text-base text-[#5C5C5C] outline-none"
                 >
                   {ROW_OPTIONS.map((option) => (
@@ -383,38 +388,22 @@ const SalesReportView = ({
             <div className="mx-auto mt-7 w-full max-w-102.5">
               <div className="overflow-hidden rounded-t-xs bg-[#F3F3F3] px-5 py-5">
                 <p className="text-[13px] text-[#8E8E8E]">
-                  No Order{" "}
-                  <span className="text-[#666666]">
-                    {selectedOrder.orderNumber}
-                  </span>
+                  No Order <span className="text-[#666666]">{selectedOrder.orderNumber}</span>
                 </p>
                 <p className="mt-2 text-[13px] text-[#8E8E8E]">
-                  Order Date{" "}
-                  <span className="text-[#666666]">
-                    {formatSalesOrderDate(selectedOrder.orderDate)}
-                  </span>
+                  Order Date <span className="text-[#666666]">{formatSalesOrderDate(selectedOrder.orderDate)}</span>
                 </p>
                 <p className="mt-2 text-[13px] text-[#8E8E8E]">
-                  Customer Name{" "}
-                  <span className="text-[#666666]">
-                    {selectedOrder.customerName}
-                  </span>
+                  Customer Name <span className="text-[#666666]">{selectedOrder.customerName}</span>
                 </p>
-                <p className="mt-2.5 text-[14px] text-[#323232]">
-                  {renderOrderTypeLine(selectedOrder)}
-                </p>
+                <p className="mt-2.5 text-[14px] text-[#323232]">{renderOrderTypeLine(selectedOrder)}</p>
 
                 <div className="mt-4 border-t border-dashed border-[#CFCFCF] pt-4">
                   <div className="space-y-4">
-                    {selectedOrder.items.map((item, index) => (
-                      <div
-                        key={`${item.name}-${index}`}
-                        className="flex items-start justify-between gap-4"
-                      >
+                    {selectedOrder.items.map((item) => (
+                      <div key={item.id ?? item.name} className="flex items-start justify-between gap-4">
                         <div>
-                          <p className="text-[18px] font-semibold text-[#1E1E1E]">
-                            {item.name}
-                          </p>
+                          <p className="text-[18px] font-semibold text-[#1E1E1E]">{item.name}</p>
                           <p className="text-[14px] text-[#767676]">
                             {item.quantity} x {formatCurrency(item.unitPrice)}
                           </p>
@@ -450,9 +439,7 @@ const SalesReportView = ({
                 />
                 <div className="flex items-center justify-between">
                   <p className="text-[18px] text-[#2F2F2F]">Total</p>
-                  <p className="text-[24px] font-semibold text-[#272727]">
-                    {formatCurrency(selectedOrder.total)}
-                  </p>
+                  <p className="text-[24px] font-semibold text-[#272727]">{formatCurrency(selectedOrder.total)}</p>
                 </div>
 
                 <div className="mt-3 flex items-center justify-between text-base text-[#585858]">
