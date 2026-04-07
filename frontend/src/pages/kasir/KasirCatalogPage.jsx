@@ -401,11 +401,6 @@ const KasirCatalogPage = () => {
         searchValue,
         onSearchChange: setSearchValue,
         searchPlaceholder: "Enter the keyword here...",
-        profile: {
-          name: "John Doe",
-          role: "Cashier",
-          image: "/images/UserImage.png",
-        },
         beforeProfile: (
           <CashierOrderArchiveControl onRestore={restoreArchiveOrder} />
         ),
