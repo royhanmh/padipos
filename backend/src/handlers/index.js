@@ -13,3 +13,9 @@ export {
   registerCashierHandler,
   getMeHandler,
 } from "./auth.js";
+
+export {
+  createTransactionHandler,
+  getTransactionByUuidHandler,
+  listTransactionsHandler,
+} from "./transaction.js";
