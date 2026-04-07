@@ -42,7 +42,7 @@ const AuthPageShell = ({ children }) => {
     <div className="relative min-h-screen overflow-hidden bg-[#DDE8FF]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.95),_rgba(221,232,255,0.9)_42%,_rgba(197,215,255,0.96)_100%)]" />
       <div
-        className={`absolute inset-0 bg-cover bg-center transition-opacity duration-500 ${
+        className={`absolute inset-0 bg-cover bg-top transition-opacity duration-500 ${
           isBackgroundReady ? "opacity-100" : "opacity-0"
         }`}
         style={{ backgroundImage: `url('${AUTH_BACKGROUND_SRC}')` }}

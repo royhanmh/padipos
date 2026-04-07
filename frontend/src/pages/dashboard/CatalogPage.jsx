@@ -168,7 +168,7 @@ const ReadOnlyField = ({ label, value, multiline = false }) => {
 
 const PanelFrame = ({ title, actions, children }) => {
   return (
-    <aside className="relative flex flex-col rounded-[10px] border border-[#F0F0F0] bg-white px-5 py-5 shadow-[0_14px_36px_rgba(25,45,88,0.05)] xl:sticky xl:top-4 xl:h-[calc(100vh-104px)] xl:min-h-[calc(100vh-104px)] 2xl:rounded-[28px] 2xl:px-5 2xl:py-5 2xl:top-6 2xl:h-[calc(100vh-120px)] 2xl:min-h-[calc(100vh-120px)]">
+    <aside className="relative flex flex-col rounded-[10px] border border-[#F0F0F0] bg-white px-5 py-5 shadow-[0_14px_36px_rgba(25,45,88,0.05)] xl:sticky xl:top-4 xl:h-[calc(100vh-104px)] xl:min-h-[calc(100vh-104px)] 2xl:rounded-[20px] 2xl:px-5 2xl:py-5 2xl:top-6 2xl:h-[calc(100vh-120px)] 2xl:min-h-[calc(100vh-120px)]">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-[20px] font-semibold text-[#161616]">{title}</h2>
         <div className="flex items-center gap-3">{actions}</div>
@@ -856,7 +856,7 @@ const CatalogPage = () => {
         {isDeleteDialogOpen ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(17,24,39,0.28)] px-4">
             <div
-              className="w-full max-w-[540px] rounded-[28px] bg-white px-8 py-9 text-center shadow-[0_22px_65px_rgba(17,24,39,0.2)]"
+              className="w-full max-w-[540px] rounded-[20px] bg-white px-8 py-9 text-center shadow-[0_22px_65px_rgba(17,24,39,0.2)]"
               role="dialog"
               aria-modal="true"
               aria-labelledby="delete-menu-title"
