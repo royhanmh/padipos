@@ -87,7 +87,7 @@ const CashierOrderArchiveControl = ({ onRestoreOrder }) => {
           <div
             role="dialog"
             aria-modal="true"
-            className="w-full max-w-[980px] rounded-[28px] bg-white shadow-[0_24px_64px_rgba(17,24,39,0.2)]"
+            className="w-full max-w-[980px] rounded-[20px] bg-white shadow-[0_24px_64px_rgba(17,24,39,0.2)]"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-[#EFEFEF] px-7 py-5">
