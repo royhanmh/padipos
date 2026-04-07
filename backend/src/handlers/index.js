@@ -5,3 +5,11 @@ export {
   listProductsHandler,
   updateProductHandler,
 } from "./product.js";
+
+export {
+  loginAdminHandler,
+  registerAdminHandler,
+  loginCashierHandler,
+  registerCashierHandler,
+  getMeHandler,
+} from "./auth.js";

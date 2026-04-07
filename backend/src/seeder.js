@@ -1,5 +1,6 @@
 import "dotenv/config";
-import { sequelize, Product } from "./models/index.js";
+import bcrypt from "bcryptjs";
+import { sequelize, Product, Admin, Cashier } from "./models/index.js";
 
 const seedProducts = [
   {
@@ -70,6 +71,40 @@ const seedProducts = [
   },
 ];
 
+const seedUsers = async () => {
+  const adminCount = await Admin.count();
+
+  if (adminCount === 0) {
+    const hashedPassword = await bcrypt.hash("admin123", 10);
+    await Admin.create({
+      username: "Admin POS",
+      email: "admin@possederhana.com",
+      password: hashedPassword,
+      status: "active",
+      image_profile: null,
+    });
+    console.log("Seeded default admin (admin@possederhana.com / admin123).");
+  } else {
+    console.log(`Admin table already has ${adminCount} row(s). Skipping.`);
+  }
+
+  const cashierCount = await Cashier.count();
+
+  if (cashierCount === 0) {
+    const hashedPassword = await bcrypt.hash("kasir123", 10);
+    await Cashier.create({
+      username: "Kasir POS",
+      email: "kasir@possederhana.com",
+      password: hashedPassword,
+      status: "active",
+      image_profile: null,
+    });
+    console.log("Seeded default cashier (kasir@possederhana.com / kasir123).");
+  } else {
+    console.log(`Cashier table already has ${cashierCount} row(s). Skipping.`);
+  }
+};
+
 const seed = async () => {
   try {
     await sequelize.authenticate();
@@ -78,6 +113,7 @@ const seed = async () => {
     await sequelize.sync();
     console.log("Database synced.");
 
+    // Seed products
     const existingCount = await Product.count();
 
     if (existingCount > 0) {
@@ -88,6 +124,9 @@ const seed = async () => {
       await Product.bulkCreate(seedProducts);
       console.log(`Seeded ${seedProducts.length} products successfully.`);
     }
+
+    // Seed users
+    await seedUsers();
 
     await sequelize.close();
     console.log("Done.");
