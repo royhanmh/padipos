@@ -21,13 +21,12 @@ export const ORDER_TYPE_OPTIONS = [
   { value: "take-away", label: "Take Away" },
 ];
 
-const CATEGORY_LABEL_MAP = CATEGORY_OPTIONS.reduce((collection, item) => {
-  if (item.value !== "all") {
-    collection[item.value] = item.label;
-  }
-
-  return collection;
-}, {});
+const CATEGORY_LABEL_MAP = {
+  food: "Foods",
+  beverage: "Beverages",
+  dessert: "Desserts",
+  mixed: "Mixed",
+};
 
 const ORDER_TYPE_LABEL_MAP = ORDER_TYPE_OPTIONS.reduce((collection, item) => {
   if (item.value !== "all") {

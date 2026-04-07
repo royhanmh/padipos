@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import { sequelize } from "./models/index.js";
 import routes from "./routes/index.js";
+import { prepareSchema } from "./prepareSchema.js";
 
 const FRONTEND_ORIGIN =
   process.env.FRONTEND_ORIGIN ?? "http://localhost:5173";
@@ -46,7 +47,8 @@ export const startServer = async () => {
     await sequelize.authenticate();
     console.log("Database connection established");
 
-    await sequelize.sync();
+    await prepareSchema();
+    await sequelize.sync({ alter: true });
     console.log("Database synced");
 
     const app = createApp();
@@ -64,3 +66,5 @@ export const startServer = async () => {
 const app = createApp();
 
 export default app;
+
+

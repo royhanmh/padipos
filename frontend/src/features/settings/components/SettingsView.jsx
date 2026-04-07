@@ -569,7 +569,7 @@ const SettingsView = ({
           onClick={closePasswordModal}
         >
           <div
-            className="w-full max-w-[560px] rounded-[28px] bg-white p-6 shadow-[0_22px_60px_rgba(17,24,39,0.2)]"
+            className="w-full max-w-[560px] rounded-[20px] bg-white p-6 shadow-[0_22px_60px_rgba(17,24,39,0.2)]"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between">

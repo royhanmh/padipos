@@ -1,37 +1,132 @@
-import { Link } from "react-router";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { useShallow } from "zustand/react/shallow";
 import AuthPageShell from "../../components/AuthPageShell";
 import DefaultInputComponent from "../../components/DefaultInputComponent";
 import LoginCardComponent from "../../components/LoginCardComponent";
 import PrimaryButtonComponent from "../../components/PrimaryButtonComponent";
+import { getHomePathForRole, useAuthStore } from "../../stores/authStore";
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
+  const { registerCashier, isSubmitting, error, clearError } = useAuthStore(
+    useShallow((state) => ({
+      registerCashier: state.registerCashier,
+      isSubmitting: state.isSubmitting,
+      error: state.error,
+      clearError: state.clearError,
+    })),
+  );
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const handleChange = (field, value) => {
+    setForm((current) => ({ ...current, [field]: value }));
+    setFieldErrors((current) => ({ ...current, [field]: "" }));
+    clearError();
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const nextErrors = {};
+
+    if (!form.username.trim()) {
+      nextErrors.username = "Username is required.";
+    }
+
+    if (!form.email.trim()) {
+      nextErrors.email = "Email is required.";
+    }
+
+    if (!form.password.trim()) {
+      nextErrors.password = "Password is required.";
+    } else if (form.password.length < 6) {
+      nextErrors.password = "Password must be at least 6 characters.";
+    }
+
+    if (!form.confirmPassword.trim()) {
+      nextErrors.confirmPassword = "Confirm password is required.";
+    } else if (form.confirmPassword !== form.password) {
+      nextErrors.confirmPassword = "Password confirmation does not match.";
+    }
+
+    if (Object.keys(nextErrors).length > 0) {
+      setFieldErrors(nextErrors);
+      return;
+    }
+
+    try {
+      await registerCashier({
+        username: form.username.trim(),
+        email: form.email.trim(),
+        password: form.password,
+      });
+      navigate(getHomePathForRole("cashier"), { replace: true });
+    } catch {
+      return null;
+    }
+
+    return null;
+  };
+
   return (
     <AuthPageShell>
       <LoginCardComponent subtitle="Create Your Account Here">
-        <DefaultInputComponent
-          type="text"
-          label="Username"
-          placeholder="Username"
-        />
-        <DefaultInputComponent
-          type="email"
-          label="Email"
-          placeholder="Email"
-        />
-        <DefaultInputComponent
-          type="password"
-          label="Password"
-          placeholder="Password"
-        />
-        <DefaultInputComponent
-          type="password"
-          label="Confirm Password"
-          placeholder="Confirm Password"
-        />
+        <form onSubmit={handleSubmit}>
+          <DefaultInputComponent
+            id="username"
+            type="text"
+            label="Username"
+            placeholder="Username"
+            value={form.username}
+            onChange={(event) => handleChange("username", event.target.value)}
+            error={fieldErrors.username}
+          />
+          <DefaultInputComponent
+            id="email"
+            type="email"
+            label="Email"
+            placeholder="cashier@example.com"
+            value={form.email}
+            onChange={(event) => handleChange("email", event.target.value)}
+            error={fieldErrors.email}
+          />
+          <DefaultInputComponent
+            id="password"
+            type="password"
+            label="Password"
+            placeholder="Password"
+            value={form.password}
+            onChange={(event) => handleChange("password", event.target.value)}
+            error={fieldErrors.password}
+          />
+          <DefaultInputComponent
+            id="confirm-password"
+            type="password"
+            label="Confirm Password"
+            placeholder="Confirm Password"
+            value={form.confirmPassword}
+            onChange={(event) => handleChange("confirmPassword", event.target.value)}
+            error={fieldErrors.confirmPassword}
+          />
 
-        <PrimaryButtonComponent type="submit" className="mt-3">
-          Create Account
-        </PrimaryButtonComponent>
+          {error ? (
+            <p className="mb-4 rounded-[10px] border border-[#FAD7DB] bg-[#FFF7F8] px-4 py-3 text-sm text-[#B42318] md:text-base">
+              {error}
+            </p>
+          ) : null}
+
+          <PrimaryButtonComponent type="submit" className="mt-3" disabled={isSubmitting}>
+            {isSubmitting ? "Creating account..." : "Create Account"}
+          </PrimaryButtonComponent>
+        </form>
+
         <p className="mt-5 pb-6 text-center text-base text-[#919191] md:text-[17px]">
           Already have an account?{" "}
           <Link to="/login" className="text-[#3572EF] hover:text-[#1255DE]">

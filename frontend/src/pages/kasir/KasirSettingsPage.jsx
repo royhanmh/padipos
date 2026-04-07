@@ -1,14 +1,13 @@
 import { PiBasketLight, PiGearSixLight, PiReceiptLight } from "react-icons/pi";
 import CashierOrderArchiveControl from "../../features/cashier-order-archive/components/CashierOrderArchiveControl";
 import SettingsView from "../../features/settings/components/SettingsView";
+import { useAuthStore } from "../../stores/authStore";
 
-const CASHIER_PROFILE = {
-  name: "John Doe",
-  role: "Cashier",
-  image: "/images/UserImage.png",
-};
+const DEFAULT_AVATAR = "/images/UserImage.png";
 
 const KasirSettingsPage = () => {
+  const user = useAuthStore((state) => state.user);
+
   return (
     <SettingsView
       layoutSidebarProps={{
@@ -36,15 +35,14 @@ const KasirSettingsPage = () => {
         ],
       }}
       layoutTopbarProps={{
-        profile: CASHIER_PROFILE,
         beforeProfile: <CashierOrderArchiveControl />,
       }}
       accountDefaults={{
-        email: "johndoe@gmail.com",
-        username: CASHIER_PROFILE.name,
-        role: CASHIER_PROFILE.role,
+        email: user?.email,
+        username: user?.username,
+        role: "Cashier",
         status: "Active",
-        avatar: CASHIER_PROFILE.image,
+        avatar: user?.image_profile || DEFAULT_AVATAR,
       }}
     />
   );

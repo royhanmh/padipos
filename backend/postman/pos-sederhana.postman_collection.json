@@ -1,0 +1,925 @@
+{
+    "info":  {
+                 "_postman_id":  "8a15fb42-1960-4753-8a8f-4f9b98e3aa01",
+                 "name":  "POS Sederhana Backend",
+                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+             },
+    "variable":  [
+                     {
+                         "key":  "acceptType",
+                         "type":  "string",
+                         "value":  "application/json"
+                     },
+                     {
+                         "key":  "contentType",
+                         "type":  "string",
+                         "value":  "application/json"
+                     }
+                 ],
+    "item":  [
+                 {
+                     "name":  "Health",
+                     "item":  [
+                                  {
+                                      "name":  "Health Check",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseurl}}/health",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Auth",
+                     "item":  [
+                                  {
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"username\": \"{{adminUsername}}\",\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\",\n  \"image_profile\": \"{{adminImageProfile}}\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/auth/admin/register",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "Register Admin",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "const data = pm.response.json();",
+                                                                                    "if (data.token) { pm.environment.set(\"adminToken\", data.token); }",
+                                                                                    "if (data.user \u0026\u0026 data.user.uuid) { pm.environment.set(\"adminUuid\", data.user.uuid); }"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/auth/admin/login",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "Admin Login",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "const data = pm.response.json();",
+                                                                                    "if (data.token) { pm.environment.set(\"adminToken\", data.token); }",
+                                                                                    "if (data.user \u0026\u0026 data.user.uuid) { pm.environment.set(\"adminUuid\", data.user.uuid); }"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "name":  "Get Current Admin Profile",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseurl}}/auth/me",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"username\": \"{{cashierUsername}}\",\n  \"email\": \"{{cashierEmail}}\",\n  \"password\": \"{{cashierPassword}}\",\n  \"image_profile\": \"{{cashierImageProfile}}\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/auth/cashier/register",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "Register Cashier",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "const data = pm.response.json();",
+                                                                                    "if (data.token) { pm.environment.set(\"cashierToken\", data.token); }",
+                                                                                    "if (data.user \u0026\u0026 data.user.uuid) { pm.environment.set(\"cashierUuid\", data.user.uuid); }"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"email\": \"{{cashierEmail}}\",\n  \"password\": \"{{cashierPassword}}\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/auth/cashier/login",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "Cashier Login",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "const data = pm.response.json();",
+                                                                                    "if (data.token) { pm.environment.set(\"cashierToken\", data.token); }",
+                                                                                    "if (data.user \u0026\u0026 data.user.uuid) { pm.environment.set(\"cashierUuid\", data.user.uuid); }"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "name":  "Get Current Cashier Profile",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseurl}}/auth/me",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{cashierToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"username\": \"{{otherCashierUsername}}\",\n  \"email\": \"{{otherCashierEmail}}\",\n  \"password\": \"{{otherCashierPassword}}\",\n  \"image_profile\": \"{{otherCashierImageProfile}}\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/auth/cashier/register",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "Optional Register Second Cashier",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "const data = pm.response.json();",
+                                                                                    "if (data.token) { pm.environment.set(\"otherCashierToken\", data.token); }",
+                                                                                    "if (data.user \u0026\u0026 data.user.uuid) { pm.environment.set(\"otherCashierUuid\", data.user.uuid); }"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"email\": \"{{otherCashierEmail}}\",\n  \"password\": \"{{otherCashierPassword}}\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/auth/cashier/login",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "Optional Second Cashier Login",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "const data = pm.response.json();",
+                                                                                    "if (data.token) { pm.environment.set(\"otherCashierToken\", data.token); }",
+                                                                                    "if (data.user \u0026\u0026 data.user.uuid) { pm.environment.set(\"otherCashierUuid\", data.user.uuid); }"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "name":  "Get Profile Without Token",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseurl}}/auth/me",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Get Profile With Invalid Token",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseurl}}/auth/me",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{invalidToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Products",
+                     "item":  [
+                                  {
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseurl}}/products",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "List Products",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "const data = pm.response.json();",
+                                                                                    "if (Array.isArray(data) \u0026\u0026 data.length \u003e 0 \u0026\u0026 data[0].uuid) { pm.environment.set(\"productUuid\", data[0].uuid); }",
+                                                                                    "if (Array.isArray(data) \u0026\u0026 data.length \u003e 1 \u0026\u0026 data[1].uuid) { pm.environment.set(\"secondProductUuid\", data[1].uuid); }"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "name":  "Get Product By UUID",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseurl}}/products/{{productUuid}}",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"image\": \"{{productImageUrl}}\",\n  \"title\": \"{{productTitle}}\",\n  \"description\": \"{{productDescription}}\",\n  \"price\": {{productPrice}},\n  \"category\": \"{{productCategory}}\",\n  \"quantity\": {{productQuantity}}\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/products",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "Create Product As Admin",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "const data = pm.response.json();",
+                                                                                    "if (data.uuid) { pm.environment.set(\"productUuid\", data.uuid); }"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "name":  "Get Created Product",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseurl}}/products/{{productUuid}}",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Update Product As Admin",
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"title\": \"{{updatedProductTitle}}\",\n  \"price\": {{updatedProductPrice}},\n  \"quantity\": {{updatedProductQuantity}}\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "PATCH",
+                                                      "url":  "{{baseurl}}/products/{{productUuid}}",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Delete Product As Admin",
+                                      "request":  {
+                                                      "method":  "DELETE",
+                                                      "url":  "{{baseurl}}/products/{{productUuid}}",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Create Product Without Token",
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"image\": \"https://example.com/products/no-auth.png\",\n  \"title\": \"Unauthorized Product\",\n  \"description\": \"This request should fail because no token is sent.\",\n  \"price\": 15000,\n  \"category\": \"food\",\n  \"quantity\": 3\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/products",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Create Product As Cashier",
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"image\": \"https://example.com/products/cashier.png\",\n  \"title\": \"Cashier Forbidden Product\",\n  \"description\": \"This request should fail because cashier cannot write products.\",\n  \"price\": 18000,\n  \"category\": \"dessert\",\n  \"quantity\": 4\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/products",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{cashierToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Create Product With Invalid Payload",
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"image\": \"\",\n  \"title\": \"\",\n  \"description\": \"\",\n  \"price\": -1,\n  \"category\": \"invalid-category\",\n  \"quantity\": -5\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/products",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Update Unknown Product UUID",
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"title\": \"Unknown Product\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "PATCH",
+                                                      "url":  "{{baseurl}}/products/{{unknownProductUuid}}",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Delete Unknown Product UUID",
+                                      "request":  {
+                                                      "method":  "DELETE",
+                                                      "url":  "{{baseurl}}/products/{{unknownProductUuid}}",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Transactions",
+                     "item":  [
+                                  {
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseurl}}/products",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "Prepare Product UUIDs From Product List",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "const data = pm.response.json();",
+                                                                                    "if (Array.isArray(data) \u0026\u0026 data.length \u003e 0 \u0026\u0026 data[0].uuid) { pm.environment.set(\"productUuid\", data[0].uuid); }",
+                                                                                    "if (Array.isArray(data) \u0026\u0026 data.length \u003e 1 \u0026\u0026 data[1].uuid) { pm.environment.set(\"secondProductUuid\", data[1].uuid); }"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"order_type\": \"dine-in\",\n  \"customer_name\": \"REST Client Customer\",\n  \"table_number\": 3,\n  \"amount_paid\": 120000,\n  \"items\": [\n    {\n      \"product_uuid\": \"{{productUuid}}\",\n      \"quantity\": 2,\n      \"notes\": \"No spicy\"\n    }\n  ]\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/transactions",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{cashierToken}}"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "Create Transaction As Cashier",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "const data = pm.response.json();",
+                                                                                    "if (data.uuid) { pm.environment.set(\"transactionUuid\", data.uuid); }"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "name":  "List Transactions As Cashier",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseurl}}/transactions",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{cashierToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Get Own Transaction As Cashier",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseurl}}/transactions/{{transactionUuid}}",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{cashierToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "List Transactions As Admin",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseurl}}/transactions",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Get Transaction Detail As Admin",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseurl}}/transactions/{{transactionUuid}}",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Create Transaction Without Token",
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"order_type\": \"take-away\",\n  \"customer_name\": \"No Auth Customer\",\n  \"amount_paid\": 50000,\n  \"items\": [\n    {\n      \"product_uuid\": \"{{productUuid}}\",\n      \"quantity\": 1,\n      \"notes\": null\n    }\n  ]\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/transactions",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Create Transaction As Admin",
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"order_type\": \"take-away\",\n  \"customer_name\": \"Admin Forbidden\",\n  \"amount_paid\": 50000,\n  \"items\": [\n    {\n      \"product_uuid\": \"{{productUuid}}\",\n      \"quantity\": 1,\n      \"notes\": \"\"\n    }\n  ]\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/transactions",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Create Transaction With Invalid Payload",
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"order_type\": \"invalid-order-type\",\n  \"customer_name\": \"\",\n  \"amount_paid\": 0,\n  \"items\": []\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/transactions",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{cashierToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Create Dine-In Transaction Without Table Number",
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"order_type\": \"dine-in\",\n  \"customer_name\": \"Missing Table\",\n  \"amount_paid\": 50000,\n  \"items\": [\n    {\n      \"product_uuid\": \"{{productUuid}}\",\n      \"quantity\": 1,\n      \"notes\": null\n    }\n  ]\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/transactions",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{cashierToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Create Transaction With Unknown Product UUID",
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\n  \"order_type\": \"take-away\",\n  \"customer_name\": \"Unknown Product\",\n  \"amount_paid\": 50000,\n  \"items\": [\n    {\n      \"product_uuid\": \"{{unknownProductUuid}}\",\n      \"quantity\": 1,\n      \"notes\": null\n    }\n  ]\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseurl}}/transactions",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "{{contentType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{cashierToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Get Another Cashier\u0027s Transaction As Second Cashier",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseurl}}/transactions/{{transactionUuid}}",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "{{acceptType}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{otherCashierToken}}"
+                                                                     }
+                                                                 ]
+                                                  }
+                                  }
+                              ]
+                 }
+             ]
+}

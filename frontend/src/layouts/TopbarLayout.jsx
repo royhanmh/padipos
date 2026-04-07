@@ -10,6 +10,7 @@ const TopbarLayout = ({
   searchValue = "",
   searchPlaceholder = "Enter the keyword here...",
   onSearchChange,
+  onSignOut,
   profile = defaultProfile,
   showSearch = true,
   beforeProfile = null,
@@ -61,6 +62,7 @@ const TopbarLayout = ({
         <button
           type="button"
           aria-label="Sign out"
+          onClick={onSignOut}
           className="flex h-10 w-10 items-center justify-center rounded-full text-[#FF3333] transition hover:bg-[#FFF0EF] md:h-11 md:w-11"
         >
           <PiSignOutLight className="text-[24px] md:text-[26px]" />
@@ -71,4 +73,3 @@ const TopbarLayout = ({
 };
 
 export default TopbarLayout;
-

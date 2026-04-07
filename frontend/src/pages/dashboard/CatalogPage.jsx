@@ -6,14 +6,15 @@ import {
   PiCheckCircleLight,
   PiCoffeeLight,
   PiCookieLight,
-  PiImageLight,
   PiPencilSimpleLineLight,
   PiPlusLight,
   PiTrashLight,
   PiUploadSimpleLight,
   PiXLight,
 } from "react-icons/pi";
+import { useShallow } from "zustand/react/shallow";
 import DashboardLayout from "../../layouts/DashboardLayout";
+import { useProductsStore } from "../../stores/productsStore";
 
 const DEFAULT_IMAGE = "/images/food.png";
 
@@ -41,37 +42,12 @@ const categoryOptions = [
   },
 ];
 
-const selectableCategories = categoryOptions.filter(
-  (category) => category.id !== "all",
-);
+const selectableCategories = categoryOptions.filter((category) => category.id !== "all");
 
 const categoryMap = categoryOptions.reduce((collection, category) => {
   collection[category.id] = category;
   return collection;
 }, {});
-
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000/api";
-
-const requestApi = async (path, options = {}) => {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-    ...options,
-  });
-
-  const isJsonResponse = response.headers
-    .get("content-type")
-    ?.includes("application/json");
-  const responseData = isJsonResponse ? await response.json() : null;
-
-  if (!response.ok) {
-    throw new Error(responseData?.message ?? "Request failed.");
-  }
-
-  return responseData;
-};
 
 const createEmptyFormState = () => ({
   title: "",
@@ -178,9 +154,7 @@ const ReadOnlyField = ({ label, value, multiline = false }) => {
     <div>
       <p className="mb-2.5 text-base font-medium text-[#4A4A4A]">{label}</p>
       {multiline ? (
-        <div
-          className={`${sharedClassName} min-h-28 py-4 leading-8 md:leading-9`}
-        >
+        <div className={`${sharedClassName} min-h-28 py-4 leading-8 md:leading-9`}>
           {value}
         </div>
       ) : (
@@ -194,7 +168,7 @@ const ReadOnlyField = ({ label, value, multiline = false }) => {
 
 const PanelFrame = ({ title, actions, children }) => {
   return (
-    <aside className="relative flex flex-col rounded-[10px] border border-[#F0F0F0] bg-white px-5 py-5 shadow-[0_14px_36px_rgba(25,45,88,0.05)] xl:sticky xl:top-4 xl:h-[calc(100vh-104px)] xl:min-h-[calc(100vh-104px)] 2xl:rounded-[28px] 2xl:px-5 2xl:py-5 2xl:top-6 2xl:h-[calc(100vh-120px)] 2xl:min-h-[calc(100vh-120px)]">
+    <aside className="relative flex flex-col rounded-[10px] border border-[#F0F0F0] bg-white px-5 py-5 shadow-[0_14px_36px_rgba(25,45,88,0.05)] xl:sticky xl:top-4 xl:h-[calc(100vh-104px)] xl:min-h-[calc(100vh-104px)] 2xl:rounded-[20px] 2xl:px-5 2xl:py-5 2xl:top-6 2xl:h-[calc(100vh-120px)] 2xl:min-h-[calc(100vh-120px)]">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-[20px] font-semibold text-[#161616]">{title}</h2>
         <div className="flex items-center gap-3">{actions}</div>
@@ -207,7 +181,28 @@ const PanelFrame = ({ title, actions, children }) => {
 };
 
 const CatalogPage = () => {
-  const [menus, setMenus] = useState([]);
+  const {
+    products: menus,
+    isLoading,
+    error: requestError,
+    fetchProducts,
+    createProduct,
+    updateProduct,
+    deleteProduct,
+    clearError,
+  } = useProductsStore(
+    useShallow((state) => ({
+      products: state.products,
+      isLoading: state.isLoading,
+      error: state.error,
+      fetchProducts: state.fetchProducts,
+      createProduct: state.createProduct,
+      updateProduct: state.updateProduct,
+      deleteProduct: state.deleteProduct,
+      clearError: state.clearError,
+    })),
+  );
+
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchValue, setSearchValue] = useState("");
   const [selectedMenuUuid, setSelectedMenuUuid] = useState(null);
@@ -216,8 +211,6 @@ const CatalogPage = () => {
   const [formErrors, setFormErrors] = useState({});
   const [toast, setToast] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [requestError, setRequestError] = useState("");
 
   const fileInputRef = useRef(null);
 
@@ -230,15 +223,12 @@ const CatalogPage = () => {
     const normalizedSearch = searchValue.trim().toLowerCase();
 
     return menus.filter((menu) => {
-      const matchesCategory =
-        activeCategory === "all" || menu.category === activeCategory;
+      const matchesCategory = activeCategory === "all" || menu.category === activeCategory;
       const matchesSearch =
         normalizedSearch.length === 0 ||
         menu.title.toLowerCase().includes(normalizedSearch) ||
         menu.description.toLowerCase().includes(normalizedSearch) ||
-        categoryMap[menu.category]?.label
-          .toLowerCase()
-          .includes(normalizedSearch);
+        categoryMap[menu.category]?.label.toLowerCase().includes(normalizedSearch);
 
       return matchesCategory && matchesSearch;
     });
@@ -257,36 +247,8 @@ const CatalogPage = () => {
   }, [toast]);
 
   useEffect(() => {
-    let isActive = true;
-
-    const loadProducts = async () => {
-      try {
-        const products = await requestApi("/products");
-
-        if (!isActive) {
-          return;
-        }
-
-        setMenus(products);
-      } catch (error) {
-        if (!isActive) {
-          return;
-        }
-
-        setRequestError(error.message);
-      } finally {
-        if (isActive) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    loadProducts();
-
-    return () => {
-      isActive = false;
-    };
-  }, []);
+    void fetchProducts();
+  }, [fetchProducts]);
 
   const resetToEmptyPanel = () => {
     setPanelMode(PANEL_MODE.EMPTY);
@@ -294,6 +256,7 @@ const CatalogPage = () => {
     setPanelForm(createEmptyFormState());
     setFormErrors({});
     setIsDeleteDialogOpen(false);
+    clearError();
   };
 
   const handleOpenCreate = () => {
@@ -301,12 +264,14 @@ const CatalogPage = () => {
     setSelectedMenuUuid(null);
     setPanelForm(createEmptyFormState());
     setFormErrors({});
+    clearError();
   };
 
   const handleSelectMenu = (menuUuid) => {
     setSelectedMenuUuid(menuUuid);
     setPanelMode(PANEL_MODE.DETAIL);
     setFormErrors({});
+    clearError();
   };
 
   const handleOpenEdit = () => {
@@ -317,6 +282,7 @@ const CatalogPage = () => {
     setPanelMode(PANEL_MODE.EDIT);
     setPanelForm(mapMenuToFormState(selectedMenu));
     setFormErrors({});
+    clearError();
   };
 
   const handleFormChange = (field, value) => {
@@ -333,6 +299,7 @@ const CatalogPage = () => {
       ...currentErrors,
       [field]: "",
     }));
+    clearError();
   };
 
   const handleImageFile = async (file) => {
@@ -380,6 +347,15 @@ const CatalogPage = () => {
     setToast(createToastState(message));
   };
 
+  const buildPayload = () => ({
+    image: panelForm.image || DEFAULT_IMAGE,
+    title: panelForm.title.trim(),
+    description: panelForm.description.trim(),
+    price: parsePriceInput(panelForm.price),
+    category: panelForm.category,
+    quantity: parseQuantityInput(panelForm.quantity),
+  });
+
   const createMenu = async () => {
     const nextErrors = validateFormState(panelForm);
 
@@ -388,30 +364,19 @@ const CatalogPage = () => {
       return;
     }
 
-    setRequestError("");
-
     try {
-      const nextMenu = await requestApi("/products", {
-        method: "POST",
-        body: JSON.stringify({
-          image: panelForm.image || DEFAULT_IMAGE,
-          title: panelForm.title.trim(),
-          description: panelForm.description.trim(),
-          price: parsePriceInput(panelForm.price),
-          category: panelForm.category,
-          quantity: parseQuantityInput(panelForm.quantity),
-        }),
-      });
-
-      setMenus((currentMenus) => [nextMenu, ...currentMenus]);
-      resetToEmptyPanel();
+      const nextMenu = await createProduct(buildPayload());
+      setSelectedMenuUuid(nextMenu.uuid);
+      setPanelMode(PANEL_MODE.DETAIL);
+      setPanelForm(createEmptyFormState());
+      setFormErrors({});
       showSuccessToast("New menu successfully added!");
-    } catch (error) {
-      setRequestError(error.message);
+    } catch {
+      return;
     }
   };
 
-  const updateMenu = async () => {
+  const updateMenuAction = async () => {
     if (!selectedMenu) {
       return;
     }
@@ -423,53 +388,28 @@ const CatalogPage = () => {
       return;
     }
 
-    setRequestError("");
-
     try {
-      const updatedMenu = await requestApi(`/products/${selectedMenu.uuid}`, {
-        method: "PATCH",
-        body: JSON.stringify({
-          image: panelForm.image || DEFAULT_IMAGE,
-          title: panelForm.title.trim(),
-          description: panelForm.description.trim(),
-          price: parsePriceInput(panelForm.price),
-          category: panelForm.category,
-          quantity: parseQuantityInput(panelForm.quantity),
-        }),
-      });
-
-      setMenus((currentMenus) =>
-        currentMenus.map((menu) =>
-          menu.uuid === selectedMenu.uuid ? updatedMenu : menu,
-        ),
-      );
-
-      resetToEmptyPanel();
+      const updatedMenu = await updateProduct(selectedMenu.uuid, buildPayload());
+      setSelectedMenuUuid(updatedMenu.uuid);
+      setPanelMode(PANEL_MODE.DETAIL);
+      setFormErrors({});
       showSuccessToast("Menu successfully updated!");
-    } catch (error) {
-      setRequestError(error.message);
+    } catch {
+      return;
     }
   };
 
-  const deleteMenu = async () => {
+  const deleteMenuAction = async () => {
     if (!selectedMenu) {
       return;
     }
 
-    setRequestError("");
-
     try {
-      await requestApi(`/products/${selectedMenu.uuid}`, {
-        method: "DELETE",
-      });
-
-      setMenus((currentMenus) =>
-        currentMenus.filter((menu) => menu.uuid !== selectedMenu.uuid),
-      );
+      await deleteProduct(selectedMenu.uuid);
       resetToEmptyPanel();
       showSuccessToast("Menu successfully deleted!");
-    } catch (error) {
-      setRequestError(error.message);
+    } catch {
+      return;
     }
   };
 
@@ -494,7 +434,7 @@ const CatalogPage = () => {
     }
 
     if (panelMode === PANEL_MODE.EDIT) {
-      await updateMenu();
+      await updateMenuAction();
     }
   };
 
@@ -597,9 +537,7 @@ const CatalogPage = () => {
           <div className="relative">
             <select
               value={panelForm.category}
-              onChange={(event) =>
-                handleFormChange("category", event.target.value)
-              }
+              onChange={(event) => handleFormChange("category", event.target.value)}
               className="h-12 w-full appearance-none rounded-[10px] border border-[#D7D7D7] px-4 text-[16px] text-[#2B2B2B] outline-none transition focus:border-[#C8D8FF] md:px-5 2xl:h-12"
             >
               {selectableCategories.map((category) => (
@@ -628,9 +566,7 @@ const CatalogPage = () => {
             type="text"
             inputMode="numeric"
             value={panelForm.quantity}
-            onChange={(event) =>
-              handleFormChange("quantity", event.target.value)
-            }
+            onChange={(event) => handleFormChange("quantity", event.target.value)}
             placeholder="Enter quantity here..."
             className="h-12 w-full rounded-[10px] border border-[#D7D7D7] px-4 text-[16px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5 2xl:h-12"
           />
@@ -639,9 +575,7 @@ const CatalogPage = () => {
         <FormField label="Description" error={formErrors.description}>
           <textarea
             value={panelForm.description}
-            onChange={(event) =>
-              handleFormChange("description", event.target.value)
-            }
+            onChange={(event) => handleFormChange("description", event.target.value)}
             rows="4"
             placeholder="Add description here..."
             className="w-full rounded-[10px] border border-[#D7D7D7] px-4 py-3.5 text-[16px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5"
@@ -697,30 +631,18 @@ const CatalogPage = () => {
           <ReadOnlyField label="Title" value={selectedMenu.title} />
 
           <div>
-            <p className="mb-2.5 text-base font-medium text-[#4A4A4A]">
-              Category
-            </p>
+            <p className="mb-2.5 text-base font-medium text-[#4A4A4A]">Category</p>
             <div className="relative flex h-12 items-center rounded-[10px] border border-[#D7D7D7] bg-white px-4 text-[16px] text-[#2B2B2B] md:px-5 2xl:h-12">
               {categoryMap[selectedMenu.category]?.shortLabel}
               <PiCaretDownLight className="absolute right-4 text-[22px] text-[#A8A8A8]" />
             </div>
           </div>
 
-          <ReadOnlyField
-            label="Price"
-            value={formatPriceInput(String(selectedMenu.price))}
-          />
+          <ReadOnlyField label="Price" value={formatPriceInput(String(selectedMenu.price))} />
 
-          <ReadOnlyField
-            label="Quantity"
-            value={String(selectedMenu.quantity)}
-          />
+          <ReadOnlyField label="Quantity" value={String(selectedMenu.quantity)} />
 
-          <ReadOnlyField
-            label="Description"
-            value={selectedMenu.description}
-            multiline
-          />
+          <ReadOnlyField label="Description" value={selectedMenu.description} multiline />
         </div>
       </PanelFrame>
     );
@@ -756,9 +678,7 @@ const CatalogPage = () => {
     }
 
     if (panelMode === PANEL_MODE.EDIT) {
-      return selectedMenu
-        ? renderMenuForm({ title: "Edit Menu", isEdit: true })
-        : renderEmptyPanel();
+      return selectedMenu ? renderMenuForm({ title: "Edit Menu", isEdit: true }) : renderEmptyPanel();
     }
 
     return renderEmptyPanel();
@@ -781,11 +701,7 @@ const CatalogPage = () => {
                 List Menu
               </h1>
               <p className="text-base text-[#8E8E8E]">
-                Total{" "}
-                <span className="font-semibold text-[#3A3A3A]">
-                  {menus.length}
-                </span>{" "}
-                Menu
+                Total <span className="font-semibold text-[#3A3A3A]">{menus.length}</span> Menu
               </p>
             </div>
 
@@ -799,10 +715,11 @@ const CatalogPage = () => {
                     key={category.id}
                     type="button"
                     onClick={() => setActiveCategory(category.id)}
-                    className={`flex w-full min-h-[60px] items-center justify-center gap-3 rounded-[10px] border px-5 text-lg transition 2xl:min-h-16 2xl:px-5 2xl:text-lg ${isActive
+                    className={`flex w-full min-h-[60px] items-center justify-center gap-3 rounded-[10px] border px-5 text-lg transition 2xl:min-h-16 2xl:px-5 2xl:text-lg ${
+                      isActive
                         ? "border-[#3572EF] bg-[#3572EF] text-white shadow-[0_18px_35px_rgba(53,114,239,0.22)]"
                         : "border-[#D9DDE5] bg-white text-[#A7A7A7] hover:border-[#B8C9FF] hover:text-[#5C76B8]"
-                      }`}
+                    }`}
                   >
                     {Icon ? <Icon className="text-[26px]" /> : null}
                     <span>{category.label}</span>
@@ -815,12 +732,8 @@ const CatalogPage = () => {
               {isLoading ? (
                 <div className="flex min-h-84 items-center justify-center rounded-3xl border border-dashed border-[#D7DDEA] bg-white px-7 text-center">
                   <div>
-                    <p className="text-2xl font-semibold text-[#2A2A2A]">
-                      Loading products...
-                    </p>
-                    <p className="mt-3 text-base text-[#9D9D9D]">
-                      Fetching the product list from the backend.
-                    </p>
+                    <p className="text-2xl font-semibold text-[#2A2A2A]">Loading products...</p>
+                    <p className="mt-3 text-base text-[#9D9D9D]">Fetching the product list from the backend.</p>
                   </div>
                 </div>
               ) : filteredMenus.length > 0 ? (
@@ -841,10 +754,11 @@ const CatalogPage = () => {
                             handleSelectMenu(menu.uuid);
                           }
                         }}
-                        className={`flex min-h-[208px] cursor-pointer flex-col rounded-[10px] border bg-white p-3 shadow-[0_8px_24px_rgba(25,45,88,0.05)] transition 2xl:min-h-[214px] ${isSelected
+                        className={`flex min-h-[208px] cursor-pointer flex-col rounded-[10px] border bg-white p-3 shadow-[0_8px_24px_rgba(25,45,88,0.05)] transition 2xl:min-h-[214px] ${
+                          isSelected
                             ? "border-[#3572EF] shadow-[0_14px_36px_rgba(53,114,239,0.18)]"
                             : "border-transparent hover:-translate-y-0.5 hover:border-[#DCE5FF]"
-                          }`}
+                        }`}
                       >
                         <div className="relative overflow-hidden rounded-[10px]">
                           <img
@@ -869,13 +783,9 @@ const CatalogPage = () => {
                             <div>
                               <p className="text-[13px] font-semibold text-[#3572EF] 2xl:text-[14px]">
                                 {formatCurrency(menu.price)}
-                                <span className="ml-1 font-normal text-[#B1B1B1]">
-                                  /portion
-                                </span>
+                                <span className="ml-1 font-normal text-[#B1B1B1]">/portion</span>
                               </p>
-                              <p className="mt-1 text-[12px] text-[#8F8F8F]">
-                                Stock {menu.quantity}
-                              </p>
+                              <p className="mt-1 text-[12px] text-[#8F8F8F]">Stock {menu.quantity}</p>
                             </div>
                             <button
                               type="button"
@@ -884,10 +794,11 @@ const CatalogPage = () => {
                                 event.stopPropagation();
                                 handleSelectMenu(menu.uuid);
                               }}
-                              className={`flex h-9 w-9 items-center justify-center rounded-full border transition 2xl:h-10 2xl:w-10 ${isSelected
+                              className={`flex h-9 w-9 items-center justify-center rounded-full border transition 2xl:h-10 2xl:w-10 ${
+                                isSelected
                                   ? "border-[#3572EF] bg-[#3572EF] text-white"
                                   : "border-[#D8DDEA] text-[#6A6A6A] hover:border-[#B6C7FF] hover:text-[#3572EF]"
-                                }`}
+                              }`}
                             >
                               <PiArrowUpRightLight className="text-[18px] 2xl:text-[20px]" />
                             </button>
@@ -901,9 +812,7 @@ const CatalogPage = () => {
                 <div className="flex min-h-84 items-center justify-center rounded-3xl border border-dashed border-[#D7DDEA] bg-white px-7 text-center">
                   <div>
                     <p className="text-2xl font-semibold text-[#2A2A2A]">
-                      {requestError
-                        ? "Products could not be loaded"
-                        : "No menu matched your filters"}
+                      {requestError ? "Products could not be loaded" : "No menu matched your filters"}
                     </p>
                     <p className="mt-3 text-base text-[#9D9D9D]">
                       {requestError
@@ -921,9 +830,7 @@ const CatalogPage = () => {
               <div className="mb-5 rounded-[10px] border border-[#EAEAEA] bg-white shadow-[0_16px_36px_rgba(25,45,88,0.08)]">
                 <div className="flex items-start gap-4 border-l-[3px] border-[#22C55E] px-6 py-6">
                   <PiCheckCircleLight className="mt-0.5 text-[30px] text-[#16A34A]" />
-                  <p className="flex-1 text-base text-[#171717] mt-1.5">
-                    {toast.message}
-                  </p>
+                  <p className="mt-1.5 flex-1 text-base text-[#171717]">{toast.message}</p>
                   <button
                     type="button"
                     aria-label="Dismiss notification"
@@ -949,7 +856,7 @@ const CatalogPage = () => {
         {isDeleteDialogOpen ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(17,24,39,0.28)] px-4">
             <div
-              className="w-full max-w-[540px] rounded-[28px] bg-white px-8 py-9 text-center shadow-[0_22px_65px_rgba(17,24,39,0.2)]"
+              className="w-full max-w-[540px] rounded-[20px] bg-white px-8 py-9 text-center shadow-[0_22px_65px_rgba(17,24,39,0.2)]"
               role="dialog"
               aria-modal="true"
               aria-labelledby="delete-menu-title"
@@ -975,7 +882,7 @@ const CatalogPage = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={deleteMenu}
+                  onClick={deleteMenuAction}
                   className="flex h-[54px] items-center justify-center rounded-[10px] bg-[#FF3333] text-base font-medium text-white transition hover:brightness-105"
                 >
                   Delete

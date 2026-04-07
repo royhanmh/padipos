@@ -1,82 +1,69 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router";
-import {
-  PiArrowCircleRightLight,
-  PiBookmarkSimpleLight,
-  PiCaretDownLight,
+import { useState } from "react";
+import { 
+  PiBookmarkSimpleLight, 
+  PiXLight, 
   PiMagnifyingGlassLight,
-  PiXLight,
+  PiCaretDownLight,
+  PiArrowRightLight
 } from "react-icons/pi";
-import {
-  CASHIER_ARCHIVE_ORDERS,
-  CASHIER_ORDER_TYPES,
-} from "../data/archiveOrders";
-import { savePendingArchiveRestore } from "../utils/archiveRestoreStorage";
+import { useArchiveStore } from "../../../stores/archiveStore";
 
-const TAX_AMOUNT = 5000;
-
-const formatCurrency = (value) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
-
-const pad = (value) => String(value).padStart(2, "0");
-
-const formatArchiveDateTime = (value) => {
-  const date = new Date(value);
-  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(
-    date.getHours(),
-  )}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+const formatDate = (isoString) => {
+  if (!isoString) return "";
+  const d = new Date(isoString);
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 };
 
-const itemsSubtotal = (items) =>
-  items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+const formatCurrency = (value) => 
+  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
 
-const CashierOrderArchiveControl = ({ onRestoreOrder }) => {
+const getOrderTotal = (order) => {
+  const subTotal = (order.cartItems || []).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const tax = subTotal > 0 ? 5000 : 0;
+  return subTotal + tax;
+};
+
+const CashierOrderArchiveControl = ({ onRestore }) => {
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
-  const [archiveSearchDraft, setArchiveSearchDraft] = useState("");
-  const [archiveTypeDraft, setArchiveTypeDraft] = useState("all");
-  const [archiveSearch, setArchiveSearch] = useState("");
-  const [archiveType, setArchiveType] = useState("all");
+  const archivedOrders = useArchiveStore((state) => state.archivedOrders);
+  const removeArchive = useArchiveStore((state) => state.removeArchive);
 
-  const navigate = useNavigate();
+  const [keyword, setKeyword] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  
+  const [appliedKeyword, setAppliedKeyword] = useState("");
+  const [appliedType, setAppliedType] = useState("");
 
-  const filteredArchiveOrders = useMemo(() => {
-    const keyword = archiveSearch.trim().toLowerCase();
-    return CASHIER_ARCHIVE_ORDERS.filter((order) => {
-      const matchType = archiveType === "all" || order.orderType === archiveType;
-      const matchKeyword =
-        keyword.length === 0 ||
-        order.orderNumber.toLowerCase().includes(keyword) ||
-        order.customerName.toLowerCase().includes(keyword);
-
-      return matchType && matchKeyword;
-    });
-  }, [archiveSearch, archiveType]);
-
-  const handleRestore = (order) => {
-    setIsArchiveOpen(false);
-
-    if (onRestoreOrder) {
-      onRestoreOrder(order);
-      return;
-    }
-
-    savePendingArchiveRestore(order);
-    navigate("/kasir/catalog");
+  const handleSearch = () => {
+    setAppliedKeyword(keyword.trim());
+    setAppliedType(typeFilter);
   };
+
+  const filteredOrders = archivedOrders.filter((order) => {
+    const matchKeyword = !appliedKeyword 
+       || order.orderNumber.toLowerCase().includes(appliedKeyword.toLowerCase())
+       || (order.customerName || "").toLowerCase().includes(appliedKeyword.toLowerCase());
+    
+    const matchType = !appliedType || order.orderType === appliedType;
+    
+    return matchKeyword && matchType;
+  });
 
   return (
     <>
       <button
         type="button"
         onClick={() => setIsArchiveOpen(true)}
-        className="flex items-center gap-2 rounded-xl px-2 py-2 text-base text-[#6B6B6B] transition hover:bg-[#F5F5F5] hover:text-[#3572EF]"
+        className="relative flex items-center gap-2 rounded-xl px-2 py-2 text-base text-[#6B6B6B] transition hover:bg-[#F5F5F5] hover:text-[#3572EF]"
       >
         <PiBookmarkSimpleLight className="text-[18px]" />
         <span>Order Archive</span>
+        {archivedOrders.length > 0 && (
+          <span className="absolute -right-1 -top-1 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#FF3B30] text-[10px] font-bold text-white">
+            {archivedOrders.length}
+          </span>
+        )}
       </button>
 
       {isArchiveOpen ? (
@@ -87,116 +74,115 @@ const CashierOrderArchiveControl = ({ onRestoreOrder }) => {
           <div
             role="dialog"
             aria-modal="true"
-            className="w-full max-w-[980px] rounded-[28px] bg-white shadow-[0_24px_64px_rgba(17,24,39,0.2)]"
+            className="w-full max-w-[760px] rounded-[20px] bg-white shadow-[0_24px_64px_rgba(17,24,39,0.2)] flex flex-col"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-[#EFEFEF] px-7 py-5">
-              <h3 className="text-[44px] font-semibold text-[#171717]">
+            <div className="flex items-center justify-between border-b border-[#EFEFEF] px-7 py-5 shrink-0">
+              <h3 className="text-[26px] font-semibold text-[#171717] md:text-[28px]">
                 Order Archive
               </h3>
               <button
                 type="button"
                 aria-label="Close archive modal"
                 onClick={() => setIsArchiveOpen(false)}
-                className="text-[#3E3E3E]"
+                className="text-[#646464] hover:text-[#272727] transition"
               >
                 <PiXLight className="text-[30px]" />
               </button>
             </div>
 
-            <div className="px-5 py-5">
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_180px_120px]">
-                <label className="relative block">
-                  <PiMagnifyingGlassLight className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[22px] text-[#B3B3B3]" />
-                  <input
-                    type="text"
-                    value={archiveSearchDraft}
-                    onChange={(event) => setArchiveSearchDraft(event.target.value)}
-                    placeholder="Enter the keyword here..."
-                    className="h-12 w-full rounded-xl border border-[#D7D7D7] pl-10 pr-4 text-base text-[#3B3B3B] outline-none placeholder:text-[#BCBCBC]"
+            <div className="bg-[#F8F9FB] px-6 py-6 md:px-7 md:py-7 flex flex-col gap-5 rounded-b-[28px] min-h-[400px] max-h-[75vh]">
+              
+              <div className="flex flex-col gap-3 md:flex-row md:items-center w-full z-10 shrink-0">
+                <div className="relative flex-1">
+                  <PiMagnifyingGlassLight className="absolute top-1/2 left-4 -translate-y-1/2 text-[18px] text-[#A6A6A6]" />
+                  <input 
+                    type="text" 
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    placeholder="Enter the keyword here..." 
+                    className="w-full h-[46px] pl-[42px] pr-4 rounded-[12px] border border-[#E9E9E9] text-sm text-[#272727] placeholder:text-[#A6A6A6] outline-none focus:border-[#3572EF] transition bg-white"
                   />
-                </label>
-
-                <div className="relative">
-                  <select
-                    value={archiveTypeDraft}
-                    onChange={(event) => setArchiveTypeDraft(event.target.value)}
-                    className="h-12 w-full appearance-none rounded-xl border border-[#D7D7D7] px-4 text-base text-[#757575] outline-none"
-                  >
-                    <option value="all">Select type order</option>
-                    <option value={CASHIER_ORDER_TYPES.DINE_IN}>Dine-in</option>
-                    <option value={CASHIER_ORDER_TYPES.TAKE_AWAY}>Take Away</option>
-                  </select>
-                  <PiCaretDownLight className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[22px] text-[#A8A8A8]" />
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setArchiveSearch(archiveSearchDraft);
-                    setArchiveType(archiveTypeDraft);
-                  }}
-                  className="h-12 rounded-xl bg-[#3572EF] text-[18px] text-white"
-                >
-                  Search
-                </button>
+                <div className="flex gap-3">
+                  <div className="relative w-[180px]">
+                    <select 
+                      value={typeFilter}
+                      onChange={(e) => setTypeFilter(e.target.value)}
+                      className="w-full h-[46px] pl-4 pr-10 appearance-none rounded-[12px] border border-[#E9E9E9] text-sm text-[#A6A6A6] outline-none focus:border-[#3572EF] transition bg-white"
+                    >
+                      <option value="">Select type order</option>
+                      <option value="dine-in">Dine-in</option>
+                      <option value="take-away">Take Away</option>
+                    </select>
+                    <PiCaretDownLight className="absolute top-1/2 right-4 -translate-y-1/2 text-[16px] text-[#A6A6A6] pointer-events-none" />
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={handleSearch}
+                    className="h-[46px] px-7 bg-[#3572EF] rounded-[12px] text-white text-[15px] hover:bg-[#2A5BC0] transition shrink-0 shadow-[0_4px_12px_rgba(53,114,239,0.15)]"
+                  >
+                    Search
+                  </button>
+                </div>
               </div>
 
-              <div className="mt-4 max-h-[560px] overflow-y-auto pr-1">
-                <div className="space-y-4">
-                  {filteredArchiveOrders.map((order) => {
-                    const orderSubTotal = itemsSubtotal(order.items);
-                    const orderTax = orderSubTotal > 0 ? TAX_AMOUNT : 0;
-                    const orderTotal = orderSubTotal + orderTax;
-
-                    return (
-                      <article
-                        key={order.id}
-                        className="rounded-xl bg-[#FAFAFA] px-4 py-3"
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div>
-                            <p className="text-[19px] text-[#8C8C8C]">
-                              No Order{" "}
-                              <span className="text-[#525252]">
-                                {order.orderNumber}
-                              </span>
-                            </p>
-                            <p className="mt-1 text-[17px] text-[#2E2E2E]">
-                              {order.orderType === CASHIER_ORDER_TYPES.DINE_IN
-                                ? "Dine-in"
-                                : "Take Away"}{" "}
-                              | {order.customerName} | No.{order.tableNumber || "--"}
-                            </p>
-                            <p className="mt-2 text-[42px] font-semibold text-[#191919] md:text-[42px]">
-                              {formatCurrency(orderTotal)}
-                            </p>
-                          </div>
-
-                          <div className="text-right">
-                            <p className="text-sm text-[#8D8D8D]">
-                              {formatArchiveDateTime(order.createdAt)}
-                            </p>
-                            <button
-                              type="button"
-                              aria-label={`Restore ${order.orderNumber}`}
-                              onClick={() => handleRestore(order)}
-                              className="mt-3 ml-auto flex h-9 w-9 items-center justify-center rounded-full border border-[#3572EF] text-[#3572EF] transition hover:bg-[#3572EF] hover:text-white"
-                            >
-                              <PiArrowCircleRightLight className="text-[20px]" />
-                            </button>
-                          </div>
+              <div className="flex-1 overflow-y-auto pr-2 space-y-[14px]">
+                {filteredOrders.length === 0 ? (
+                  <div className="rounded-[20px] border border-dashed border-[#D4DCEB] bg-white px-6 py-12 text-center">
+                    <p className="text-[20px] font-semibold text-[#6E6E6E]">No archive orders found</p>
+                  </div>
+                ) : (
+                  filteredOrders.map((order) => (
+                    <div key={order.id} className="group relative flex flex-col justify-between rounded-[16px] border border-transparent shadow-[0_4px_24px_rgba(0,0,0,0.02)] bg-white p-[22px] transition hover:shadow-[0_4px_24px_rgba(55,114,239,0.08)]">
+                      <div className="flex justify-between items-start w-full">
+                        <div className="flex items-center flex-wrap gap-x-3 gap-y-2 text-[14px] text-[#3E3E3E]">
+                          <p>
+                            <span className="text-[#A2A2A2]">No Order</span> 
+                            <span className="font-medium text-[#272727] ml-[6px]">{order.orderNumber}</span>
+                          </p>
+                          <div className="w-[1px] h-3.5 bg-[#DDDDDD]" />
+                          <p className="font-medium capitalize text-[#272727]">{order.orderType?.replace("-", " ")}</p>
+                          {order.customerName && (
+                            <>
+                              <div className="w-[1px] h-3.5 bg-[#DDDDDD]" />
+                              <p className="font-medium text-[#272727]">{order.customerName}</p>
+                            </>
+                          )}
+                          {order.tableNumber && (
+                            <>
+                              <div className="w-[1px] h-3.5 bg-[#DDDDDD]" />
+                              <p className="font-medium text-[#272727]">No.{order.tableNumber.toString().padStart(2, '0')}</p>
+                            </>
+                          )}
                         </div>
-                      </article>
-                    );
-                  })}
+                        <p className="text-[13px] font-medium text-[#B2B2B2] shrink-0 ml-4 mt-0.5">
+                          {formatDate(order.archivedAt)}
+                        </p>
+                      </div>
 
-                  {filteredArchiveOrders.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-[#DADADA] px-5 py-12 text-center text-[#959595]">
-                      No order archive matched your filter.
+                      <div className="flex justify-between items-center mt-5">
+                        <p className="text-[20px] font-semibold text-[#1A1A1A]">
+                          {formatCurrency(getOrderTotal(order))}
+                        </p>
+                        
+                        <button
+                          type="button"
+                          aria-label="Restore Order"
+                          onClick={() => {
+                            if (onRestore) onRestore(order);
+                            removeArchive(order.id);
+                            setIsArchiveOpen(false);
+                          }}
+                          className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#3572EF] text-[#3572EF] transition hover:bg-[#3572EF] hover:text-white"
+                        >
+                          <PiArrowRightLight className="text-[18px]" />
+                        </button>
+                      </div>
                     </div>
-                  ) : null}
-                </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
