@@ -1,4 +1,6 @@
-import { createElement, useState } from "react";
+import { createElement, useState, useEffect, useMemo } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { useTransactionsStore } from "../../stores/transactionsStore";
 import {
   PiBowlFoodLight,
   PiCalendarBlankLight,
@@ -23,100 +25,6 @@ import {
 } from "recharts";
 import StatCardComponent from "../../components/StatCardComponent";
 import DashboardLayout from "../../layouts/DashboardLayout";
-
-const stats = [
-  {
-    label: "Total Orders",
-    value: "500",
-    icon: PiReceiptLight,
-  },
-  {
-    label: "Total Omzet",
-    value: "Rp 10.000.000",
-    icon: PiCoinsLight,
-  },
-  {
-    label: "All Menu Orders",
-    value: "1000",
-    icon: PiNotebookLight,
-  },
-  {
-    label: "Foods",
-    value: "500",
-    icon: PiBowlFoodLight,
-    accent: true,
-    categoryKey: "food",
-  },
-  {
-    label: "Beverages",
-    value: "300",
-    icon: PiCoffeeLight,
-    accent: true,
-    categoryKey: "beverage",
-  },
-  {
-    label: "Desserts",
-    value: "200",
-    icon: PiCookieLight,
-    accent: true,
-    categoryKey: "dessert",
-  },
-];
-
-const omzetData = [
-  { day: "Mon", food: 20_000, beverage: 150_000, dessert: 15_000 },
-  { day: "Tue", food: 30_000, beverage: 100_000, dessert: 5_000 },
-  { day: "Wed", food: 50_000, beverage: 245_000, dessert: 18_000 },
-  { day: "Thu", food: 70_000, beverage: 150_000, dessert: 45_000 },
-  { day: "Fri", food: 95_000, beverage: 200_000, dessert: 8_000 },
-  { day: "Sat", food: 50_000, beverage: 150_000, dessert: 30_000 },
-  { day: "Sun", food: 22_000, beverage: 100_000, dessert: 6_000 },
-  { day: "Mon", food: 48_000, beverage: 150_000, dessert: 18_000 },
-  { day: "Tue", food: 48_000, beverage: 250_000, dessert: 16_000 },
-  { day: "Wed", food: 18_000, beverage: 150_000, dessert: 45_000 },
-];
-
-const categoryDetails = {
-  food: {
-    title: "Foods",
-    items: [
-      { name: "Gado-gado Spesial", totalSales: 10 },
-      { name: "Ketoprak", totalSales: 5 },
-      { name: "Siomay", totalSales: 3 },
-      { name: "Batagor", totalSales: 2 },
-      { name: "Bakso", totalSales: 2 },
-      { name: "Mie Ayam", totalSales: 2 },
-      { name: "Soto Ayam", totalSales: 1 },
-      { name: "Soto Sapi", totalSales: 0 },
-    ],
-  },
-  beverage: {
-    title: "Beverages",
-    items: [
-      { name: "Ice Tea", totalSales: 10 },
-      { name: "Coffee", totalSales: 5 },
-      { name: "Matcha Latte", totalSales: 3 },
-      { name: "Milkshake", totalSales: 2 },
-      { name: "Juice", totalSales: 2 },
-      { name: "Ice Chocolate", totalSales: 2 },
-      { name: "Soda", totalSales: 1 },
-      { name: "Mineral Water", totalSales: 0 },
-    ],
-  },
-  dessert: {
-    title: "Desserts",
-    items: [
-      { name: "Ice Cream", totalSales: 10 },
-      { name: "Smothie", totalSales: 5 },
-      { name: "Waffle", totalSales: 3 },
-      { name: "Donut", totalSales: 2 },
-      { name: "Tiramisu", totalSales: 2 },
-      { name: "Brownies", totalSales: 2 },
-      { name: "Pancake", totalSales: 1 },
-      { name: "Pudding", totalSales: 0 },
-    ],
-  },
-};
 
 const formatAxisTick = (value) => {
   if (value === 0) {
@@ -151,6 +59,95 @@ const FilterField = ({ placeholder, icon, suffixIcon }) => {
 };
 
 const DashboardPage = () => {
+
+  const { transactions, fetchTransactions, isLoading } = useTransactionsStore(
+    useShallow((state) => ({
+      transactions: state.transactions,
+      fetchTransactions: state.fetchTransactions,
+      isLoading: state.isLoading
+    }))
+  );
+
+  useEffect(() => {
+    void fetchTransactions();
+  }, [fetchTransactions]);
+
+  const { stats, omzetData, categoryDetails } = useMemo(() => {
+    let totalOrders = transactions.length;
+    let totalOmzet = 0;
+    let allMenuOrders = 0;
+    let foodsCount = 0;
+    let beveragesCount = 0;
+    let dessertsCount = 0;
+
+    const categoryItemSales = {
+      food: {},
+      beverage: {},
+      dessert: {},
+    };
+
+    const dayMap = {};
+    const today = new Date();
+    // last 7 days including today
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+      const dateKey = d.toDateString();
+      const dayName = d.toLocaleDateString("en-US", { weekday: "short" });
+      dayMap[dateKey] = { day: dayName, food: 0, beverage: 0, dessert: 0 };
+    }
+
+    transactions.forEach((tx) => {
+      totalOmzet += tx.total;
+
+      const txDate = new Date(tx.created_at);
+      const dateKey = new Date(txDate.getFullYear(), txDate.getMonth(), txDate.getDate()).toDateString();
+      const dayRecord = dayMap[dateKey];
+
+      tx.items.forEach((item) => {
+        allMenuOrders += item.quantity;
+        const cat = item.product_category;
+        
+        if (cat === "food") foodsCount += item.quantity;
+        if (cat === "beverage") beveragesCount += item.quantity;
+        if (cat === "dessert") dessertsCount += item.quantity;
+
+        if (cat) {
+            categoryItemSales[cat][item.product_title] = (categoryItemSales[cat][item.product_title] || 0) + item.quantity;
+            if (dayRecord) {
+              dayRecord[cat] += Number(item.subtotal_item);
+            }
+        }
+      });
+    });
+
+    const omzetDataArr = Object.values(dayMap);
+
+    const formatCatData = (catKey, title) => {
+      const items = Object.keys(categoryItemSales[catKey]).map(name => ({
+        name,
+        totalSales: categoryItemSales[catKey][name]
+      })).sort((a,b) => b.totalSales - a.totalSales);
+      return { title, items };
+    };
+
+    const computedCategoryDetails = {
+      food: formatCatData("food", "Foods"),
+      beverage: formatCatData("beverage", "Beverages"),
+      dessert: formatCatData("dessert", "Desserts")
+    };
+
+    const computedStats = [
+      { label: "Total Orders", value: String(totalOrders), icon: PiReceiptLight },
+      { label: "Total Omzet", value: formatCurrency(totalOmzet), icon: PiCoinsLight },
+      { label: "All Menu Orders", value: String(allMenuOrders), icon: PiNotebookLight },
+      { label: "Foods", value: String(foodsCount), icon: PiBowlFoodLight, accent: true, categoryKey: "food" },
+      { label: "Beverages", value: String(beveragesCount), icon: PiCoffeeLight, accent: true, categoryKey: "beverage" },
+      { label: "Desserts", value: String(dessertsCount), icon: PiCookieLight, accent: true, categoryKey: "dessert" }
+    ];
+
+    return { stats: computedStats, omzetData: omzetDataArr, categoryDetails: computedCategoryDetails };
+  }, [transactions]);
+
   const [activeCategory, setActiveCategory] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
 
@@ -179,7 +176,7 @@ const DashboardPage = () => {
             Dashboard
           </h1>
           <p className="text-base text-[#757575]">
-            Today, Senin 30 September 2024
+            Today, Rabu, 8 April 2026
           </p>
         </div>
 
