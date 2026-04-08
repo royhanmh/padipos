@@ -53,14 +53,6 @@ const AuthSessionBootstrap = ({ children }) => {
     };
   }, [isHydrated, refreshCurrentUser, token]);
 
-  if (!isHydrated || isCheckingSession) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F7F7F7] px-6 text-center text-[#6A6A6A]">
-        <p className="text-base">Loading session...</p>
-      </div>
-    );
-  }
-
   return children;
 };
 
