@@ -377,8 +377,8 @@ const KasirCatalogPage = () => {
       }}
     >
       <section className="min-h-full bg-[#F7F7F7] px-4 py-4 md:px-5 md:py-5">
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_430px]">
-          <div className="min-h-0">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] xl:h-[calc(100vh-120px)] xl:grid-cols-[minmax(0,1fr)_430px]">
+          <div className="min-h-0 xl:flex xl:min-h-0 xl:flex-col">
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
               {categories.map((category) => {
                 const Icon = category.icon;
@@ -407,80 +407,80 @@ const KasirCatalogPage = () => {
               </p>
             </div>
 
-            <div className="mt-3 max-h-[calc(100vh-250px)] overflow-y-auto pr-1">
+            <div className="mt-3 overflow-y-auto pr-1 xl:min-h-0 xl:flex-1">
               {isLoading ? (
                 <div className="flex items-center justify-center py-10">
                   <p className="text-[#979797]">Loading products...</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {filteredMenus.map((menu) => {
+                    const category = categoryMap[menu.category];
                     const isSelected = cartItems.some((item) => item.menuId === menu.uuid);
                     return (
                       <article
-                      key={menu.uuid}
-                      role="button"
+                        key={menu.uuid}
+                        role="button"
                       tabIndex={0}
                       onClick={() => addToCart(menu)}
                       onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          event.preventDefault();
-                          addToCart(menu);
-                        }
-                      }}
-                      className={`flex flex-col relative w-full overflow-hidden rounded-[10px] shadow-[0_8px_22px_rgba(25,45,88,0.04)] transition border ${isSelected
-                          ? "border-[#3572EF]"
-                          : "border-transparent hover:border-[#C2D4FA]"
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            addToCart(menu);
+                          }
+                        }}
+                        className={`flex min-h-[208px] cursor-pointer flex-col rounded-[10px] border bg-white p-3 shadow-[0_8px_24px_rgba(25,45,88,0.05)] transition 2xl:min-h-[214px] ${
+                          isSelected
+                            ? "border-[#3572EF] shadow-[0_14px_36px_rgba(53,114,239,0.18)]"
+                            : "border-transparent hover:-translate-y-0.5 hover:border-[#DCE5FF]"
                         }`}
-                    >
-                      <div className="bg-[#F3F3F3] p-2.5 w-full">
+                      >
                         <div className="relative overflow-hidden rounded-[10px]">
                           <img
                             src={menu.image}
-                            alt={menu.name}
-                            className="h-[140px] w-full object-cover rounded-[10px]"
+                            alt={menu.title}
+                            className="h-[116px] w-full object-cover 2xl:h-[120px]"
                           />
-                          <span className="absolute right-2 top-2 rounded-full bg-[#3572EF] px-2.5 py-0.5 text-xs text-white">
-                            {categoryMap[menu.category]?.shortLabel ?? "Menu"}
+                          <span className="absolute right-2.5 top-2.5 rounded-full bg-[#3572EF] px-3.5 py-1.5 text-sm font-medium text-white shadow-[0_8px_18px_rgba(53,114,239,0.24)]">
+                            {category?.shortLabel ?? "Menu"}
                           </span>
                         </div>
-                        <h2 className="mt-2.5 line-clamp-1 text-[16px] font-semibold text-[#1A1A1A]">
-                          {menu.title}
-                        </h2>
-                        <p className="mt-1 line-clamp-2 min-h-[36px] text-[13px] text-[#A5A5A5] leading-snug">
-                          {menu.description}
-                        </p>
-                      </div>
 
-                      <div className="relative border-t border-dashed border-[#CFCFCF] bg-[#ECECEC] px-3 pb-3 pt-3 flex-1 flex flex-col justify-end w-full">
-                        <span
-                          aria-hidden="true"
-                          className="absolute -left-2.5 top-0 h-5 w-5 -translate-y-1/2 rounded-full bg-white"
-                        />
-                        <span
-                          aria-hidden="true"
-                          className="absolute -right-2.5 top-0 h-5 w-5 -translate-y-1/2 rounded-full bg-white"
-                        />
-                        <div className="mt-1 flex items-center justify-between gap-2">
-                          <p className="text-[15px] font-semibold text-[#3572EF]">
-                            {formatCurrency(menu.price)}
-                            <span className="ml-1 text-xs font-normal text-[#AFAFAF]">/portion</span>
+                        <div className="mt-3 flex min-h-0 min-w-0 flex-1 flex-col 2xl:mt-3">
+                          <h2 className="line-clamp-1 break-words text-[17px] font-semibold leading-[1.25] tracking-[-0.03em] text-[#161616] 2xl:text-[18px]">
+                            {menu.title}
+                          </h2>
+                          <p className="mt-1.5 min-h-[40px] overflow-hidden break-words line-clamp-2 text-[13px] leading-[1.45] text-[#A0A0A0] 2xl:mt-1.5 2xl:min-h-[38px] 2xl:text-[13px] 2xl:leading-[1.5]">
+                            {menu.description}
                           </p>
-                          <button
-                            type="button"
-                            aria-label={`Open ${menu.title} detail`}
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              setDetailMenu(menu);
-                              setDetailNote("");
-                            }}
-                            className="flex h-[32px] w-[32px] items-center justify-center rounded-lg border border-[#D3D3D3] bg-white text-[#666666] transition hover:border-[#3572EF] hover:text-[#3572EF]"
-                          >
-                            <PiArrowUpRightLight className="text-[16px]" />
-                          </button>
+
+                          <div className="mt-auto flex items-end justify-between gap-3 pt-1 2xl:pt-3">
+                            <div className="min-w-0">
+                              <p className="text-[13px] font-semibold text-[#3572EF] 2xl:text-[14px]">
+                                {formatCurrency(menu.price)}
+                                <span className="ml-1 font-normal text-[#B1B1B1]">/portion</span>
+                              </p>
+                              <p className="mt-1 text-[12px] text-[#8F8F8F]">Stock {menu.quantity}</p>
+                            </div>
+                            <button
+                              type="button"
+                              aria-label={`Open ${menu.title} detail`}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                setDetailMenu(menu);
+                                setDetailNote("");
+                              }}
+                              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition 2xl:h-8 2xl:w-8 ${
+                                isSelected
+                                  ? "border-[#3572EF] bg-[#3572EF] text-white"
+                                  : "border-[#D8DDEA] text-[#6A6A6A] hover:border-[#B6C7FF] hover:text-[#3572EF]"
+                              }`}
+                            >
+                              <PiArrowUpRightLight className="text-[14px] 2xl:text-[16px]" />
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    </article>
+                      </article>
                   );
                 })}
               </div>
@@ -488,7 +488,7 @@ const KasirCatalogPage = () => {
             </div>
           </div>
 
-          <aside className="flex flex-col rounded-2xl bg-white px-5 py-5 shadow-[0_12px_30px_rgba(25,45,88,0.04)] lg:sticky lg:top-5 lg:h-fit lg:max-h-[calc(100vh-120px)] overflow-y-auto">
+          <aside className="rounded-2xl bg-white px-5 py-5 shadow-[0_12px_30px_rgba(25,45,88,0.04)] xl:h-full xl:min-h-0 xl:overflow-y-auto scrollbar-hide">
             <div className="flex items-start justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-[#171717]">List Pesanan</h2>
@@ -592,7 +592,7 @@ const KasirCatalogPage = () => {
               </div>
             ) : (
               <div className="mt-4 flex min-h-0 flex-1 flex-col">
-                <div className="flex-1 min-h-[220px] overflow-y-auto pr-1">
+                <div className="pr-1">
                   <div className="space-y-5">
                     {cartItems.map((item) => (
                       <article key={item.id} className="flex gap-3 relative">

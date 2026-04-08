@@ -168,12 +168,12 @@ const ReadOnlyField = ({ label, value, multiline = false }) => {
 
 const PanelFrame = ({ title, actions, children }) => {
   return (
-    <aside className="relative flex flex-col rounded-[10px] border border-[#F0F0F0] bg-white px-5 py-5 shadow-[0_14px_36px_rgba(25,45,88,0.05)] xl:sticky xl:top-4 xl:h-[calc(100vh-104px)] xl:min-h-[calc(100vh-104px)] 2xl:rounded-[20px] 2xl:px-5 2xl:py-5 2xl:top-6 2xl:h-[calc(100vh-120px)] 2xl:min-h-[calc(100vh-120px)]">
+    <aside className="relative flex flex-col rounded-[10px] border border-[#F0F0F0] bg-white px-4 py-4 shadow-[0_14px_36px_rgba(25,45,88,0.05)] xl:h-full xl:min-h-0 2xl:rounded-[20px] 2xl:px-4 2xl:py-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-[20px] font-semibold text-[#161616]">{title}</h2>
         <div className="flex items-center gap-3">{actions}</div>
       </div>
-      <div className="mt-7 flex flex-1 flex-col border-t border-[#EFEFEF] pt-6 xl:min-h-0 xl:overflow-y-auto">
+      <div className="mt-6 flex flex-1 flex-col border-t border-[#EFEFEF] pt-5 xl:min-h-0 xl:overflow-y-auto">
         {children}
       </div>
     </aside>
@@ -694,18 +694,11 @@ const CatalogPage = () => {
       }}
     >
       <section className="min-h-full bg-[#F7F7F7] px-5 py-5 md:px-7 md:py-6">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] 2xl:gap-6 2xl:grid-cols-[minmax(0,1fr)_400px]">
-          <div className="min-h-0">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <h1 className="text-[30px] font-semibold tracking-[-0.04em] text-[#161616] 2xl:text-[32px]">
-                List Menu
-              </h1>
-              <p className="text-base text-[#8E8E8E]">
-                Total <span className="font-semibold text-[#3A3A3A]">{menus.length}</span> Menu
-              </p>
-            </div>
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] xl:h-[calc(100vh-120px)] xl:grid-cols-[minmax(0,1fr)_430px]">
+          <div className="min-h-0 xl:flex xl:min-h-0 xl:flex-col">
 
-            <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
               {categoryOptions.map((category) => {
                 const isActive = activeCategory === category.id;
                 const Icon = category.icon;
@@ -715,29 +708,32 @@ const CatalogPage = () => {
                     key={category.id}
                     type="button"
                     onClick={() => setActiveCategory(category.id)}
-                    className={`flex w-full min-h-[60px] items-center justify-center gap-3 rounded-[10px] border px-5 text-lg transition 2xl:min-h-16 2xl:px-5 2xl:text-lg ${
-                      isActive
-                        ? "border-[#3572EF] bg-[#3572EF] text-white shadow-[0_18px_35px_rgba(53,114,239,0.22)]"
-                        : "border-[#D9DDE5] bg-white text-[#A7A7A7] hover:border-[#B8C9FF] hover:text-[#5C76B8]"
-                    }`}
+                    className={`flex h-[46px] items-center justify-center gap-2 rounded-[12px] border px-4 text-[15px] font-medium transition ${isActive
+                        ? "border-[#3572EF] bg-[#3572EF] text-white"
+                        : "border-[#BEBEBE] bg-white text-[#A9A9A9] hover:border-[#C2D4FA] hover:text-[#5E5E5E]"
+                      }`}
                   >
-                    {Icon ? <Icon className="text-[26px]" /> : null}
+                    {Icon ? <Icon className="text-[20px]" /> : null}
                     <span>{category.label}</span>
                   </button>
                 );
               })}
             </div>
 
-            <div className="mt-6 max-h-[calc(100vh-214px)] overflow-y-auto pr-1 2xl:mt-5 2xl:max-h-[calc(100vh-235px)]">
+            <div className="mt-4 flex items-center justify-between">
+              <h1 className="text-[22px] font-semibold text-[#181818]">List Menu</h1>
+              <p className="text-sm text-[#979797]">
+                Total <span className="font-medium text-[#515151]">{menus.length}</span> Menu
+              </p>
+            </div>
+
+            <div className="mt-3 overflow-y-auto pr-1 xl:min-h-0 xl:flex-1">
               {isLoading ? (
-                <div className="flex min-h-84 items-center justify-center rounded-3xl border border-dashed border-[#D7DDEA] bg-white px-7 text-center">
-                  <div>
-                    <p className="text-2xl font-semibold text-[#2A2A2A]">Loading products...</p>
-                    <p className="mt-3 text-base text-[#9D9D9D]">Fetching the product list from the backend.</p>
-                  </div>
+                <div className="flex items-center justify-center py-10">
+                  <p className="text-[#979797]">Loading products...</p>
                 </div>
               ) : filteredMenus.length > 0 ? (
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-4 2xl:grid-cols-4 2xl:gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {filteredMenus.map((menu) => {
                     const category = categoryMap[menu.category];
                     const isSelected = selectedMenuUuid === menu.uuid;
@@ -754,11 +750,10 @@ const CatalogPage = () => {
                             handleSelectMenu(menu.uuid);
                           }
                         }}
-                        className={`flex min-h-[208px] cursor-pointer flex-col rounded-[10px] border bg-white p-3 shadow-[0_8px_24px_rgba(25,45,88,0.05)] transition 2xl:min-h-[214px] ${
-                          isSelected
+                        className={`flex min-h-[208px] cursor-pointer flex-col rounded-[10px] border bg-white p-3 shadow-[0_8px_24px_rgba(25,45,88,0.05)] transition 2xl:min-h-[214px] ${isSelected
                             ? "border-[#3572EF] shadow-[0_14px_36px_rgba(53,114,239,0.18)]"
                             : "border-transparent hover:-translate-y-0.5 hover:border-[#DCE5FF]"
-                        }`}
+                          }`}
                       >
                         <div className="relative overflow-hidden rounded-[10px]">
                           <img
@@ -780,7 +775,7 @@ const CatalogPage = () => {
                           </p>
 
                           <div className="mt-auto flex items-end justify-between gap-3 pt-1 2xl:pt-3">
-                            <div>
+                            <div className="min-w-0">
                               <p className="text-[13px] font-semibold text-[#3572EF] 2xl:text-[14px]">
                                 {formatCurrency(menu.price)}
                                 <span className="ml-1 font-normal text-[#B1B1B1]">/portion</span>
@@ -794,13 +789,12 @@ const CatalogPage = () => {
                                 event.stopPropagation();
                                 handleSelectMenu(menu.uuid);
                               }}
-                              className={`flex h-9 w-9 items-center justify-center rounded-full border transition 2xl:h-10 2xl:w-10 ${
-                                isSelected
+                              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition 2xl:h-8 2xl:w-8 ${isSelected
                                   ? "border-[#3572EF] bg-[#3572EF] text-white"
                                   : "border-[#D8DDEA] text-[#6A6A6A] hover:border-[#B6C7FF] hover:text-[#3572EF]"
-                              }`}
+                                }`}
                             >
-                              <PiArrowUpRightLight className="text-[18px] 2xl:text-[20px]" />
+                              <PiArrowUpRightLight className="text-[14px] 2xl:text-[16px]" />
                             </button>
                           </div>
                         </div>
@@ -825,7 +819,7 @@ const CatalogPage = () => {
             </div>
           </div>
 
-          <div className="relative">
+          <div className="relative xl:min-h-0">
             {toast ? (
               <div className="mb-5 rounded-[10px] border border-[#EAEAEA] bg-white shadow-[0_16px_36px_rgba(25,45,88,0.08)]">
                 <div className="flex items-start gap-4 border-l-[3px] border-[#22C55E] px-6 py-6">
