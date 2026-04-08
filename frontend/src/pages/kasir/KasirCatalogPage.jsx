@@ -493,7 +493,11 @@ const KasirCatalogPage = () => {
             </div>
           </div>
 
-          <aside className="rounded-2xl bg-white px-5 py-5 shadow-[0_12px_30px_rgba(25,45,88,0.04)] xl:h-full xl:min-h-0 xl:overflow-y-auto scrollbar-hide">
+          <aside
+            className={`rounded-2xl bg-white px-5 py-5 shadow-[0_12px_30px_rgba(25,45,88,0.04)] xl:h-full xl:min-h-0 xl:overflow-y-auto scrollbar-hide ${
+              isEmpty ? "flex flex-col" : ""
+            }`}
+          >
             <div className="flex items-start justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-[#171717]">List Pesanan</h2>
