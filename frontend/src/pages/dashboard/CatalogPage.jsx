@@ -890,9 +890,17 @@ const CatalogPage = () => {
                 <button
                   type="button"
                   onClick={deleteMenuAction}
-                  className="flex h-[54px] items-center justify-center rounded-[10px] bg-[#FF3333] text-base font-medium text-white transition hover:brightness-105"
+                  disabled={isLoading}
+                  className={`flex h-[54px] items-center justify-center rounded-[10px] bg-[#FF3333] text-base font-medium text-white transition hover:brightness-105 ${isLoading ? "cursor-not-allowed brightness-95" : ""}`}
                 >
-                  Delete
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <LoadingSpinner size="sm" />
+                      <span>Deleting...</span>
+                    </div>
+                  ) : (
+                    "Delete"
+                  )}
                 </button>
               </div>
             </div>
