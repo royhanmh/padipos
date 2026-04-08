@@ -10,6 +10,7 @@ import {
   PiCoffeeLight,
   PiCookieLight,
 } from "react-icons/pi";
+import StatCardComponent from "../../../components/StatCardComponent";
 import { exportSalesToExcel, exportSalesToPdf } from "../export";
 import {
   CATEGORY_OPTIONS,
@@ -75,6 +76,7 @@ const SalesReportView = ({
   layoutSidebarProps,
   layoutTopbarProps,
   exportConfig = DEFAULT_EXPORT_CONFIG,
+  showStats = false,
 }) => {
   const [draftFilters, setDraftFilters] = useState(DEFAULT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
@@ -246,7 +248,13 @@ const SalesReportView = ({
           <p className="text-base text-[#666666]">{formatTodayLabel()}</p>
         </div>
 
-
+        {showStats && (
+          <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+            {stats.map((stat) => (
+              <StatCardComponent key={stat.label} {...stat} />
+            ))}
+          </div>
+        )}
 
         <section className="mt-6 rounded-2xl border border-[#ECECEC] bg-white p-5 shadow-[0_10px_26px_rgba(25,45,88,0.06)] md:p-6">
           {errorMessage ? (

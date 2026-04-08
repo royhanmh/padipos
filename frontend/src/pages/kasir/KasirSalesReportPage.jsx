@@ -60,6 +60,7 @@ const KasirSalesReportPage = () => {
         filenamePrefix: "cashier-sales-report",
         cashierName: user?.username,
       }}
+      showStats
     />
   );
 };
