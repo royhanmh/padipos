@@ -14,6 +14,9 @@ import DashboardPage from "./pages/dashboard/DashboardPage.jsx";
 import CatalogPage from "./pages/dashboard/CatalogPage.jsx";
 import SalesReportPage from "./pages/dashboard/SalesReportPage.jsx";
 import SettingsPage from "./pages/dashboard/SettingsPage.jsx";
+import NotFoundPage from "./pages/status/NotFoundPage.jsx";
+import MaintenancePage from "./pages/status/MaintenancePage.jsx";
+import ServerErrorPage from "./pages/status/ServerErrorPage.jsx";
 import { HomeRedirect, PublicOnlyRoute, RequireRole } from "./routes/guards.jsx";
 
 createRoot(document.getElementById("root")).render(
@@ -44,6 +47,10 @@ createRoot(document.getElementById("root")).render(
           <Route path="dashboard/sales-report" element={<SalesReportPage />} />
           <Route path="dashboard/settings" element={<SettingsPage />} />
         </Route>
+
+        <Route path="/maintenance" element={<MaintenancePage />} />
+        <Route path="/500" element={<ServerErrorPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </AuthSessionBootstrap>
   </BrowserRouter>,
