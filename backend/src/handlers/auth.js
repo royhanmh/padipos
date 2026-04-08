@@ -4,13 +4,16 @@ import jwt from "jsonwebtoken";
 import {
   findAdminByEmail,
   findAdminByUuid,
+  findAdminInstanceByUuid,
   createAdmin,
 } from "../models/adminModel.js";
 import {
   findCashierByEmail,
   findCashierByUuid,
+  findCashierInstanceByUuid,
   createCashier,
 } from "../models/cashierModel.js";
+import { uploadImage, deleteImage } from "../libs/cloudinary.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "24h";
@@ -25,6 +28,20 @@ const registerSchema = Joi.object({
   email: Joi.string().email().trim().required(),
   password: Joi.string().min(6).required(),
   image_profile: Joi.string().trim().allow("", null),
+});
+
+const updateProfileSchema = Joi.object({
+  username: Joi.string().trim().min(1).max(100),
+  email: Joi.string().email().trim(),
+  image_profile: Joi.string().trim().allow("", null),
+}).or("username", "email", "image_profile");
+
+const updatePasswordSchema = Joi.object({
+  current_password: Joi.string().min(1).required(),
+  new_password: Joi.string()
+    .min(8)
+    .pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/)
+    .required(),
 });
 
 const generateToken = (payload) => {
@@ -48,6 +65,42 @@ const buildCashierResponse = (cashier) => ({
   status: cashier.status,
   image_profile: cashier.image_profile,
 });
+
+const findMutableUserInstance = async ({ uuid, role }) => {
+  if (role === "admin") {
+    return findAdminInstanceByUuid(uuid);
+  }
+
+  if (role === "cashier") {
+    return findCashierInstanceByUuid(uuid);
+  }
+
+  return null;
+};
+
+const buildUserResponse = (user, role) => {
+  if (role === "admin") {
+    return buildAdminResponse(user);
+  }
+
+  return buildCashierResponse(user);
+};
+
+const findExistingUserByRole = async (role, email) => {
+  if (role === "admin") {
+    return findAdminByEmail(email);
+  }
+
+  return findCashierByEmail(email);
+};
+
+const normalizeImageProfile = (value) => {
+  if (!value || value === "/images/UserImage.png") {
+    return null;
+  }
+
+  return value;
+};
 
 // ─── Admin Auth ──────────────────────────────────────────────
 
@@ -258,6 +311,134 @@ export const getMeHandler = async (req, res, next) => {
     }
 
     res.json({ ...user, role });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateMeHandler = async (req, res, next) => {
+  try {
+    const { error, value } = updateProfileSchema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      res.status(400).json({
+        message: "Validation failed.",
+        errors: error.details.map((detail) => detail.message),
+      });
+      return;
+    }
+
+    const currentUser = await findMutableUserInstance(req.user);
+
+    if (!currentUser) {
+      res.status(404).json({ message: "User not found." });
+      return;
+    }
+
+    const updateData = {
+      updated_at: new Date(),
+    };
+
+    if (typeof value.username === "string") {
+      updateData.username = value.username.trim();
+    }
+
+    if (typeof value.email === "string") {
+      const nextEmail = value.email.trim();
+
+      if (nextEmail && nextEmail !== currentUser.email) {
+        const existingUser = await findExistingUserByRole(req.user.role, nextEmail);
+
+        if (existingUser && existingUser.uuid !== currentUser.uuid) {
+          res.status(409).json({ message: "Email already registered." });
+          return;
+        }
+      }
+
+      updateData.email = nextEmail;
+    }
+
+    const hasImageProfileField = Object.prototype.hasOwnProperty.call(
+      value,
+      "image_profile",
+    );
+    const oldImageProfile = currentUser.image_profile;
+
+    if (hasImageProfileField) {
+      const nextImageProfile = normalizeImageProfile(value.image_profile);
+      let uploadedImageProfile = nextImageProfile;
+
+      if (typeof value.image_profile === "string" && value.image_profile.startsWith("data:image/")) {
+        uploadedImageProfile = await uploadImage(value.image_profile);
+      }
+
+      updateData.image_profile = uploadedImageProfile;
+    }
+
+    await currentUser.update(updateData);
+
+    await currentUser.reload();
+
+    if (
+      hasImageProfileField &&
+      oldImageProfile &&
+      oldImageProfile !== currentUser.image_profile &&
+      oldImageProfile !== updateData.image_profile
+    ) {
+      deleteImage(oldImageProfile).catch(console.error);
+    }
+
+    res.json({
+      message: "Profile updated successfully.",
+      user: buildUserResponse(currentUser, req.user.role),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateMePasswordHandler = async (req, res, next) => {
+  try {
+    const { error, value } = updatePasswordSchema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      res.status(400).json({
+        message: "Validation failed.",
+        errors: error.details.map((detail) => detail.message),
+      });
+      return;
+    }
+
+    const currentUser = await findMutableUserInstance(req.user);
+
+    if (!currentUser) {
+      res.status(404).json({ message: "User not found." });
+      return;
+    }
+
+    const isMatch = await bcrypt.compare(
+      value.current_password,
+      currentUser.password,
+    );
+
+    if (!isMatch) {
+      res.status(401).json({ message: "Current password is invalid." });
+      return;
+    }
+
+    const hashedPassword = await bcrypt.hash(value.new_password, 10);
+    await currentUser.update({
+      password: hashedPassword,
+      updated_at: new Date(),
+    });
+
+    res.json({ message: "Password updated successfully." });
   } catch (error) {
     next(error);
   }

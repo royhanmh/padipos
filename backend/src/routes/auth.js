@@ -5,6 +5,8 @@ import {
   loginCashierHandler,
   registerCashierHandler,
   getMeHandler,
+  updateMeHandler,
+  updateMePasswordHandler,
 } from "../handlers/index.js";
 import { authenticate } from "../middlewares/authenticate.js";
 
@@ -20,5 +22,7 @@ router.post("/cashier/register", registerCashierHandler);
 
 // Current user profile (requires token)
 router.get("/me", authenticate, getMeHandler);
+router.patch("/me", authenticate, updateMeHandler);
+router.patch("/me/password", authenticate, updateMePasswordHandler);
 
 export default router;

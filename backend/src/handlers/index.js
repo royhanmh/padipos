@@ -12,6 +12,8 @@ export {
   loginCashierHandler,
   registerCashierHandler,
   getMeHandler,
+  updateMeHandler,
+  updateMePasswordHandler,
 } from "./auth.js";
 
 export {

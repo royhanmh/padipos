@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   PiCaretDownLight,
-  PiCheckCircleLight,
   PiEyeClosedLight,
   PiLockLight,
   PiXLight,
 } from "react-icons/pi";
+import { useShallow } from "zustand/react/shallow";
+import AlertBannerComponent from "../../../components/AlertBannerComponent";
+import ConfirmationModalComponent from "../../../components/ConfirmationModalComponent";
 import DashboardLayout from "../../../layouts/DashboardLayout";
+import { useAuthStore } from "../../../stores/authStore";
 
 const LANGUAGE_OPTIONS = [
   { value: "english", label: "English" },
@@ -73,17 +76,14 @@ const createComparableSnapshot = (value) =>
     account: {
       email: value.account.email,
       username: value.account.username,
-      role: value.account.role,
-      status: value.account.status,
-      language: value.account.language,
       avatar: value.account.avatar,
     },
-    appearance: {
-      mode: value.appearance.mode,
-      fontSize: value.appearance.fontSize,
-      zoom: value.appearance.zoom,
-    },
   });
+
+const isCloudinaryAvatar = (value) =>
+  typeof value === "string" &&
+  value.startsWith("http") &&
+  value.includes("cloudinary.com");
 
 const formatPasswordChangedAt = (value) => {
   if (!value) {
@@ -110,6 +110,25 @@ const SettingsView = ({
   pageTitle = "Settings",
   accountDefaults,
 }) => {
+  const { updateCurrentUserProfile, updateCurrentUserPassword } = useAuthStore(
+    useShallow((state) => ({
+      updateCurrentUserProfile: state.updateCurrentUserProfile,
+      updateCurrentUserPassword: state.updateCurrentUserPassword,
+    })),
+  );
+
+  const initialSettings = useMemo(
+    () => createDefaultSettings(accountDefaults),
+    [
+      accountDefaults?.email,
+      accountDefaults?.username,
+      accountDefaults?.role,
+      accountDefaults?.status,
+      accountDefaults?.language,
+      accountDefaults?.avatar,
+    ],
+  );
+
   const [formSettings, setFormSettings] = useState(() =>
     createDefaultSettings(accountDefaults),
   );
@@ -117,8 +136,17 @@ const SettingsView = ({
     createDefaultSettings(accountDefaults),
   );
   const [toastMessage, setToastMessage] = useState("");
+  const [accountError, setAccountError] = useState("");
+  const [isSavingAccount, setIsSavingAccount] = useState(false);
+  const [isSaveConfirmOpen, setIsSaveConfirmOpen] = useState(false);
   const [avatarError, setAvatarError] = useState("");
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isDeletingPicture, setIsDeletingPicture] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [isPasswordConfirmOpen, setIsPasswordConfirmOpen] = useState(false);
+  const [isSavingPassword, setIsSavingPassword] = useState(false);
+  const [passwordSubmitError, setPasswordSubmitError] = useState("");
+  const [pendingPasswordUpdate, setPendingPasswordUpdate] = useState(null);
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
@@ -141,7 +169,7 @@ const SettingsView = ({
   }, [toastMessage]);
 
   useEffect(() => {
-    if (!isPasswordModalOpen) {
+    if (!isPasswordModalOpen || isPasswordConfirmOpen) {
       return undefined;
     }
 
@@ -153,7 +181,65 @@ const SettingsView = ({
 
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
-  }, [isPasswordModalOpen]);
+  }, [isPasswordConfirmOpen, isPasswordModalOpen]);
+
+  useEffect(() => {
+    if (!isSaveConfirmOpen) {
+      return undefined;
+    }
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setIsSaveConfirmOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [isSaveConfirmOpen]);
+
+  useEffect(() => {
+    if (!isDeleteConfirmOpen) {
+      return undefined;
+    }
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setIsDeleteConfirmOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [isDeleteConfirmOpen]);
+
+  useEffect(() => {
+    if (!isPasswordConfirmOpen) {
+      return undefined;
+    }
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setIsPasswordConfirmOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [isPasswordConfirmOpen]);
+
+  useEffect(() => {
+    setFormSettings((currentValue) => ({
+      ...currentValue,
+      account: initialSettings.account,
+    }));
+    setCommittedSettings((currentValue) => ({
+      ...currentValue,
+      account: initialSettings.account,
+    }));
+    setAccountError("");
+    setAvatarError("");
+  }, [initialSettings.account]);
 
   const isDirty = useMemo(() => {
     return (
@@ -163,6 +249,7 @@ const SettingsView = ({
   }, [committedSettings, formSettings]);
 
   const updateAccountField = (field, value) => {
+    setAccountError("");
     setFormSettings((currentValue) => ({
       ...currentValue,
       account: {
@@ -208,27 +295,148 @@ const SettingsView = ({
       const nextImage = await readFileAsDataUrl(file);
       updateAccountField("avatar", nextImage);
       setAvatarError("");
+      setAccountError("");
     } catch {
       setAvatarError("Selected image could not be loaded.");
     }
   };
 
-  const handleDeletePicture = () => {
-    updateAccountField("avatar", DEFAULT_AVATAR);
-    setAvatarError("");
-  };
-
-  const handleSaveChanges = () => {
-    if (!isDirty) {
+  const openDeleteConfirmModal = () => {
+    if (isSavingAccount || isDeletingPicture) {
       return;
     }
 
-    setCommittedSettings(formSettings);
-    setToastMessage("Settings saved successfully.");
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const closeDeleteConfirmModal = () => {
+    setIsDeleteConfirmOpen(false);
+  };
+
+  const performDeletePicture = () => {
+    if (isSavingAccount || isDeletingPicture) {
+      return;
+    }
+
+    const currentAvatar = formSettings.account.avatar;
+
+    if (!isCloudinaryAvatar(currentAvatar)) {
+      updateAccountField("avatar", committedSettings.account.avatar || DEFAULT_AVATAR);
+      setAvatarError("");
+      setAccountError("");
+      return;
+    }
+
+    setIsDeletingPicture(true);
+    setAvatarError("");
+    setAccountError("");
+
+    updateCurrentUserProfile({ image_profile: null })
+      .then((updatedUser) => {
+        const nextAvatar = updatedUser.image_profile || DEFAULT_AVATAR;
+
+        setFormSettings((currentValue) => ({
+          ...currentValue,
+          account: {
+            ...currentValue.account,
+            avatar: nextAvatar,
+          },
+        }));
+        setCommittedSettings((currentValue) => ({
+          ...currentValue,
+          account: {
+            ...currentValue.account,
+            avatar: nextAvatar,
+          },
+        }));
+      })
+      .catch((error) => {
+        setAvatarError(
+          error?.details?.[0] || error?.message || "Failed to delete picture.",
+        );
+      })
+      .finally(() => {
+        setIsDeletingPicture(false);
+      });
+  };
+
+  const confirmDeletePicture = () => {
+    closeDeleteConfirmModal();
+    performDeletePicture();
+  };
+
+  const openSaveConfirmModal = () => {
+    if (!isDirty || isSavingAccount) {
+      return;
+    }
+
+    setIsSaveConfirmOpen(true);
+  };
+
+  const closeSaveConfirmModal = () => {
+    setIsSaveConfirmOpen(false);
+  };
+
+  const confirmSaveChanges = async () => {
+    if (!isDirty || isSavingAccount) {
+      return;
+    }
+
+    closeSaveConfirmModal();
+    await handleSaveChanges();
+  };
+
+  const handleSaveChanges = async () => {
+    if (!isDirty || isSavingAccount) {
+      return;
+    }
+
+    setIsSavingAccount(true);
+    setAccountError("");
+
+    try {
+      const updatedUser = await updateCurrentUserProfile({
+        username: formSettings.account.username.trim(),
+        email: formSettings.account.email.trim(),
+        image_profile:
+          formSettings.account.avatar &&
+          formSettings.account.avatar !== DEFAULT_AVATAR
+            ? formSettings.account.avatar
+            : null,
+      });
+
+      const nextAccount = {
+        ...formSettings.account,
+        email: updatedUser.email,
+        username: updatedUser.username,
+        role: updatedUser.role === "cashier" ? "Cashier" : "Admin",
+        status: updatedUser.status === "nonactive" ? "Inactive" : "Active",
+        avatar: updatedUser.image_profile || DEFAULT_AVATAR,
+      };
+
+      setFormSettings((currentValue) => ({
+        ...currentValue,
+        account: nextAccount,
+      }));
+      setCommittedSettings((currentValue) => ({
+        ...currentValue,
+        account: nextAccount,
+      }));
+      setToastMessage("Saved successfully.");
+    } catch (error) {
+      const firstDetail = error?.details?.[0];
+      setAccountError(
+        firstDetail || error?.message || "Failed to save settings.",
+      );
+    } finally {
+      setIsSavingAccount(false);
+    }
   };
 
   const openPasswordModal = () => {
     setPasswordErrors({});
+    setPasswordSubmitError("");
+    setPendingPasswordUpdate(null);
     setPasswordForm({
       currentPassword: "",
       newPassword: "",
@@ -240,6 +448,9 @@ const SettingsView = ({
   const closePasswordModal = () => {
     setIsPasswordModalOpen(false);
     setPasswordErrors({});
+    setPasswordSubmitError("");
+    setIsPasswordConfirmOpen(false);
+    setPendingPasswordUpdate(null);
   };
 
   const updatePasswordField = (field, value) => {
@@ -251,9 +462,10 @@ const SettingsView = ({
       ...currentErrors,
       [field]: "",
     }));
+    setPasswordSubmitError("");
   };
 
-  const handlePasswordSubmit = (event) => {
+  const handlePasswordSubmit = async (event) => {
     event.preventDefault();
 
     const nextErrors = {};
@@ -281,17 +493,61 @@ const SettingsView = ({
       return;
     }
 
-    const nextSettings = {
-      ...formSettings,
-      security: {
-        ...formSettings.security,
-        passwordChangedAt: new Date().toISOString(),
-      },
-    };
+    setPendingPasswordUpdate({
+      current_password: passwordForm.currentPassword,
+      new_password: passwordForm.newPassword,
+    });
+    setIsPasswordConfirmOpen(true);
+  };
 
-    setFormSettings(nextSettings);
-    closePasswordModal();
-    setToastMessage("Password changed successfully.");
+  const closePasswordConfirmModal = () => {
+    setIsPasswordConfirmOpen(false);
+    setPendingPasswordUpdate(null);
+  };
+
+  const confirmPasswordChange = async () => {
+    if (!pendingPasswordUpdate || isSavingPassword) {
+      return;
+    }
+
+    setIsSavingPassword(true);
+    setPasswordSubmitError("");
+
+    try {
+      await updateCurrentUserPassword(pendingPasswordUpdate);
+
+      const nextPasswordChangedAt = new Date().toISOString();
+      setFormSettings((currentValue) => ({
+        ...currentValue,
+        security: {
+          ...currentValue.security,
+          passwordChangedAt: nextPasswordChangedAt,
+        },
+      }));
+      setCommittedSettings((currentValue) => ({
+        ...currentValue,
+        security: {
+          ...currentValue.security,
+          passwordChangedAt: nextPasswordChangedAt,
+        },
+      }));
+      closePasswordConfirmModal();
+      closePasswordModal();
+      setToastMessage("Password changed successfully.");
+    } catch (error) {
+      closePasswordConfirmModal();
+      if (error?.status === 401) {
+        setPasswordErrors({
+          currentPassword: error.message || "Current password is invalid.",
+        });
+      } else if (error?.details?.length > 0) {
+        setPasswordSubmitError(error.details[0]);
+      } else {
+        setPasswordSubmitError(error?.message || "Failed to update password.");
+      }
+    } finally {
+      setIsSavingPassword(false);
+    }
   };
 
   return (
@@ -306,14 +562,11 @@ const SettingsView = ({
           </h1>
 
           {toastMessage ? (
-            <div className="mt-4 flex items-start gap-3 rounded-[10px] border border-[#EAEAEA] bg-white px-4 py-3 text-[#2B2B2B]">
-              <span
-                aria-hidden="true"
-                className="mt-0.5 h-7 w-1 rounded-full bg-[#00AF10]"
-              />
-              <PiCheckCircleLight className="mt-0.5 text-[22px]" />
-              <p className="text-sm md:text-base">{toastMessage}</p>
-            </div>
+            <AlertBannerComponent
+              message={toastMessage}
+              onDismiss={() => setToastMessage("")}
+              className="mt-4"
+            />
           ) : null}
 
           <section className="mt-6">
@@ -344,15 +597,27 @@ const SettingsView = ({
                 </button>
                 <button
                   type="button"
-                  onClick={handleDeletePicture}
+                  onClick={openDeleteConfirmModal}
+                  disabled={isSavingAccount || isDeletingPicture}
                   className="h-12 rounded-[10px] border border-[#3572EF] bg-white px-5 text-base font-medium text-[#3572EF] transition hover:bg-[#F2F6FF] md:h-13"
                 >
-                  Delete Picture
+                  {isDeletingPicture ? "Deleting..." : "Delete Picture"}
                 </button>
               </div>
             </div>
             {avatarError ? (
-              <p className="mt-2 text-sm text-[#FF3333]">{avatarError}</p>
+              <AlertBannerComponent
+                variant="error"
+                message={avatarError}
+                className="mt-2"
+              />
+            ) : null}
+            {accountError ? (
+              <AlertBannerComponent
+                variant="error"
+                message={accountError}
+                className="mt-2"
+              />
             ) : null}
 
             <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -463,7 +728,9 @@ const SettingsView = ({
               </button>
               <p className="mt-2 text-sm text-[#8A8A8A]">
                 Last changed:{" "}
-                {formatPasswordChangedAt(formSettings.security.passwordChangedAt)}
+                {formatPasswordChangedAt(
+                  formSettings.security.passwordChangedAt,
+                )}
               </p>
             </div>
           </section>
@@ -549,15 +816,15 @@ const SettingsView = ({
           <div className="mt-6">
             <button
               type="button"
-              onClick={handleSaveChanges}
-              disabled={!isDirty}
+              onClick={openSaveConfirmModal}
+              disabled={!isDirty || isSavingAccount}
               className={`h-12 rounded-[10px] px-6 text-base font-medium transition md:h-13 ${
-                isDirty
+                isDirty && !isSavingAccount
                   ? "bg-[#3572EF] text-white shadow-[0_10px_24px_rgba(53,114,239,0.24)] hover:brightness-105"
                   : "cursor-not-allowed bg-[#C7C7C7] text-[#EFEFEF]"
               }`}
             >
-              Save Changes
+              {isSavingAccount ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </div>
@@ -592,6 +859,13 @@ const SettingsView = ({
             </div>
 
             <form className="mt-5 space-y-4" onSubmit={handlePasswordSubmit}>
+              {passwordSubmitError ? (
+                <AlertBannerComponent
+                  variant="error"
+                  message={passwordSubmitError}
+                />
+              ) : null}
+
               <label className="block">
                 <span className="mb-2 block text-sm font-medium text-[#555555]">
                   Current Password
@@ -653,21 +927,59 @@ const SettingsView = ({
                 <button
                   type="button"
                   onClick={closePasswordModal}
+                  disabled={isSavingPassword}
                   className="h-12 rounded-[10px] border border-[#D9D9D9] px-4 text-base font-medium text-[#555555] transition hover:bg-[#F8F8F8] md:h-13"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="h-12 rounded-[10px] bg-[#3572EF] px-4 text-base font-medium text-white transition hover:brightness-105 md:h-13"
+                  disabled={isSavingPassword}
+                  className="h-12 rounded-[10px] bg-[#3572EF] px-4 text-base font-medium text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:bg-[#7FA2F4] md:h-13"
                 >
-                  Update Password
+                  {isSavingPassword ? "Updating..." : "Update Password"}
                 </button>
               </div>
             </form>
           </div>
         </div>
       ) : null}
+
+      <ConfirmationModalComponent
+        open={isSaveConfirmOpen}
+        title="Save settings?"
+        description="Confirm that you want to save the current account changes."
+        confirmLabel="Save Changes"
+        cancelLabel="Cancel"
+        busy={isSavingAccount}
+        busyLabel="Saving..."
+        onCancel={closeSaveConfirmModal}
+        onConfirm={confirmSaveChanges}
+      />
+
+      <ConfirmationModalComponent
+        open={isDeleteConfirmOpen}
+        title="Delete picture?"
+        description="This will remove the current profile picture from your account."
+        confirmLabel="Delete Picture"
+        cancelLabel="Cancel"
+        busy={isDeletingPicture}
+        busyLabel="Deleting..."
+        onCancel={closeDeleteConfirmModal}
+        onConfirm={confirmDeletePicture}
+      />
+
+      <ConfirmationModalComponent
+        open={isPasswordConfirmOpen}
+        title="Confirm password change?"
+        description="This will update your account password after confirmation."
+        confirmLabel="Update Password"
+        cancelLabel="Cancel"
+        busy={isSavingPassword}
+        busyLabel="Updating..."
+        onCancel={closePasswordConfirmModal}
+        onConfirm={confirmPasswordChange}
+      />
     </DashboardLayout>
   );
 };

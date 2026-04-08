@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { requestApi } from "../lib/apiClient";
+import { ApiError, requestApi } from "../lib/apiClient";
 
 const STORAGE_KEY = "pos-sederhana-auth";
 
@@ -151,6 +151,35 @@ export const useAuthStore = create(
 
           throw error;
         }
+      },
+      updateCurrentUserProfile: async (payload) => {
+        const token = get().token;
+
+        if (!token) {
+          throw new ApiError("Authentication required.", { status: 401 });
+        }
+
+        const response = await requestApi("/auth/me", {
+          method: "PATCH",
+          token,
+          body: payload,
+        });
+
+        get().setSession({ token, user: normalizeUser(response.user) });
+        return response.user;
+      },
+      updateCurrentUserPassword: async (payload) => {
+        const token = get().token;
+
+        if (!token) {
+          throw new ApiError("Authentication required.", { status: 401 });
+        }
+
+        return requestApi("/auth/me/password", {
+          method: "PATCH",
+          token,
+          body: payload,
+        });
       },
       logout: () =>
         set({
