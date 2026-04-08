@@ -140,7 +140,7 @@ export const createTransaction = async ({ cashierUuid, payload }) => {
 
     const products = await Product.findAll({
       where: { uuid: requestedProductUuids },
-      attributes: ["id", "uuid", "title", "price", "category"],
+      attributes: ["id", "uuid", "title", "price", "category", "quantity"],
       transaction: dbTransaction,
     });
 
@@ -155,6 +155,12 @@ export const createTransaction = async ({ cashierUuid, payload }) => {
 
     const normalizedItems = payload.items.map((item) => {
       const product = productMap.get(item.product_uuid);
+      
+      if (product.quantity < item.quantity) {
+        throw createError(`Insufficient stock for product ${product.title}.`, 400);
+      }
+      
+      product.quantity -= item.quantity;
       const subtotalItem = product.price * item.quantity;
 
       return {
@@ -208,6 +214,10 @@ export const createTransaction = async ({ cashierUuid, payload }) => {
         subtotal_item: item.subtotal_item,
       })),
       { transaction: dbTransaction },
+    );
+
+    await Promise.all(
+      products.map((product) => product.save({ transaction: dbTransaction }))
     );
 
     const transactionRecord = await findTransactionInstance(

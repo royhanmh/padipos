@@ -369,7 +369,7 @@ const SalesReportView = ({
           onClick={closeDetailModal}
         >
           <div
-            className="relative w-full max-w-155 rounded-[20px] bg-white px-10 py-10 shadow-[0_22px_60px_rgba(17,24,39,0.2)] md:px-9 md:py-10 xl:scale-80"
+            className="relative w-full max-w-155 max-h-[90vh] overflow-y-auto scrollbar-hide rounded-[20px] bg-white px-10 py-10 shadow-[0_22px_60px_rgba(17,24,39,0.2)] md:px-9 md:py-10 xl:scale-80"
             onClick={(event) => event.stopPropagation()}
           >
             <button

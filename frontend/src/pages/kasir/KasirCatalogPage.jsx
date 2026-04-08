@@ -418,7 +418,7 @@ const KasirCatalogPage = () => {
                     const isSelected = cartItems.some((item) => item.menuId === menu.uuid);
                     return (
                       <article
-                        key={menu.uuid}
+                      key={menu.uuid}
                       role="button"
                       tabIndex={0}
                       onClick={() => addToCart(menu)}
@@ -428,44 +428,57 @@ const KasirCatalogPage = () => {
                           addToCart(menu);
                         }
                       }}
-                      className={`rounded-xl border bg-white p-2.5 shadow-[0_8px_22px_rgba(25,45,88,0.04)] transition ${isSelected
+                      className={`flex flex-col relative w-full overflow-hidden rounded-[10px] shadow-[0_8px_22px_rgba(25,45,88,0.04)] transition border ${isSelected
                           ? "border-[#3572EF]"
                           : "border-transparent hover:border-[#C2D4FA]"
                         }`}
                     >
-                      <div className="relative overflow-hidden rounded-[10px]">
-                        <img
-                          src={menu.image}
-                          alt={menu.name}
-                          className="h-[140px] w-full object-cover rounded-[10px]"
-                        />
-                        <span className="absolute right-2 top-2 rounded-full bg-[#3572EF] px-2.5 py-0.5 text-xs text-white">
-                          {categoryMap[menu.category]?.shortLabel ?? "Menu"}
-                        </span>
-                      </div>
-                      <h2 className="mt-2.5 line-clamp-1 text-[16px] font-semibold text-[#1A1A1A]">
-                        {menu.title}
-                      </h2>
-                      <p className="mt-1 line-clamp-2 min-h-[36px] text-[13px] text-[#A5A5A5] leading-snug">
-                        {menu.description}
-                      </p>
-                      <div className="mt-2 flex items-center justify-between gap-2">
-                        <p className="text-[15px] font-semibold text-[#3572EF]">
-                          {formatCurrency(menu.price)}
-                          <span className="ml-1 text-xs font-normal text-[#AFAFAF]">/portion</span>
+                      <div className="bg-[#F3F3F3] p-2.5 w-full">
+                        <div className="relative overflow-hidden rounded-[10px]">
+                          <img
+                            src={menu.image}
+                            alt={menu.name}
+                            className="h-[140px] w-full object-cover rounded-[10px]"
+                          />
+                          <span className="absolute right-2 top-2 rounded-full bg-[#3572EF] px-2.5 py-0.5 text-xs text-white">
+                            {categoryMap[menu.category]?.shortLabel ?? "Menu"}
+                          </span>
+                        </div>
+                        <h2 className="mt-2.5 line-clamp-1 text-[16px] font-semibold text-[#1A1A1A]">
+                          {menu.title}
+                        </h2>
+                        <p className="mt-1 line-clamp-2 min-h-[36px] text-[13px] text-[#A5A5A5] leading-snug">
+                          {menu.description}
                         </p>
-                        <button
-                          type="button"
-                          aria-label={`Open ${menu.title} detail`}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            setDetailMenu(menu);
-                            setDetailNote("");
-                          }}
-                          className="flex h-[32px] w-[32px] items-center justify-center rounded-lg border border-[#D3D3D3] text-[#666666] transition hover:border-[#3572EF] hover:text-[#3572EF]"
-                        >
-                          <PiArrowUpRightLight className="text-[16px]" />
-                        </button>
+                      </div>
+
+                      <div className="relative border-t border-dashed border-[#CFCFCF] bg-[#ECECEC] px-3 pb-3 pt-3 flex-1 flex flex-col justify-end w-full">
+                        <span
+                          aria-hidden="true"
+                          className="absolute -left-2.5 top-0 h-5 w-5 -translate-y-1/2 rounded-full bg-white"
+                        />
+                        <span
+                          aria-hidden="true"
+                          className="absolute -right-2.5 top-0 h-5 w-5 -translate-y-1/2 rounded-full bg-white"
+                        />
+                        <div className="mt-1 flex items-center justify-between gap-2">
+                          <p className="text-[15px] font-semibold text-[#3572EF]">
+                            {formatCurrency(menu.price)}
+                            <span className="ml-1 text-xs font-normal text-[#AFAFAF]">/portion</span>
+                          </p>
+                          <button
+                            type="button"
+                            aria-label={`Open ${menu.title} detail`}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              setDetailMenu(menu);
+                              setDetailNote("");
+                            }}
+                            className="flex h-[32px] w-[32px] items-center justify-center rounded-lg border border-[#D3D3D3] bg-white text-[#666666] transition hover:border-[#3572EF] hover:text-[#3572EF]"
+                          >
+                            <PiArrowUpRightLight className="text-[16px]" />
+                          </button>
+                        </div>
                       </div>
                     </article>
                   );
@@ -870,7 +883,7 @@ const KasirCatalogPage = () => {
           <div
             role="dialog"
             aria-modal="true"
-            className="relative w-full max-w-[340px] rounded-[20px] bg-white px-5 py-6 shadow-[0_22px_60px_rgba(17,24,39,0.2)]"
+            className="relative w-full max-w-[340px] max-h-[90vh] overflow-y-auto scrollbar-hide rounded-[20px] bg-white px-5 py-6 shadow-[0_22px_60px_rgba(17,24,39,0.2)]"
             onClick={(event) => event.stopPropagation()}
           >
             <button
