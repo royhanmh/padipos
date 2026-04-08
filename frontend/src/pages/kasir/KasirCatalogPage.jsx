@@ -50,74 +50,6 @@ const categoryMap = categories.reduce((acc, item) => {
   return acc;
 }, {});
 
-const menus = [
-  {
-    id: 1,
-    name: "Gado-gado Spesial",
-    category: "food",
-    description:
-      "Vegetables, egg, tempe, tofu, ketupat, peanut sauce, and kerupuk.",
-    price: 20000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 2,
-    name: "Crispy chicken sambal",
-    category: "food",
-    description: "Crispy chicken, green sambal, cucumber, and warm rice.",
-    price: 28000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 3,
-    name: "Savory fried rice",
-    category: "food",
-    description: "Savory fried rice with shredded chicken, egg and crackers.",
-    price: 25000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 4,
-    name: "Grilled chicken satay",
-    category: "food",
-    description: "Grilled chicken satay with peanut glaze and lontong.",
-    price: 32000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 5,
-    name: "Kopi Susu Aren",
-    category: "beverage",
-    description: "Espresso, palm sugar milk, and creamy foam.",
-    price: 18000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 6,
-    name: "Matcha Latte",
-    category: "beverage",
-    description: "Earthy matcha with chilled milk and silky texture.",
-    price: 22000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 7,
-    name: "Banana Caramel Cake",
-    category: "dessert",
-    description: "Soft banana sponge with caramel cream topping.",
-    price: 24000,
-    image: DEFAULT_IMAGE,
-  },
-  {
-    id: 8,
-    name: "Chocolate Lava Cup",
-    category: "dessert",
-    description: "Warm chocolate center with vanilla cream.",
-    price: 23000,
-    image: DEFAULT_IMAGE,
-  },
-];
-
 const formatCurrency = (value) =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -156,6 +88,17 @@ const cartKey = (menuId, note) => `${menuId}-${note.trim().toLowerCase()}`;
 
 const KasirCatalogPage = () => {
   const addArchive = useArchiveStore((state) => state.addArchive);
+  const { products: menus, fetchProducts, isLoading } = useProductsStore(
+    useShallow((state) => ({
+      products: state.products,
+      fetchProducts: state.fetchProducts,
+      isLoading: state.isLoading
+    }))
+  );
+
+  useEffect(() => {
+    void fetchProducts();
+  }, [fetchProducts]);
   
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchValue, setSearchValue] = useState("");
@@ -178,12 +121,12 @@ const KasirCatalogPage = () => {
         activeCategory === "all" || menu.category === activeCategory;
       const matchKeyword =
         keyword.length === 0 ||
-        menu.name.toLowerCase().includes(keyword) ||
-        menu.description.toLowerCase().includes(keyword) ||
+        menu.title?.toLowerCase().includes(keyword) ||
+        menu.description?.toLowerCase().includes(keyword) ||
         categoryMap[menu.category]?.label.toLowerCase().includes(keyword);
       return matchCategory && matchKeyword;
     });
-  }, [activeCategory, searchValue]);
+  }, [activeCategory, searchValue, menus]);
 
   const subTotal = useMemo(() => itemsSubtotal(cartItems), [cartItems]);
   const tax = subTotal > 0 ? TAX_AMOUNT : 0;
@@ -201,7 +144,7 @@ const KasirCatalogPage = () => {
 
   const addToCart = (menu, note = "") => {
     const finalNote = note.trim();
-    const key = cartKey(menu.id, finalNote);
+    const key = cartKey(menu.uuid, finalNote);
     setCartItems((prev) => {
       const found = prev.find((item) => item.key === key);
       if (found) {
@@ -215,9 +158,9 @@ const KasirCatalogPage = () => {
         {
           id: `${key}-${Date.now()}`,
           key,
-          menuId: menu.id,
-          name: menu.name,
-          image: menu.image,
+          menuId: menu.uuid,
+          name: menu.title,
+          image: menu.image || DEFAULT_IMAGE,
           price: menu.price,
           quantity: 1,
           note: finalNote,
@@ -438,12 +381,17 @@ const KasirCatalogPage = () => {
             </div>
 
             <div className="mt-3 max-h-[calc(100vh-250px)] overflow-y-auto pr-1">
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {filteredMenus.map((menu) => {
-                  const isSelected = cartItems.some((item) => item.menuId === menu.id);
-                  return (
-                    <article
-                      key={menu.id}
+              {isLoading ? (
+                <div className="flex items-center justify-center py-10">
+                  <p className="text-[#979797]">Loading products...</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {filteredMenus.map((menu) => {
+                    const isSelected = cartItems.some((item) => item.menuId === menu.uuid);
+                    return (
+                      <article
+                        key={menu.uuid}
                       role="button"
                       tabIndex={0}
                       onClick={() => addToCart(menu)}
@@ -469,7 +417,7 @@ const KasirCatalogPage = () => {
                         </span>
                       </div>
                       <h2 className="mt-2.5 line-clamp-1 text-[16px] font-semibold text-[#1A1A1A]">
-                        {menu.name}
+                        {menu.title}
                       </h2>
                       <p className="mt-1 line-clamp-2 min-h-[36px] text-[13px] text-[#A5A5A5] leading-snug">
                         {menu.description}
@@ -481,7 +429,7 @@ const KasirCatalogPage = () => {
                         </p>
                         <button
                           type="button"
-                          aria-label={`Open ${menu.name} detail`}
+                          aria-label={`Open ${menu.title} detail`}
                           onClick={(event) => {
                             event.stopPropagation();
                             setDetailMenu(menu);
@@ -496,6 +444,7 @@ const KasirCatalogPage = () => {
                   );
                 })}
               </div>
+            )}
             </div>
           </div>
 
@@ -642,7 +591,7 @@ const KasirCatalogPage = () => {
                                 type="button"
                                 aria-label="Add or Edit Note"
                                 onClick={() => {
-                                  const menuLookup = menus.find((m) => m.id === item.menuId);
+                                  const menuLookup = menus.find((m) => m.uuid === item.menuId);
                                   if (menuLookup) {
                                     setEditCartItemId(item.id);
                                     setDetailMenu(menuLookup);
@@ -822,14 +771,14 @@ const KasirCatalogPage = () => {
             <div className="px-4 py-4">
               <img
                 src={detailMenu.image}
-                alt={detailMenu.name}
+                alt={detailMenu.title}
                 className="h-[130px] w-full rounded-[12px] object-cover"
               />
               <span className="mt-2.5 inline-flex rounded-full bg-[#3572EF] px-2 py-0.5 text-[10px] text-white">
                 {categoryMap[detailMenu.category]?.shortLabel ?? "Food"}
               </span>
               <h4 className="mt-1.5 text-[16px] font-semibold text-[#151515]">
-                {detailMenu.name}
+                {detailMenu.title}
               </h4>
               <p className="mt-1 text-[12px] leading-snug text-[#8C8C8C]">
                 {detailMenu.description}
