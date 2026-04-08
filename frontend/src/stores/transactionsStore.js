@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { requestApi } from "../lib/apiClient";
-import { useAuthStore } from "./authStore";
+import { handleProtectedAuthError, useAuthStore } from "./authStore";
 
 const requireToken = () => {
   const token = useAuthStore.getState().token;
@@ -30,6 +30,7 @@ export const useTransactionsStore = create((set) => ({
       set({ transactions, isLoading: false, error: "" });
       return transactions;
     } catch (error) {
+      handleProtectedAuthError(error);
       set({ isLoading: false, error: error.message });
       throw error;
     }
@@ -45,6 +46,7 @@ export const useTransactionsStore = create((set) => ({
       set({ selectedTransaction: transaction, isLoading: false, error: "" });
       return transaction;
     } catch (error) {
+      handleProtectedAuthError(error);
       set({ isLoading: false, error: error.message });
       throw error;
     }
@@ -68,6 +70,7 @@ export const useTransactionsStore = create((set) => ({
 
       return transaction;
     } catch (error) {
+      handleProtectedAuthError(error);
       set({ isSubmitting: false, error: error.message });
       throw error;
     }

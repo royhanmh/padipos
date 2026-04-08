@@ -20,6 +20,7 @@ const LoginPage = () => {
   );
   const [form, setForm] = useState({ email: "", password: "" });
   const [fieldErrors, setFieldErrors] = useState({});
+  const registrationMessage = location.state?.message ?? "";
 
   const nextPath = useMemo(() => {
     const requestedPath = location.state?.from?.pathname;
@@ -99,6 +100,12 @@ const LoginPage = () => {
           {error ? (
             <p className="mb-4 rounded-[10px] border border-[#FAD7DB] bg-[#FFF7F8] px-4 py-3 text-sm text-[#B42318] md:text-base">
               {error}
+            </p>
+          ) : null}
+
+          {!error && registrationMessage ? (
+            <p className="mb-4 rounded-[10px] border border-[#D8E6FF] bg-[#F5F9FF] px-4 py-3 text-sm text-[#175CD3] md:text-base">
+              {registrationMessage}
             </p>
           ) : null}
 

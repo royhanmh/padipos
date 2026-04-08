@@ -5,7 +5,7 @@ import AuthPageShell from "../../components/AuthPageShell";
 import DefaultInputComponent from "../../components/DefaultInputComponent";
 import LoginCardComponent from "../../components/LoginCardComponent";
 import PrimaryButtonComponent from "../../components/PrimaryButtonComponent";
-import { getHomePathForRole, useAuthStore } from "../../stores/authStore";
+import { useAuthStore } from "../../stores/authStore";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -62,12 +62,19 @@ const RegisterPage = () => {
     }
 
     try {
-      await registerCashier({
+      const response = await registerCashier({
         username: form.username.trim(),
         email: form.email.trim(),
         password: form.password,
       });
-      navigate(getHomePathForRole("cashier"), { replace: true });
+      navigate("/login", {
+        replace: true,
+        state: {
+          message:
+            response.message ??
+            "Account created successfully. Please wait for admin activation before logging in.",
+        },
+      });
     } catch {
       return null;
     }

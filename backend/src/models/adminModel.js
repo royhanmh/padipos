@@ -15,6 +15,10 @@ export const findAdminByUuid = async (uuid) => {
   return admin ? toPlain(admin) : null;
 };
 
+export const findAdminInstanceByUuid = async (uuid) => {
+  return Admin.findOne({ where: { uuid } });
+};
+
 export const createAdmin = async (payload) => {
   const admin = await Admin.create(payload);
   const plain = toPlain(admin);

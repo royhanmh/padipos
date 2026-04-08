@@ -22,6 +22,30 @@ const buildSessionState = ({ token = null, user = null } = {}) => ({
   isAuthenticated: Boolean(token && user),
 });
 
+export const shouldLogoutForAuthError = (error) => {
+  if (!error) {
+    return false;
+  }
+
+  if (error.status === 401 || error.status === 404) {
+    return true;
+  }
+
+  if (error.status === 403) {
+    return /inactive|not active|activation/i.test(String(error.message ?? ""));
+  }
+
+  return false;
+};
+
+export const handleProtectedAuthError = (error) => {
+  if (shouldLogoutForAuthError(error)) {
+    useAuthStore.getState().logout();
+  }
+
+  return error;
+};
+
 export const getHomePathForRole = (role) => {
   if (role === "admin") {
     return "/dashboard";
@@ -104,8 +128,7 @@ export const useAuthStore = create(
             body: payload,
           });
           const user = normalizeUser(response.user, "cashier");
-
-          get().setSession({ token: response.token, user });
+          set({ isSubmitting: false, error: "" });
           return { ...response, user };
         } catch (error) {
           set({ error: error.message, isSubmitting: false });
@@ -124,9 +147,7 @@ export const useAuthStore = create(
           get().setSession({ token, user: normalizeUser(user) });
           return user;
         } catch (error) {
-          if (error.status === 401 || error.status === 404) {
-            get().logout();
-          }
+          handleProtectedAuthError(error);
 
           throw error;
         }

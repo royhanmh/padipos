@@ -31,7 +31,7 @@ export default (sequelize) =>
       status: {
         type: DataTypes.ENUM("active", "nonactive"),
         allowNull: false,
-        defaultValue: "active",
+        defaultValue: "nonactive",
       },
       image_profile: {
         type: DataTypes.STRING,

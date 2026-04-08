@@ -4,6 +4,7 @@ import SettingsView from "../../features/settings/components/SettingsView";
 import { useAuthStore } from "../../stores/authStore";
 
 const DEFAULT_AVATAR = "/images/UserImage.png";
+const formatStatus = (status) => (status === "nonactive" ? "Inactive" : "Active");
 
 const KasirSettingsPage = () => {
   const user = useAuthStore((state) => state.user);
@@ -41,7 +42,7 @@ const KasirSettingsPage = () => {
         email: user?.email,
         username: user?.username,
         role: "Cashier",
-        status: "Active",
+        status: formatStatus(user?.status),
         avatar: user?.image_profile || DEFAULT_AVATAR,
       }}
     />

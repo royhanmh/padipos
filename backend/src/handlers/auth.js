@@ -31,6 +31,24 @@ const generateToken = (payload) => {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 };
 
+const buildAdminResponse = (admin) => ({
+  uuid: admin.uuid,
+  username: admin.username,
+  email: admin.email,
+  role: "admin",
+  status: admin.status,
+  image_profile: admin.image_profile,
+});
+
+const buildCashierResponse = (cashier) => ({
+  uuid: cashier.uuid,
+  username: cashier.username,
+  email: cashier.email,
+  role: "cashier",
+  status: cashier.status,
+  image_profile: cashier.image_profile,
+});
+
 // ─── Admin Auth ──────────────────────────────────────────────
 
 export const loginAdminHandler = async (req, res, next) => {
@@ -72,13 +90,7 @@ export const loginAdminHandler = async (req, res, next) => {
     res.json({
       message: "Login successful.",
       token,
-      user: {
-        uuid: admin.uuid,
-        username: admin.username,
-        email: admin.email,
-        role: "admin",
-        image_profile: admin.image_profile,
-      },
+      user: buildAdminResponse(admin),
     });
   } catch (error) {
     next(error);
@@ -121,7 +133,10 @@ export const registerAdminHandler = async (req, res, next) => {
     res.status(201).json({
       message: "Admin registered successfully.",
       token,
-      user: admin,
+      user: {
+        ...admin,
+        role: "admin",
+      },
     });
   } catch (error) {
     next(error);
@@ -153,7 +168,9 @@ export const loginCashierHandler = async (req, res, next) => {
     }
 
     if (cashier.status !== "active") {
-      res.status(403).json({ message: "Account is not active." });
+      res.status(403).json({
+        message: "Account is pending activation. Please contact the admin first.",
+      });
       return;
     }
 
@@ -169,13 +186,7 @@ export const loginCashierHandler = async (req, res, next) => {
     res.json({
       message: "Login successful.",
       token,
-      user: {
-        uuid: cashier.uuid,
-        username: cashier.username,
-        email: cashier.email,
-        role: "cashier",
-        image_profile: cashier.image_profile,
-      },
+      user: buildCashierResponse(cashier),
     });
   } catch (error) {
     next(error);
@@ -210,15 +221,17 @@ export const registerCashierHandler = async (req, res, next) => {
       username: value.username,
       email: value.email,
       password: hashedPassword,
+      status: "nonactive",
       image_profile: value.image_profile || null,
     });
 
-    const token = generateToken({ uuid: cashier.uuid, role: "cashier" });
-
     res.status(201).json({
-      message: "Cashier registered successfully.",
-      token,
-      user: cashier,
+      message:
+        "Cashier registered successfully. Your account is pending admin activation.",
+      user: {
+        ...cashier,
+        role: "cashier",
+      },
     });
   } catch (error) {
     next(error);

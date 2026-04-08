@@ -15,6 +15,10 @@ export const findCashierByUuid = async (uuid) => {
   return cashier ? toPlain(cashier) : null;
 };
 
+export const findCashierInstanceByUuid = async (uuid) => {
+  return Cashier.findOne({ where: { uuid } });
+};
+
 export const createCashier = async (payload) => {
   const cashier = await Cashier.create(payload);
   const plain = toPlain(cashier);
