@@ -299,7 +299,7 @@ const SettingsView = ({
       sidebarProps={layoutSidebarProps}
       topbarProps={layoutTopbarProps}
     >
-      <section className="min-h-full bg-[#F7F7F7] px-5 py-5 md:px-6 md:py-6">
+      <section className="min-h-full bg-[#F7F7F7] px-5 py-5 md:px-8 md:py-7">
         <div className="mx-auto w-full max-w-[1280px]">
           <h1 className="text-[30px] font-semibold tracking-[-0.03em] text-[#1D1D1D] md:text-[32px]">
             {pageTitle}

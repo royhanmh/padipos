@@ -693,7 +693,7 @@ const CatalogPage = () => {
         searchPlaceholder: "Enter the keyword here...",
       }}
     >
-      <section className="min-h-full bg-[#F7F7F7] px-5 py-5 md:px-7 md:py-6">
+      <section className="min-h-full bg-[#F7F7F7] px-5 py-5 md:px-8 md:py-7">
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] xl:h-[calc(100vh-120px)] xl:grid-cols-[minmax(0,1fr)_430px]">
           <div className="min-h-0 xl:flex xl:min-h-0 xl:flex-col">
 

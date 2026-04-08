@@ -170,7 +170,7 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout sidebarProps={{ activeItem: "dashboard" }}>
-      <section className="min-h-full bg-[#F7F7F7] px-5 py-5 md:px-8 md:py-6">
+      <section className="min-h-full bg-[#F7F7F7] px-5 py-5 md:px-8 md:py-7">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <h1 className="text-[26px] font-semibold tracking-[-0.03em] text-[#242424] md:text-[28px]">
             Dashboard
