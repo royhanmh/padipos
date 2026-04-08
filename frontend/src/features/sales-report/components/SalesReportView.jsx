@@ -3,7 +3,14 @@ import {
   PiArrowUpRightLight,
   PiCaretDownLight,
   PiXLight,
+  PiReceiptLight,
+  PiCoinsLight,
+  PiNotebookLight,
+  PiBowlFoodLight,
+  PiCoffeeLight,
+  PiCookieLight,
 } from "react-icons/pi";
+import StatCardComponent from "../../../components/StatCardComponent";
 import { exportSalesToExcel, exportSalesToPdf } from "../export";
 import {
   CATEGORY_OPTIONS,
@@ -113,6 +120,34 @@ const SalesReportView = ({
     return filteredOrders.slice(startIndex, endIndex);
   }, [filteredOrders, page, rowsPerPage]);
 
+  const stats = useMemo(() => {
+    let totalOmzet = 0;
+    let allMenuSales = 0;
+    let foodsCount = 0;
+    let beveragesCount = 0;
+    let dessertsCount = 0;
+
+    filteredOrders.forEach((order) => {
+      totalOmzet += order.total;
+      (order.items || []).forEach((item) => {
+        allMenuSales += item.quantity;
+        const cat = item.category;
+        if (cat === "food") foodsCount += item.quantity;
+        if (cat === "beverage") beveragesCount += item.quantity;
+        if (cat === "dessert") dessertsCount += item.quantity;
+      });
+    });
+
+    return [
+      { label: "Total Order", value: String(filteredOrders.length), icon: PiReceiptLight },
+      { label: "Total Omzet", value: formatCurrency(totalOmzet), icon: PiCoinsLight },
+      { label: "All Menu Sales", value: String(allMenuSales), icon: PiNotebookLight },
+      { label: "Foods", value: String(foodsCount), icon: PiBowlFoodLight, accent: true },
+      { label: "Beverages", value: String(beveragesCount), icon: PiCoffeeLight, accent: true },
+      { label: "Desserts", value: String(dessertsCount), icon: PiCookieLight, accent: true },
+    ];
+  }, [filteredOrders]);
+
   useEffect(() => {
     if (page > totalPages) {
       setPage(totalPages);
@@ -210,6 +245,12 @@ const SalesReportView = ({
             {pageTitle}
           </h1>
           <p className="text-base text-[#666666]">{formatTodayLabel()}</p>
+        </div>
+
+        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+          {stats.map((stat) => (
+            <StatCardComponent key={stat.label} {...stat} />
+          ))}
         </div>
 
         <section className="mt-6 rounded-2xl border border-[#ECECEC] bg-white p-5 shadow-[0_10px_26px_rgba(25,45,88,0.06)] md:p-6">

@@ -83,14 +83,14 @@ export const formatFilterDate = (value) => {
 };
 
 export const formatTodayLabel = () => {
-  const formatted = new Intl.DateTimeFormat("en-GB", {
+  const formatted = new Intl.DateTimeFormat("id-ID", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
   }).format(new Date());
 
-  return `Today, ${formatted.replace(",", "")}`;
+  return `Today, ${formatted.replace(/, /g, " ")}`;
 };
 
 export const formatGeneratedAt = (date = new Date()) => {
