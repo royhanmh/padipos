@@ -31,6 +31,8 @@ export const useProductsStore = create((set, get) => ({
     }
   },
   createProduct: async (payload) => {
+    set({ isLoading: true, error: "" });
+
     try {
       const createdProduct = await requestApi("/products", {
         method: "POST",
@@ -40,17 +42,20 @@ export const useProductsStore = create((set, get) => ({
 
       set((state) => ({
         products: [createdProduct, ...state.products],
+        isLoading: false,
         error: "",
       }));
 
       return createdProduct;
     } catch (error) {
       handleProtectedAuthError(error);
-      set({ error: error.message });
+      set({ isLoading: false, error: error.message });
       throw error;
     }
   },
   updateProduct: async (productUuid, payload) => {
+    set({ isLoading: true, error: "" });
+
     try {
       const updatedProduct = await requestApi(`/products/${productUuid}`, {
         method: "PATCH",
@@ -62,17 +67,20 @@ export const useProductsStore = create((set, get) => ({
         products: state.products.map((product) =>
           product.uuid === productUuid ? updatedProduct : product,
         ),
+        isLoading: false,
         error: "",
       }));
 
       return updatedProduct;
     } catch (error) {
       handleProtectedAuthError(error);
-      set({ error: error.message });
+      set({ isLoading: false, error: error.message });
       throw error;
     }
   },
   deleteProduct: async (productUuid) => {
+    set({ isLoading: true, error: "" });
+
     try {
       await requestApi(`/products/${productUuid}`, {
         method: "DELETE",
@@ -81,11 +89,12 @@ export const useProductsStore = create((set, get) => ({
 
       set((state) => ({
         products: state.products.filter((product) => product.uuid !== productUuid),
+        isLoading: false,
         error: "",
       }));
     } catch (error) {
       handleProtectedAuthError(error);
-      set({ error: error.message });
+      set({ isLoading: false, error: error.message });
       throw error;
     }
   },

@@ -47,6 +47,7 @@ const TopbarLayout = ({
           <img
             src={profile.image ?? defaultProfile.image}
             alt="User profile"
+            loading="lazy"
             className="h-10 w-10 rounded-full object-cover md:h-11 md:w-11"
           />
           <div className="hidden min-w-max md:block">

@@ -21,6 +21,8 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 import { useProductsStore } from "../../stores/productsStore";
 import { useTransactionsStore } from "../../stores/transactionsStore";
 import { useArchiveStore } from "../../stores/archiveStore";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import SkeletonCard from "../../components/SkeletonCard";
 
 const ORDER_TYPE = { DINE_IN: "dine-in", TAKE_AWAY: "take-away" };
 const TAX_AMOUNT = 5000;
@@ -409,8 +411,10 @@ const KasirCatalogPage = () => {
 
             <div className="mt-3 overflow-y-auto pr-1 xl:min-h-0 xl:flex-1">
               {isLoading ? (
-                <div className="flex items-center justify-center py-10">
-                  <p className="text-[#979797]">Loading products...</p>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {[...Array(8)].map((_, index) => (
+                    <SkeletonCard key={index} />
+                  ))}
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -439,6 +443,7 @@ const KasirCatalogPage = () => {
                           <img
                             src={menu.image}
                             alt={menu.title}
+                            loading="lazy"
                             className="h-[116px] w-full object-cover 2xl:h-[120px]"
                           />
                           <span className="absolute right-2.5 top-2.5 rounded-full bg-[#3572EF] px-3.5 py-1.5 text-sm font-medium text-white shadow-[0_8px_18px_rgba(53,114,239,0.24)]">
@@ -599,6 +604,7 @@ const KasirCatalogPage = () => {
                         <img
                           src={item.image}
                           alt={item.name}
+                          loading="lazy"
                           className="h-[60px] w-[60px] shrink-0 rounded-[10px] object-cover"
                         />
                         <div className="flex flex-1 flex-col justify-between min-w-0">
@@ -771,7 +777,14 @@ const KasirCatalogPage = () => {
                         : "bg-[#B6B6B8] text-[#ECECEC]"
                       }`}
                   >
-                    {isSubmitting ? "Processing..." : "Pay"}
+                    {isSubmitting ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <LoadingSpinner size="sm" />
+                        <span>Processing...</span>
+                      </div>
+                    ) : (
+                      "Pay"
+                    )}
                   </button>
                 </div>
               </div>

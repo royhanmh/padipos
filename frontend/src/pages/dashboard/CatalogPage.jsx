@@ -15,6 +15,8 @@ import {
 import { useShallow } from "zustand/react/shallow";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useProductsStore } from "../../stores/productsStore";
+import SkeletonCard from "../../components/SkeletonCard";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const DEFAULT_IMAGE = "/images/food.png";
 
@@ -584,9 +586,17 @@ const CatalogPage = () => {
 
         <button
           type="submit"
-          className="mt-9 flex h-[54px] w-full items-center justify-center rounded-[10px] bg-[#3572EF] text-base font-medium text-white shadow-[0_12px_28px_rgba(53,114,239,0.24)] transition hover:brightness-105"
+          disabled={isLoading}
+          className={`mt-9 flex h-[54px] w-full items-center justify-center rounded-[10px] bg-[#3572EF] text-base font-medium text-white shadow-[0_12px_28px_rgba(53,114,239,0.24)] transition hover:brightness-105 ${isLoading ? "cursor-not-allowed brightness-95" : ""}`}
         >
-          Save
+          {isLoading ? (
+            <div className="flex items-center gap-2">
+              <LoadingSpinner size="sm" />
+              <span>Adding...</span>
+            </div>
+          ) : (
+            "Save"
+          )}
         </button>
       </form>
     </PanelFrame>
@@ -729,8 +739,10 @@ const CatalogPage = () => {
 
             <div className="mt-3 overflow-y-auto pr-1 xl:min-h-0 xl:flex-1">
               {isLoading ? (
-                <div className="flex items-center justify-center py-10">
-                  <p className="text-[#979797]">Loading products...</p>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {[...Array(8)].map((_, index) => (
+                    <SkeletonCard key={index} />
+                  ))}
                 </div>
               ) : filteredMenus.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -759,6 +771,7 @@ const CatalogPage = () => {
                           <img
                             src={menu.image}
                             alt={menu.title}
+                            loading="lazy"
                             className="h-[116px] w-full object-cover 2xl:h-[120px]"
                           />
                           <span className="absolute right-2.5 top-2.5 rounded-full bg-[#3572EF] px-3.5 py-1.5 text-sm font-medium text-white shadow-[0_8px_18px_rgba(53,114,239,0.24)]">

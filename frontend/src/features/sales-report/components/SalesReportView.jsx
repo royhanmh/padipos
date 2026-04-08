@@ -25,6 +25,7 @@ import DatePickerField from "./DatePickerField";
 import ExportMenu from "./ExportMenu";
 import PaginationControls from "./PaginationControls";
 import ReportFilterField from "./ReportFilterField";
+import SkeletonTableRow from "./SkeletonTableRow";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 
 const ROW_OPTIONS = [10, 25, 50];
@@ -224,10 +225,6 @@ const SalesReportView = ({
   };
 
   const renderTableState = () => {
-    if (isLoading) {
-      return "Loading transactions...";
-    }
-
     if (errorMessage) {
       return errorMessage;
     }
@@ -346,7 +343,11 @@ const SalesReportView = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedOrders.length > 0 ? (
+                  {isLoading ? (
+                    [...Array(5)].map((_, index) => (
+                      <SkeletonTableRow key={index} />
+                    ))
+                  ) : paginatedOrders.length > 0 ? (
                     paginatedOrders.map((order) => (
                       <tr
                         key={order.id ?? order.uuid ?? order.orderNumber}
