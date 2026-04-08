@@ -95,6 +95,12 @@ const KasirCatalogPage = () => {
       isLoading: state.isLoading
     }))
   );
+  const { createTransaction, isSubmitting } = useTransactionsStore(
+    useShallow((state) => ({
+      createTransaction: state.createTransaction,
+      isSubmitting: state.isSubmitting
+    }))
+  );
 
   useEffect(() => {
     void fetchProducts();
@@ -139,8 +145,8 @@ const KasirCatalogPage = () => {
   const hasIdentity = customerName.trim().length > 0;
   const hasTable = orderType === ORDER_TYPE.TAKE_AWAY || tableNumber !== "";
   
-  // The button only greys out if there are zero items in the cart.
-  const canPay = !isEmpty;
+  // The button only greys out if there are zero items in the cart or submitting.
+  const canPay = !isEmpty && !isSubmitting;
 
   const addToCart = (menu, note = "") => {
     const finalNote = note.trim();
@@ -204,7 +210,7 @@ const KasirCatalogPage = () => {
     setOrderNumber(createOrderNumber());
   };
 
-  const submitPay = () => {
+  const submitPay = async () => {
     if (!canPay) return;
     
     if (!hasIdentity) {
@@ -223,25 +229,46 @@ const KasirCatalogPage = () => {
     }
 
     const paid = Math.max(amountPaid, total);
-    setReceiptData({
-      orderNumber,
-      orderType,
-      customerName: customerName.trim(),
-      tableNumber: tableNumber,
-      createdAt: new Date().toISOString(),
-      items: cartItems,
-      subTotal,
-      tax,
-      total,
-      amountPaid: paid,
-      change: paid - total,
-    });
-    setCartItems([]);
-    setCustomerName("");
-    setTableNumber("");
-    setSelectedNominal(0);
-    setCustomNominal("");
-    setOrderNumber(createOrderNumber());
+    
+    try {
+      const payload = {
+        order_type: orderType,
+        customer_name: customerName.trim(),
+        table_number: orderType === ORDER_TYPE.DINE_IN ? Number(tableNumber) : null,
+        amount_paid: paid,
+        items: cartItems.map((item) => ({
+          product_uuid: item.menuId,
+          quantity: item.quantity,
+          notes: item.note || "",
+        })),
+      };
+
+      const result = await createTransaction(payload);
+
+      setReceiptData({
+        orderNumber: result.order_number || orderNumber,
+        orderType: result.order_type,
+        customerName: result.customer_name,
+        tableNumber: result.table_number,
+        createdAt: result.created_at,
+        items: cartItems,
+        subTotal,
+        tax,
+        total,
+        amountPaid: paid,
+        change: paid - total,
+      });
+
+      setCartItems([]);
+      setCustomerName("");
+      setTableNumber("");
+      setSelectedNominal(0);
+      setCustomNominal("");
+      setOrderNumber(createOrderNumber());
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "Failed to create transaction.");
+    }
   };
 
   const handlePrintReceipt = () => {
@@ -731,7 +758,7 @@ const KasirCatalogPage = () => {
                         : "bg-[#B6B6B8] text-[#ECECEC]"
                       }`}
                   >
-                    Pay
+                    {isSubmitting ? "Processing..." : "Pay"}
                   </button>
                 </div>
               </div>
