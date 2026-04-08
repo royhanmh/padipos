@@ -237,30 +237,30 @@ const SalesReportView = ({
       sidebarProps={layoutSidebarProps}
       topbarProps={layoutTopbarProps}
     >
-      <section className="min-h-full bg-[#F7F7F7] px-5 py-5 md:px-8 md:py-7">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <h1 className="text-[26px] font-semibold tracking-[-0.03em] text-[#111111] md:text-[28px]">
+      <section className="min-h-full bg-[#F7F7F7] px-6 py-6 max-lg:px-4 max-lg:py-4 xl:px-8 xl:py-7">
+        <div className="flex items-center justify-between gap-3 max-lg:flex-col max-lg:items-start">
+          <h1 className="text-[28px] font-semibold tracking-[-0.03em] text-[#111111] max-lg:text-[26px]">
             {pageTitle}
           </h1>
           <p className="text-base text-[#666666]">{formatTodayLabel()}</p>
         </div>
 
         {showStats && (
-          <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+          <div className="mt-6 grid grid-cols-2 gap-5 max-lg:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-6">
             {stats.map((stat) => (
               <StatCardComponent key={stat.label} {...stat} />
             ))}
           </div>
         )}
 
-        <section className="mt-6 rounded-2xl border border-[#ECECEC] bg-white p-5 shadow-[0_10px_26px_rgba(25,45,88,0.06)] md:p-6">
+        <section className="mt-6 rounded-2xl border border-[#ECECEC] bg-white p-6 shadow-[0_10px_26px_rgba(25,45,88,0.06)] max-lg:p-5">
           {errorMessage ? (
-            <div className="mb-5 rounded-xl border border-[#FAD7DB] bg-[#FFF7F8] px-4 py-3 text-sm text-[#B42318] md:text-base">
+            <div className="mb-5 rounded-xl border border-[#FAD7DB] bg-[#FFF7F8] px-4 py-3 text-base text-[#B42318] max-lg:text-sm">
               {errorMessage}
             </div>
           ) : null}
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(150px,0.85fr)_auto] lg:items-end">
+          <div className="grid grid-cols-2 gap-4 max-lg:grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(150px,0.85fr)_auto] xl:items-end">
             <ReportFilterField label="Start">
               <DatePickerField
                 value={draftFilters.startDate}
@@ -381,7 +381,7 @@ const SalesReportView = ({
               </table>
             </div>
 
-            <div className="flex flex-col gap-4 border-t border-[#EFEFEF] px-6 py-5 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center justify-between gap-4 border-t border-[#EFEFEF] px-6 py-5 max-lg:flex-col max-lg:items-start">
               <label className="flex items-center gap-3 text-base text-[#5E5E5E]">
                 <span>Show:</span>
                 <select
@@ -414,14 +414,14 @@ const SalesReportView = ({
           onClick={closeDetailModal}
         >
           <div
-            className="relative w-full max-w-155 max-h-[90vh] overflow-y-auto scrollbar-hide rounded-[20px] bg-white px-10 py-10 shadow-[0_22px_60px_rgba(17,24,39,0.2)] md:px-9 md:py-10 xl:scale-80"
+            className="relative max-h-[90vh] w-full max-w-155 overflow-y-auto rounded-[20px] bg-white px-9 py-10 shadow-[0_22px_60px_rgba(17,24,39,0.2)] scrollbar-hide max-lg:px-5 max-lg:py-6 xl:scale-80"
             onClick={(event) => event.stopPropagation()}
           >
             <button
               type="button"
               aria-label="Close detail"
               onClick={closeDetailModal}
-              className="absolute right-6 top-5 text-[#4A4A4A] transition hover:text-[#1B1B1B] md:right-7 md:top-6"
+              className="absolute right-6 top-6 text-[#4A4A4A] transition hover:text-[#1B1B1B] max-lg:right-4 max-lg:top-4"
             >
               <PiXLight className="text-[26px]" />
             </button>

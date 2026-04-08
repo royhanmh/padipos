@@ -170,7 +170,7 @@ const ReadOnlyField = ({ label, value, multiline = false }) => {
 
 const PanelFrame = ({ title, actions, children }) => {
   return (
-    <aside className="relative flex flex-col rounded-[10px] border border-[#F0F0F0] bg-white px-4 py-4 shadow-[0_14px_36px_rgba(25,45,88,0.05)] xl:h-full xl:min-h-0 2xl:rounded-[20px] 2xl:px-4 2xl:py-4">
+    <aside className="relative flex h-full flex-col rounded-[10px] border border-[#F0F0F0] bg-white px-4 py-4 shadow-[0_14px_36px_rgba(25,45,88,0.05)] xl:min-h-0 2xl:rounded-[20px] 2xl:px-4 2xl:py-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-[20px] font-semibold text-[#161616]">{title}</h2>
         <div className="flex items-center gap-3">{actions}</div>
@@ -213,6 +213,7 @@ const CatalogPage = () => {
   const [formErrors, setFormErrors] = useState({});
   const [toast, setToast] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -258,6 +259,7 @@ const CatalogPage = () => {
     setPanelForm(createEmptyFormState());
     setFormErrors({});
     setIsDeleteDialogOpen(false);
+    setIsPanelOpen(false);
     clearError();
   };
 
@@ -266,6 +268,7 @@ const CatalogPage = () => {
     setSelectedMenuUuid(null);
     setPanelForm(createEmptyFormState());
     setFormErrors({});
+    setIsPanelOpen(true);
     clearError();
   };
 
@@ -273,6 +276,7 @@ const CatalogPage = () => {
     setSelectedMenuUuid(menuUuid);
     setPanelMode(PANEL_MODE.DETAIL);
     setFormErrors({});
+    setIsPanelOpen(true);
     clearError();
   };
 
@@ -284,6 +288,7 @@ const CatalogPage = () => {
     setPanelMode(PANEL_MODE.EDIT);
     setPanelForm(mapMenuToFormState(selectedMenu));
     setFormErrors({});
+    setIsPanelOpen(true);
     clearError();
   };
 
@@ -592,7 +597,7 @@ const CatalogPage = () => {
           {isLoading ? (
             <div className="flex items-center gap-2">
               <LoadingSpinner size="sm" />
-              <span>Adding...</span>
+              <span>{isEdit ? "Updating..." : "Adding..."}</span>
             </div>
           ) : (
             "Save"
@@ -703,12 +708,10 @@ const CatalogPage = () => {
         searchPlaceholder: "Enter the keyword here...",
       }}
     >
-      <section className="min-h-full bg-[#F7F7F7] px-5 py-5 md:px-8 md:py-7">
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] xl:h-[calc(100vh-120px)] xl:grid-cols-[minmax(0,1fr)_430px]">
-          <div className="min-h-0 xl:flex xl:min-h-0 xl:flex-col">
-
-
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <section className="relative min-h-full bg-[#F7F7F7] px-6 py-6 max-lg:px-4 max-lg:py-4 xl:px-8 xl:py-7">
+        <div className="grid min-h-0 grid-cols-[minmax(0,1fr)_340px] gap-5 max-lg:grid-cols-1 lg:h-[calc(100vh-120px)] xl:h-[calc(100vh-120px)] xl:grid-cols-[minmax(0,1fr)_430px]">
+          <div className="flex min-h-0 flex-col">
+            <div className="grid grid-cols-4 gap-3 max-lg:grid-cols-2 max-lg:gap-2">
               {categoryOptions.map((category) => {
                 const isActive = activeCategory === category.id;
                 const Icon = category.icon;
@@ -737,15 +740,15 @@ const CatalogPage = () => {
               </p>
             </div>
 
-            <div className="mt-3 overflow-y-auto pr-1 xl:min-h-0 xl:flex-1">
+            <div className="mt-3 overflow-y-auto pr-1 max-lg:pr-0 xl:min-h-0 xl:flex-1">
               {isLoading ? (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid grid-cols-3 gap-4 max-lg:grid-cols-2 xl:grid-cols-4">
                   {[...Array(8)].map((_, index) => (
                     <SkeletonCard key={index} />
                   ))}
                 </div>
               ) : filteredMenus.length > 0 ? (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid grid-cols-3 gap-4 max-lg:grid-cols-2 xl:grid-cols-4">
                   {filteredMenus.map((menu) => {
                     const category = categoryMap[menu.category];
                     const isSelected = selectedMenuUuid === menu.uuid;
@@ -832,7 +835,7 @@ const CatalogPage = () => {
             </div>
           </div>
 
-          <div className="relative xl:min-h-0">
+          <div className="relative min-h-0 lg:h-full lg:flex lg:flex-col">
             {toast ? (
               <div className="mb-5 rounded-[10px] border border-[#EAEAEA] bg-white shadow-[0_16px_36px_rgba(25,45,88,0.08)]">
                 <div className="flex items-start gap-4 border-l-[3px] border-[#22C55E] px-6 py-6">
@@ -856,12 +859,34 @@ const CatalogPage = () => {
               </div>
             ) : null}
 
-            {renderPanel()}
+            <div 
+              className={`transition-all duration-300 lg:static lg:flex lg:flex-col lg:h-full lg:min-h-0 ${
+                isPanelOpen 
+                  ? "fixed inset-0 z-50 flex flex-col bg-white lg:bg-transparent" 
+                  : "hidden lg:flex"
+              }`}
+            >
+              <div className="flex-1 min-h-0 lg:h-full overflow-y-auto scrollbar-hide">
+                {renderPanel()}
+              </div>
+            </div>
           </div>
         </div>
 
+        {/* Floating Action Button for Mobile Create */}
+        {!isPanelOpen && (
+          <button
+            type="button"
+            onClick={handleOpenCreate}
+            className="fixed bottom-24 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#3572EF] text-white shadow-[0_12px_28px_rgba(53,114,239,0.36)] transition hover:brightness-105 active:scale-95 lg:hidden"
+            aria-label="Add Menu"
+          >
+            <PiPlusLight className="text-[28px]" />
+          </button>
+        )}
+
         {isDeleteDialogOpen ? (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(17,24,39,0.28)] px-4">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[rgba(17,24,39,0.28)] px-4">
             <div
               className="w-full max-w-[540px] rounded-[20px] bg-white px-8 py-9 text-center shadow-[0_22px_65px_rgba(17,24,39,0.2)]"
               role="dialog"

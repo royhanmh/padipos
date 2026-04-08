@@ -555,9 +555,9 @@ const SettingsView = ({
       sidebarProps={layoutSidebarProps}
       topbarProps={layoutTopbarProps}
     >
-      <section className="min-h-full bg-[#F7F7F7] px-5 py-5 md:px-8 md:py-7">
+      <section className="min-h-full bg-[#F7F7F7] px-6 py-6 max-lg:px-4 max-lg:py-4 xl:px-8 xl:py-7">
         <div className="mx-auto w-full max-w-[1280px]">
-          <h1 className="text-[30px] font-semibold tracking-[-0.03em] text-[#1D1D1D] md:text-[32px]">
+          <h1 className="text-[32px] font-semibold tracking-[-0.03em] text-[#1D1D1D] max-lg:text-[30px]">
             {pageTitle}
           </h1>
 
@@ -574,7 +574,7 @@ const SettingsView = ({
               Account
             </h2>
 
-            <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-center">
+            <div className="mt-4 flex items-center gap-4 max-lg:flex-col max-lg:items-start">
               <img
                 src={formSettings.account.avatar}
                 alt="Account avatar"
@@ -620,7 +620,7 @@ const SettingsView = ({
               />
             ) : null}
 
-            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-4 grid grid-cols-2 gap-4 max-lg:grid-cols-1 xl:grid-cols-3">
               <label className="block">
                 <span className="mb-2 block text-base text-[#636363]">
                   Email
@@ -742,7 +742,7 @@ const SettingsView = ({
               Appearance
             </h2>
 
-            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-4 grid grid-cols-2 gap-4 max-lg:grid-cols-1 xl:grid-cols-3">
               <label className="block">
                 <span className="mb-2 block text-base text-[#636363]">
                   Preference Mode

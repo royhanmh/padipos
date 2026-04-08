@@ -8,21 +8,21 @@ const LoginCardComponent = ({
 }) => {
   return (
     <div
-      className={`mx-auto w-full max-w-155 rounded-[20px] bg-white px-7 pb-12 shadow-[0_22px_60px_rgba(17,24,39,0.2)] sm:px-10 md:ml-20 md:px-12 md:pb-14 xl:scale-75 ${className}`}
+      className={`mx-auto w-full max-w-155 rounded-[20px] bg-white px-12 pb-14 shadow-[0_22px_60px_rgba(17,24,39,0.2)] lg:ml-20 max-lg:px-7 max-lg:pb-12 xl:scale-75 ${className}`}
     >
       <div className="text-center">
         <img
-          className="mx-auto h-28 w-28 object-contain sm:h-32 sm:w-32 md:h-36 md:w-36"
+          className="mx-auto h-36 w-36 object-contain max-lg:h-28 max-lg:w-28"
           src={logoSrc}
           alt={logoAlt}
         />
-        <h1 className="mb-2.5 text-3xl font-semibold text-[#2B2B2B] sm:text-3xl md:text-4xl">
+        <h1 className="mb-2.5 text-4xl font-semibold text-[#2B2B2B] max-lg:text-3xl">
           {title}
         </h1>
-        <p className="text-base text-[#919191] md:text-[17px]">{subtitle}</p>
+        <p className="text-[17px] text-[#919191] max-lg:text-base">{subtitle}</p>
       </div>
 
-      <div className="mt-9 px-3 sm:mt-12 sm:px-5 md:mt-14 md:px-6">
+      <div className="mt-14 px-6 max-lg:mt-9 max-lg:px-3">
         {children}
       </div>
     </div>

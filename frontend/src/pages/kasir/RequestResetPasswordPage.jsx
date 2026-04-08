@@ -10,7 +10,7 @@ const RequestResetPasswordPage = () => {
       <LoginCardComponent
         title="Reset Password"
         subtitle="Please enter your registered email here!"
-        className="pb-20 md:pb-24"
+        className="pb-24 max-lg:pb-20"
       >
         <DefaultInputComponent type="email" placeholder="Email" label="Email" />
         <Link to="/reset/form">

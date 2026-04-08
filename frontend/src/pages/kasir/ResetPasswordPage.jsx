@@ -8,7 +8,7 @@ const ResetPasswordPage = () => {
       <LoginCardComponent
         title="Reset Password"
         subtitle="Please enter your new password and confirm!"
-        className="pb-20 md:pb-24"
+        className="pb-24 max-lg:pb-20"
       >
         <DefaultInputComponent
           type="password"

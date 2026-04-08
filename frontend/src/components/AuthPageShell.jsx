@@ -47,7 +47,7 @@ const AuthPageShell = ({ children }) => {
         }`}
         style={{ backgroundImage: `url('${AUTH_BACKGROUND_SRC}')` }}
       />
-      <div className="relative flex min-h-screen items-center px-4 py-8">
+      <div className="relative flex min-h-screen items-center px-6 py-10 max-lg:items-start max-lg:px-4 max-lg:py-6">
         {children}
       </div>
     </div>

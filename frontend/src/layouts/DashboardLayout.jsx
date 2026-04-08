@@ -33,14 +33,20 @@ const DashboardLayout = ({
   };
 
   return (
-    <div className="grid h-screen grid-cols-[96px_minmax(0,1fr)] grid-rows-[auto_1fr]">
+    <div className="grid h-screen min-h-screen overflow-hidden bg-[#F7F7F7] lg:grid-cols-[96px_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)]">
       <SidebarLayout {...sidebarProps} />
-      <TopbarLayout
-        {...topbarProps}
-        profile={topbarProps?.profile ?? derivedProfile}
-        onSignOut={topbarProps?.onSignOut ?? handleSignOut}
-      />
-      <div className={contentClassName}>{children}</div>
+      <div className="min-w-0 lg:col-start-2 lg:row-start-1">
+        <TopbarLayout
+          {...topbarProps}
+          profile={topbarProps?.profile ?? derivedProfile}
+          onSignOut={topbarProps?.onSignOut ?? handleSignOut}
+        />
+      </div>
+      <div
+        className={`min-h-0 min-w-0 max-lg:pb-20 lg:col-start-2 lg:row-start-2 ${contentClassName}`}
+      >
+        {children}
+      </div>
     </div>
   );
 };

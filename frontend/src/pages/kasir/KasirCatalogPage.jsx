@@ -13,6 +13,7 @@ import {
   PiReceiptLight,
   PiPencilSimpleLineLight,
   PiPlusCircleLight,
+  PiShoppingCartSimpleLight,
   PiTrashLight,
   PiXLight,
 } from "react-icons/pi";
@@ -121,6 +122,7 @@ const KasirCatalogPage = () => {
   const [detailNote, setDetailNote] = useState("");
   const [editCartItemId, setEditCartItemId] = useState(null);
   const [receiptData, setReceiptData] = useState(null);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const filteredMenus = useMemo(() => {
     const keyword = searchValue.trim().toLowerCase();
@@ -144,6 +146,11 @@ const KasirCatalogPage = () => {
   const amountPaid = explicitNominal || total;
   const isEmpty = cartItems.length === 0;
   
+  const totalItemsCount = useMemo(
+    () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
+    [cartItems],
+  );
+
   const hasIdentity = customerName.trim().length > 0;
   const hasTable = orderType === ORDER_TYPE.TAKE_AWAY || tableNumber !== "";
   
@@ -341,8 +348,6 @@ const KasirCatalogPage = () => {
     };
   };
 
-  const listTitle = orderType === ORDER_TYPE.DINE_IN ? "List Order" : "List Pesanan";
-
   return (
     <DashboardLayout
       sidebarProps={{
@@ -378,10 +383,10 @@ const KasirCatalogPage = () => {
         ),
       }}
     >
-      <section className="min-h-full bg-[#F7F7F7] px-5 py-5 md:px-8 md:py-7">
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] xl:h-[calc(100vh-120px)] xl:grid-cols-[minmax(0,1fr)_430px]">
-          <div className="min-h-0 xl:flex xl:min-h-0 xl:flex-col">
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <section className="relative min-h-full bg-[#F7F7F7] px-6 py-6 max-lg:px-4 max-lg:py-4 xl:px-8 xl:py-7">
+        <div className="grid min-h-0 grid-cols-[minmax(0,1fr)_340px] gap-5 max-lg:grid-cols-1 xl:h-[calc(100vh-120px)] xl:grid-cols-[minmax(0,1fr)_430px]">
+          <div className="flex min-h-0 flex-col">
+            <div className="grid grid-cols-4 gap-3 max-lg:grid-cols-2 max-lg:gap-2">
               {categories.map((category) => {
                 const Icon = category.icon;
                 const isActive = activeCategory === category.id;
@@ -409,15 +414,15 @@ const KasirCatalogPage = () => {
               </p>
             </div>
 
-            <div className="mt-3 overflow-y-auto pr-1 xl:min-h-0 xl:flex-1">
+            <div className="mt-3 overflow-y-auto pr-1 max-lg:pr-0 xl:min-h-0 xl:flex-1">
               {isLoading ? (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid grid-cols-3 gap-4 max-lg:grid-cols-2 xl:grid-cols-4">
                   {[...Array(8)].map((_, index) => (
                     <SkeletonCard key={index} />
                   ))}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid grid-cols-3 gap-4 max-lg:grid-cols-2 xl:grid-cols-4">
                   {filteredMenus.map((menu) => {
                     const category = categoryMap[menu.category];
                     const isSelected = cartItems.some((item) => item.menuId === menu.uuid);
@@ -486,17 +491,19 @@ const KasirCatalogPage = () => {
                           </div>
                         </div>
                       </article>
-                  );
-                })}
-              </div>
-            )}
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
           <aside
-            className={`rounded-2xl bg-white px-5 py-5 shadow-[0_12px_30px_rgba(25,45,88,0.04)] xl:h-full xl:min-h-0 xl:overflow-y-auto scrollbar-hide ${
-              isEmpty ? "flex flex-col" : ""
-            }`}
+            className={`transition-all duration-300 scrollbar-hide lg:flex lg:h-full lg:min-h-0 lg:overflow-y-auto lg:rounded-2xl lg:bg-white lg:px-5 lg:py-5 lg:shadow-[0_12px_30px_rgba(25,45,88,0.04)] ${
+              isCartOpen
+                ? "fixed inset-0 z-50 flex flex-col bg-white p-6 md:p-8"
+                : "hidden"
+            } ${isEmpty ? "lg:flex lg:flex-col" : "lg:flex lg:flex-col"}`}
           >
             <div className="flex items-start justify-between">
               <div>
@@ -505,14 +512,24 @@ const KasirCatalogPage = () => {
                   No Order <span className="font-semibold text-[#8A8A8A]">ORDR#{orderNumber.replace(/[^0-9]/g, '') || '1234567890'}</span>
                 </p>
               </div>
-              <button
-                type="button"
-                aria-label="Save order"
-                onClick={handleSaveToArchive}
-                className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#3572EF] text-[#3572EF] hover:bg-[#F0F5FF] transition"
-              >
-                <PiBookmarkSimpleLight className="text-[18px]" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  aria-label="Save order"
+                  onClick={handleSaveToArchive}
+                  className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#3572EF] text-[#3572EF] hover:bg-[#F0F5FF] transition"
+                >
+                  <PiBookmarkSimpleLight className="text-[18px]" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Close cart"
+                  onClick={() => setIsCartOpen(false)}
+                  className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#EDEDED] text-[#5E5E5E] transition lg:hidden"
+                >
+                  <PiXLight className="text-[18px]" />
+                </button>
+              </div>
             </div>
 
             <div className="mt-5 grid grid-cols-2 gap-3">
@@ -1008,6 +1025,24 @@ const KasirCatalogPage = () => {
           </div>
         </div>
       ) : null}
+
+      {/* Floating Cart Button */}
+      {!isCartOpen && (
+        <div className="fixed bottom-24 right-6 z-40 lg:hidden">
+          <button
+            type="button"
+            onClick={() => setIsCartOpen(true)}
+            className="relative flex h-14 w-14 items-center justify-center rounded-full bg-[#3572EF] text-white shadow-[0_12px_28px_rgba(53,114,239,0.35)] transition active:scale-95"
+          >
+            <PiShoppingCartSimpleLight className="text-[28px]" />
+            {totalItemsCount > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-6 min-w-[24px] items-center justify-center rounded-full border-2 border-white bg-[#FF3333] px-1 text-[12px] font-bold text-white shadow-sm">
+                {totalItemsCount}
+              </span>
+            )}
+          </button>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

@@ -28,31 +28,34 @@ const SystemStatePage = ({
   };
 
   const colors = toneColors[tone] || toneColors.brand;
+  const actionGridClassName = secondaryAction
+    ? "grid-cols-2 max-lg:grid-cols-1"
+    : "grid-cols-1";
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F7F7F7] px-4 py-8">
-      <div className="w-full max-w-[540px] rounded-[20px] border border-[#F0F0F0] bg-white px-8 py-10 text-center shadow-[0_14px_36px_rgba(25,45,88,0.05)] md:px-12 md:py-14">
+    <div className="flex min-h-screen items-center justify-center bg-[#F7F7F7] px-6 py-10 max-lg:px-4 max-lg:py-6">
+      <div className="w-full max-w-[540px] rounded-[20px] border border-[#F0F0F0] bg-white px-12 py-14 text-center shadow-[0_14px_36px_rgba(25,45,88,0.05)] max-lg:px-8 max-lg:py-10">
         {Icon && (
           <div
-            className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[24px] border md:h-28 md:w-28"
+            className="mx-auto mb-8 flex h-28 w-28 items-center justify-center rounded-[24px] border max-lg:h-24 max-lg:w-24"
             style={{ 
               color: colors.primary, 
               borderColor: colors.border,
               backgroundColor: colors.bg 
             }}
           >
-            <Icon className="text-[44px] md:text-[52px]" />
+            <Icon className="text-[52px] max-lg:text-[44px]" />
           </div>
         )}
 
-        <h1 className="mb-4 text-3xl font-bold tracking-tight text-[#161616] md:text-4xl">
+        <h1 className="mb-4 text-4xl font-bold tracking-tight text-[#161616] max-lg:text-3xl">
           {title}
         </h1>
-        <p className="mx-auto mb-10 max-w-[380px] text-base leading-relaxed text-[#6A6A6A] md:text-lg">
+        <p className="mx-auto mb-10 max-w-[380px] text-lg leading-relaxed text-[#6A6A6A] max-lg:text-base">
           {subtitle}
         </p>
 
-        <div className="grid gap-4 sm:grid-cols-1">
+        <div className={`grid gap-4 ${actionGridClassName}`}>
           {primaryAction && (
             <div className="w-full">
               {primaryAction.to ? (
