@@ -29,6 +29,7 @@ const SalesReportPage = () => {
         title: "Sales Report",
         filenamePrefix: "sales-report",
       }}
+      showStats
     />
   );
 };

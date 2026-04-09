@@ -58,6 +58,22 @@ const toDateAtEndOfDay = (value) => {
   return new Date(`${value}T23:59:59`);
 };
 
+const isSameLocalDayAsToday = (value) => {
+  const orderDate = new Date(value);
+
+  if (Number.isNaN(orderDate.getTime())) {
+    return false;
+  }
+
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const todayEnd = new Date(todayStart);
+  todayEnd.setHours(23, 59, 59, 999);
+
+  return orderDate >= todayStart && orderDate <= todayEnd;
+};
+
 const matchesCategoryFilter = (order, category) => {
   if (category === "all") {
     return true;
@@ -116,12 +132,17 @@ const SalesReportView = ({
   }, [appliedFilters, orders]);
 
   const totalPages = Math.max(1, Math.ceil(filteredOrders.length / rowsPerPage));
+  const currentPage = Math.min(page, totalPages);
 
   const paginatedOrders = useMemo(() => {
-    const startIndex = (page - 1) * rowsPerPage;
+    const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
     return filteredOrders.slice(startIndex, endIndex);
-  }, [filteredOrders, page, rowsPerPage]);
+  }, [currentPage, filteredOrders, rowsPerPage]);
+
+  const todayOrders = useMemo(() => {
+    return orders.filter((order) => isSameLocalDayAsToday(order.orderDate));
+  }, [orders]);
 
   const stats = useMemo(() => {
     let totalOmzet = 0;
@@ -130,7 +151,7 @@ const SalesReportView = ({
     let beveragesCount = 0;
     let dessertsCount = 0;
 
-    filteredOrders.forEach((order) => {
+    todayOrders.forEach((order) => {
       totalOmzet += order.total;
       (order.items || []).forEach((item) => {
         allMenuSales += item.quantity;
@@ -142,20 +163,14 @@ const SalesReportView = ({
     });
 
     return [
-      { label: "Total Order", value: String(filteredOrders.length), icon: PiReceiptLight },
+      { label: "Total Orders", value: String(todayOrders.length), icon: PiReceiptLight },
       { label: "Total Omzet", value: formatCurrency(totalOmzet), icon: PiCoinsLight },
-      { label: "All Menu Sales", value: String(allMenuSales), icon: PiNotebookLight },
+      { label: "All Menu Orders", value: String(allMenuSales), icon: PiNotebookLight },
       { label: "Foods", value: String(foodsCount), icon: PiBowlFoodLight, accent: true },
       { label: "Beverages", value: String(beveragesCount), icon: PiCoffeeLight, accent: true },
       { label: "Desserts", value: String(dessertsCount), icon: PiCookieLight, accent: true },
     ];
-  }, [filteredOrders]);
-
-  useEffect(() => {
-    if (page > totalPages) {
-      setPage(totalPages);
-    }
-  }, [page, totalPages]);
+  }, [todayOrders]);
 
   useEffect(() => {
     if (!isExportOpen) {
@@ -546,7 +561,7 @@ const SalesReportView = ({
 
               <div className="max-lg:overflow-x-auto">
                 <PaginationControls
-                  page={page}
+                  page={currentPage}
                   totalPages={totalPages}
                   onPageChange={setPage}
                 />
