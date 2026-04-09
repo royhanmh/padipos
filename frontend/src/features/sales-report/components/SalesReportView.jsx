@@ -380,6 +380,7 @@ const SalesReportView = ({
               <StatCardComponent
                 key={stat.label}
                 {...stat}
+                isLoading={isLoading}
                 onClick={stat.categoryKey ? () => openCategoryModal(stat.categoryKey) : undefined}
               />
             ))}

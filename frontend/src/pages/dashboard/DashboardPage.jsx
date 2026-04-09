@@ -135,9 +135,10 @@ const buildOmzetData = (
 };
 
 const DashboardPage = () => {
-  const { transactions, fetchTransactions } = useTransactionsStore(
+  const { transactions, isLoading, fetchTransactions } = useTransactionsStore(
     useShallow((state) => ({
       transactions: state.transactions,
+      isLoading: state.isLoading,
       fetchTransactions: state.fetchTransactions,
     }))
   );
@@ -298,6 +299,7 @@ const DashboardPage = () => {
             <StatCardComponent
               key={stat.label}
               {...stat}
+              isLoading={isLoading}
               onClick={
                 stat.categoryKey
                   ? () => openCategoryModal(stat.categoryKey)
@@ -354,76 +356,100 @@ const DashboardPage = () => {
           ) : null}
 
           <div className="mt-7 h-[400px] min-w-0 w-full overflow-hidden max-lg:h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={filteredOmzetData}
-                margin={chartMargin}
-                barCategoryGap={isCompactChart ? 12 : 18}
-              >
-                <CartesianGrid
-                  stroke="#E8E8E8"
-                  strokeDasharray="4 6"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="day"
-                  axisLine={false}
-                  tickLine={false}
-                  interval={isCompactChart ? 1 : 0}
-                  tick={{ fill: "#9C9C9C", fontSize: chartTickFontSize }}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  width={isCompactChart ? 34 : 44}
-                  tick={{ fill: "#9C9C9C", fontSize: chartTickFontSize }}
-                  tickFormatter={formatAxisTick}
-                  domain={[0, 300000]}
-                  ticks={chartTicks}
-                />
-                <Tooltip
-                  formatter={(value) => formatCurrency(value)}
-                  contentStyle={{
-                    borderRadius: "16px",
-                    border: "1px solid #E6EAF2",
-                    boxShadow: "0 10px 25px rgba(25,45,88,0.08)",
-                  }}
-                />
-                <Legend
-                  wrapperStyle={{ paddingTop: chartLegendPaddingTop }}
-                  iconType="square"
-                  iconSize={isCompactChart ? 10 : 14}
-                  formatter={(value) => (
-                    <span
-                      className={`text-[#4A4A4A] ${isCompactChart ? "text-xs" : "text-sm"}`}
-                    >
-                      {value}
-                    </span>
-                  )}
-                />
-                <Bar
-                  dataKey="food"
-                  name="Food"
-                  fill="#1C49A6"
-                  radius={[3, 3, 0, 0]}
-                  maxBarSize={chartBarSize}
-                />
-                <Bar
-                  dataKey="beverage"
-                  name="Beverage"
-                  fill="#3572EF"
-                  radius={[3, 3, 0, 0]}
-                  maxBarSize={chartBarSize}
-                />
-                <Bar
-                  dataKey="dessert"
-                  name="Dessert"
-                  fill="#C2D4FA"
-                  radius={[3, 3, 0, 0]}
-                  maxBarSize={chartBarSize}
-                />
-              </BarChart>
-            </ResponsiveContainer>
+            {isLoading ? (
+              <div className="flex h-full w-full items-end justify-between gap-4 pb-12 px-2 pt-6">
+                {[...Array(7)].map((_, i) => (
+                  <div key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-4">
+                    <div className="flex w-full items-end justify-center gap-1.5">
+                      <div
+                        className="w-[16%] animate-pulse rounded-t bg-[#F0F0F0]"
+                        style={{ height: `${20 + Math.random() * 40}%` }}
+                      />
+                      <div
+                        className="w-[16%] animate-pulse rounded-t bg-[#F5F5F5]"
+                        style={{ height: `${30 + Math.random() * 50}%` }}
+                      />
+                      <div
+                        className="w-[16%] animate-pulse rounded-t bg-[#FAFAFA]"
+                        style={{ height: `${10 + Math.random() * 30}%` }}
+                      />
+                    </div>
+                    <div className="h-3 w-10 animate-pulse rounded bg-[#F2F2F2]" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={filteredOmzetData}
+                  margin={chartMargin}
+                  barCategoryGap={isCompactChart ? 12 : 18}
+                >
+                  <CartesianGrid
+                    stroke="#E8E8E8"
+                    strokeDasharray="4 6"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="day"
+                    axisLine={false}
+                    tickLine={false}
+                    interval={isCompactChart ? 1 : 0}
+                    tick={{ fill: "#9C9C9C", fontSize: chartTickFontSize }}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    width={isCompactChart ? 34 : 44}
+                    tick={{ fill: "#9C9C9C", fontSize: chartTickFontSize }}
+                    tickFormatter={formatAxisTick}
+                    domain={[0, 300000]}
+                    ticks={chartTicks}
+                  />
+                  <Tooltip
+                    formatter={(value) => formatCurrency(value)}
+                    contentStyle={{
+                      borderRadius: "16px",
+                      border: "1px solid #E6EAF2",
+                      boxShadow: "0 10px 25px rgba(25,45,88,0.08)",
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{ paddingTop: chartLegendPaddingTop }}
+                    iconType="square"
+                    iconSize={isCompactChart ? 10 : 14}
+                    formatter={(value) => (
+                      <span
+                        className={`text-[#4A4A4A] ${isCompactChart ? "text-xs" : "text-sm"}`}
+                      >
+                        {value}
+                      </span>
+                    )}
+                  />
+                  <Bar
+                    dataKey="food"
+                    name="Food"
+                    fill="#1C49A6"
+                    radius={[3, 3, 0, 0]}
+                    maxBarSize={chartBarSize}
+                  />
+                  <Bar
+                    dataKey="beverage"
+                    name="Beverage"
+                    fill="#3572EF"
+                    radius={[3, 3, 0, 0]}
+                    maxBarSize={chartBarSize}
+                  />
+                  <Bar
+                    dataKey="dessert"
+                    name="Dessert"
+                    fill="#C2D4FA"
+                    radius={[3, 3, 0, 0]}
+                    maxBarSize={chartBarSize}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </section>
 
