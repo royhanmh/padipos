@@ -69,6 +69,8 @@ const DatePickerField = ({
   minYear = 2020,
   maxYear = 2035,
   disabled = false,
+  triggerClassName = "",
+  iconClassName = "",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -202,13 +204,13 @@ const DatePickerField = ({
             : isOpen
               ? "border-[#A9C4FF] bg-white shadow-[0_0_0_2px_rgba(53,114,239,0.14)]"
               : "border-[#DCDCDC] bg-white"
-        } ${selectedDate && !disabled ? "text-[#535353]" : "text-[#B6B6B6]"}`}
+        } ${selectedDate && !disabled ? "text-[#535353]" : "text-[#B6B6B6]"} ${triggerClassName}`}
       >
         <span>{displayValue}</span>
         <PiCalendarBlankLight
           className={`pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[20px] ${
             disabled ? "text-[#D5D5D5]" : "text-[#A8A8A8]"
-          }`}
+          } ${iconClassName}`}
         />
       </button>
 

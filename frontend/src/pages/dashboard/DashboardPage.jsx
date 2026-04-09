@@ -1,9 +1,8 @@
-import { createElement, useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useTransactionsStore } from "../../stores/transactionsStore";
 import {
   PiBowlFoodLight,
-  PiCalendarBlankLight,
   PiCaretDownLight,
   PiCoffeeLight,
   PiCoinsLight,
@@ -25,6 +24,7 @@ import {
 } from "recharts";
 import StatCardComponent from "../../components/StatCardComponent";
 import DashboardLayout from "../../layouts/DashboardLayout";
+import DatePickerField from "../../features/sales-report/components/DatePickerField";
 
 const formatAxisTick = (value) => {
   if (value === 0) {
@@ -41,21 +41,96 @@ const formatCurrency = (value) =>
     maximumFractionDigits: 0,
   }).format(value);
 
-const FilterField = ({ placeholder, icon, suffixIcon }) => {
-  return (
-    <button
-      type="button"
-      className="flex h-12 min-w-52 items-center justify-between rounded-xl border border-[#E9E9E9] bg-white px-5 text-base text-[#B8B8B8] max-lg:min-w-0 max-lg:px-4 max-lg:text-sm"
-    >
-      <span>{placeholder}</span>
-      {icon
-        ? createElement(icon, { className: "text-[16px] text-[#BBBBBB]" })
-        : null}
-      {suffixIcon
-        ? createElement(suffixIcon, { className: "text-[16px] text-[#BBBBBB]" })
-        : null}
-    </button>
-  );
+const CHART_CATEGORY_OPTIONS = [
+  { value: "all", label: "All" },
+  { value: "food", label: "Foods" },
+  { value: "beverage", label: "Beverages" },
+  { value: "dessert", label: "Desserts" },
+];
+
+const toDateAtStartOfDay = (value) => {
+  if (!value) {
+    return null;
+  }
+
+  return new Date(`${value}T00:00:00`);
+};
+
+const toDateAtEndOfDay = (value) => {
+  if (!value) {
+    return null;
+  }
+
+  return new Date(`${value}T23:59:59`);
+};
+
+const createLast7DaysMap = () => {
+  const dayMap = {};
+  const today = new Date();
+
+  for (let index = 6; index >= 0; index -= 1) {
+    const date = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() - index,
+    );
+    const dateKey = date.toDateString();
+    const dayName = date.toLocaleDateString("en-US", { weekday: "short" });
+    dayMap[dateKey] = { day: dayName, food: 0, beverage: 0, dessert: 0 };
+  }
+
+  return dayMap;
+};
+
+const buildOmzetData = (
+  transactions,
+  { startDate = "", finishDate = "", category = "all" } = {},
+) => {
+  const start = toDateAtStartOfDay(startDate);
+  const finish = toDateAtEndOfDay(finishDate);
+  const dayMap = createLast7DaysMap();
+
+  transactions.forEach((transaction) => {
+    const transactionDate = new Date(transaction.created_at);
+    const inStartRange = start ? transactionDate >= start : true;
+    const inFinishRange = finish ? transactionDate <= finish : true;
+
+    if (!inStartRange || !inFinishRange) {
+      return;
+    }
+
+    const dateKey = new Date(
+      transactionDate.getFullYear(),
+      transactionDate.getMonth(),
+      transactionDate.getDate(),
+    ).toDateString();
+    const dayRecord = dayMap[dateKey];
+
+    if (!dayRecord) {
+      return;
+    }
+
+    transaction.items.forEach((item) => {
+      const itemCategory = item.product_category;
+      if (!itemCategory || typeof dayRecord[itemCategory] !== "number") {
+        return;
+      }
+
+      dayRecord[itemCategory] += Number(item.subtotal_item);
+    });
+  });
+
+  const mappedData = Object.values(dayMap);
+  if (category === "all") {
+    return mappedData;
+  }
+
+  return mappedData.map((row) => ({
+    ...row,
+    food: category === "food" ? row.food : 0,
+    beverage: category === "beverage" ? row.beverage : 0,
+    dessert: category === "dessert" ? row.dessert : 0,
+  }));
 };
 
 const DashboardPage = () => {
@@ -70,7 +145,7 @@ const DashboardPage = () => {
     void fetchTransactions();
   }, [fetchTransactions]);
 
-  const { stats, omzetData, categoryDetails } = useMemo(() => {
+  const { stats, categoryDetails } = useMemo(() => {
     let totalOrders = transactions.length;
     let totalOmzet = 0;
     let allMenuOrders = 0;
@@ -84,22 +159,8 @@ const DashboardPage = () => {
       dessert: {},
     };
 
-    const dayMap = {};
-    const today = new Date();
-    // last 7 days including today
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
-      const dateKey = d.toDateString();
-      const dayName = d.toLocaleDateString("en-US", { weekday: "short" });
-      dayMap[dateKey] = { day: dayName, food: 0, beverage: 0, dessert: 0 };
-    }
-
     transactions.forEach((tx) => {
       totalOmzet += tx.total;
-
-      const txDate = new Date(tx.created_at);
-      const dateKey = new Date(txDate.getFullYear(), txDate.getMonth(), txDate.getDate()).toDateString();
-      const dayRecord = dayMap[dateKey];
 
       tx.items.forEach((item) => {
         allMenuOrders += item.quantity;
@@ -110,15 +171,11 @@ const DashboardPage = () => {
         if (cat === "dessert") dessertsCount += item.quantity;
 
         if (cat) {
-            categoryItemSales[cat][item.product_title] = (categoryItemSales[cat][item.product_title] || 0) + item.quantity;
-            if (dayRecord) {
-              dayRecord[cat] += Number(item.subtotal_item);
-            }
+          categoryItemSales[cat][item.product_title] =
+            (categoryItemSales[cat][item.product_title] || 0) + item.quantity;
         }
       });
     });
-
-    const omzetDataArr = Object.values(dayMap);
 
     const formatCatData = (catKey, title) => {
       const items = Object.keys(categoryItemSales[catKey]).map(name => ({
@@ -143,11 +200,14 @@ const DashboardPage = () => {
       { label: "Desserts", value: String(dessertsCount), icon: PiCookieLight, accent: true, categoryKey: "dessert" }
     ];
 
-    return { stats: computedStats, omzetData: omzetDataArr, categoryDetails: computedCategoryDetails };
+    return { stats: computedStats, categoryDetails: computedCategoryDetails };
   }, [transactions]);
 
   const [activeCategory, setActiveCategory] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [finishDate, setFinishDate] = useState("");
+  const [selectedChartCategory, setSelectedChartCategory] = useState("all");
   const [isCompactChart, setIsCompactChart] = useState(() => {
     if (typeof window === "undefined") {
       return false;
@@ -172,6 +232,13 @@ const DashboardPage = () => {
     setActiveCategory(null);
     setSearchKeyword("");
   };
+  const isInvalidDateRange = useMemo(() => {
+    if (!startDate || !finishDate) {
+      return false;
+    }
+
+    return toDateAtStartOfDay(startDate) > toDateAtEndOfDay(finishDate);
+  }, [finishDate, startDate]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 1023px)");
@@ -195,6 +262,25 @@ const DashboardPage = () => {
   const chartTickFontSize = isCompactChart ? 10 : 12;
   const chartBarSize = isCompactChart ? 16 : 22;
   const chartLegendPaddingTop = isCompactChart ? "10px" : "18px";
+  const baseOmzetData = useMemo(() => buildOmzetData(transactions), [transactions]);
+  const filteredOmzetData = useMemo(() => {
+    if (isInvalidDateRange) {
+      return baseOmzetData;
+    }
+
+    return buildOmzetData(transactions, {
+      startDate,
+      finishDate,
+      category: selectedChartCategory,
+    });
+  }, [
+    baseOmzetData,
+    finishDate,
+    isInvalidDateRange,
+    selectedChartCategory,
+    startDate,
+    transactions,
+  ]);
 
   return (
     <DashboardLayout sidebarProps={{ activeItem: "dashboard" }}>
@@ -229,25 +315,46 @@ const DashboardPage = () => {
             </h2>
 
             <div className="grid grid-cols-2 gap-4 max-lg:grid-cols-1 xl:grid-cols-3">
-              <FilterField
+              <DatePickerField
+                value={startDate}
+                onChange={setStartDate}
                 placeholder="Start date"
-                icon={PiCalendarBlankLight}
+                triggerClassName="min-w-52 border-[#E9E9E9] px-5 text-base text-[#535353] max-lg:min-w-0 max-lg:px-4 max-lg:text-sm md:h-12 md:px-5"
+                iconClassName="text-[16px] text-[#A8A8A8]"
               />
-              <FilterField
+              <DatePickerField
+                value={finishDate}
+                onChange={setFinishDate}
                 placeholder="Finish date"
-                icon={PiCalendarBlankLight}
+                triggerClassName="min-w-52 border-[#E9E9E9] px-5 text-base text-[#535353] max-lg:min-w-0 max-lg:px-4 max-lg:text-sm md:h-12 md:px-5"
+                iconClassName="text-[16px] text-[#A8A8A8]"
               />
-              <FilterField
-                placeholder="Select Category"
-                suffixIcon={PiCaretDownLight}
-              />
+              <div className="relative">
+                <select
+                  value={selectedChartCategory}
+                  onChange={(event) => setSelectedChartCategory(event.target.value)}
+                  className="h-12 min-w-52 w-full appearance-none rounded-xl border border-[#E9E9E9] bg-white px-5 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] max-lg:min-w-0 max-lg:px-4 max-lg:text-sm md:h-12 md:px-5"
+                >
+                  {CHART_CATEGORY_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <PiCaretDownLight className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[16px] text-[#A8A8A8]" />
+              </div>
             </div>
           </div>
+          {isInvalidDateRange ? (
+            <p className="mt-3 text-sm text-[#B42318]">
+              Finish date must be the same as or after start date.
+            </p>
+          ) : null}
 
           <div className="mt-7 h-[400px] min-w-0 w-full overflow-hidden max-lg:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
-                data={omzetData}
+                data={filteredOmzetData}
                 margin={chartMargin}
                 barCategoryGap={isCompactChart ? 12 : 18}
               >
