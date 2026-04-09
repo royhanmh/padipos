@@ -317,6 +317,7 @@ const DashboardPage = () => {
               <DatePickerField
                 value={startDate}
                 onChange={setStartDate}
+                disabled={false}
                 placeholder="Start date"
                 triggerClassName="min-w-52 border-[#E9E9E9] px-5 text-base text-[#535353] max-lg:min-w-0 max-lg:px-4 max-lg:text-sm md:h-12 md:px-5"
                 iconClassName="text-[16px] text-[#A8A8A8]"
@@ -324,6 +325,7 @@ const DashboardPage = () => {
               <DatePickerField
                 value={finishDate}
                 onChange={setFinishDate}
+                disabled={false}
                 placeholder="Finish date"
                 triggerClassName="min-w-52 border-[#E9E9E9] px-5 text-base text-[#535353] max-lg:min-w-0 max-lg:px-4 max-lg:text-sm md:h-12 md:px-5"
                 iconClassName="text-[16px] text-[#A8A8A8]"
@@ -332,6 +334,7 @@ const DashboardPage = () => {
                 <select
                   value={selectedChartCategory}
                   onChange={(event) => setSelectedChartCategory(event.target.value)}
+                  disabled={false}
                   className="h-12 min-w-52 w-full appearance-none rounded-xl border border-[#E9E9E9] bg-white px-5 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] max-lg:min-w-0 max-lg:px-4 max-lg:text-sm md:h-12 md:px-5"
                 >
                   {CHART_CATEGORY_OPTIONS.map((option) => (
