@@ -57,6 +57,11 @@ const requestCashierPasswordResetSchema = Joi.object({
   email: Joi.string().email().trim().required(),
 });
 
+const GENERIC_RESET_REQUEST_MESSAGE =
+  "If an account matches that email, the request has been processed.";
+const GENERIC_RESET_PASSWORD_MESSAGE =
+  "If an account matches that email, the password reset has been processed.";
+
 const generateToken = (payload) => {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 };
@@ -199,10 +204,7 @@ export const registerAdminHandler = async (req, res, next) => {
     res.status(201).json({
       message: "Admin registered successfully.",
       token,
-      user: {
-        ...admin,
-        role: "admin",
-      },
+      user: buildAdminResponse(admin),
     });
   } catch (error) {
     next(error);
@@ -294,10 +296,7 @@ export const registerCashierHandler = async (req, res, next) => {
     res.status(201).json({
       message:
         "Cashier registered successfully. Your account is pending admin activation.",
-      user: {
-        ...cashier,
-        role: "cashier",
-      },
+      user: buildCashierResponse(cashier),
     });
   } catch (error) {
     next(error);
@@ -321,19 +320,16 @@ export const resetCashierPasswordHandler = async (req, res, next) => {
 
     const cashier = await findCashierInstanceByEmail(value.email);
 
-    if (!cashier) {
-      res.status(404).json({ message: "Cashier email not found." });
-      return;
+    if (cashier) {
+      const hashedPassword = await bcrypt.hash(value.new_password, 10);
+
+      await cashier.update({
+        password: hashedPassword,
+        updated_at: new Date(),
+      });
     }
 
-    const hashedPassword = await bcrypt.hash(value.new_password, 10);
-
-    await cashier.update({
-      password: hashedPassword,
-      updated_at: new Date(),
-    });
-
-    res.json({ message: "Your password has been successfully reset." });
+    res.json({ message: GENERIC_RESET_PASSWORD_MESSAGE });
   } catch (error) {
     next(error);
   }
@@ -356,12 +352,7 @@ export const requestCashierPasswordResetHandler = async (req, res, next) => {
 
     const cashier = await findCashierByEmail(value.email);
 
-    if (!cashier) {
-      res.status(404).json({ message: "Cashier email not found." });
-      return;
-    }
-
-    res.json({ message: "Cashier email found." });
+    res.json({ message: GENERIC_RESET_REQUEST_MESSAGE });
   } catch (error) {
     next(error);
   }
@@ -386,7 +377,7 @@ export const getMeHandler = async (req, res, next) => {
       return;
     }
 
-    res.json({ ...user, role });
+    res.json(buildUserResponse(user, role));
   } catch (error) {
     next(error);
   }

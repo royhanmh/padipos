@@ -31,10 +31,15 @@ export const createApp = () => {
 
   app.use((err, _req, res, _next) => {
     console.error(err);
+    const status = err.status || 500;
+    const isServerError = status >= 500;
+
     res.status(err.status || 500).json({
       error: {
-        message: err.message || "Internal Server Error",
-        status: err.status || 500,
+        message: isServerError
+          ? "Internal Server Error"
+          : err.message || "Request failed.",
+        status,
       },
     });
   });
