@@ -11,6 +11,8 @@ export {
   registerAdminHandler,
   loginCashierHandler,
   registerCashierHandler,
+  requestCashierPasswordResetHandler,
+  resetCashierPasswordHandler,
   getMeHandler,
   updateMeHandler,
   updateMePasswordHandler,

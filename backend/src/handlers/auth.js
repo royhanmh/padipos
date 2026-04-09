@@ -10,6 +10,7 @@ import {
 import {
   findCashierByEmail,
   findCashierByUuid,
+  findCashierInstanceByEmail,
   findCashierInstanceByUuid,
   createCashier,
 } from "../models/cashierModel.js";
@@ -42,6 +43,18 @@ const updatePasswordSchema = Joi.object({
     .min(8)
     .pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/)
     .required(),
+});
+
+const resetCashierPasswordSchema = Joi.object({
+  email: Joi.string().email().trim().required(),
+  new_password: Joi.string()
+    .min(8)
+    .pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/)
+    .required(),
+});
+
+const requestCashierPasswordResetSchema = Joi.object({
+  email: Joi.string().email().trim().required(),
 });
 
 const generateToken = (payload) => {
@@ -286,6 +299,69 @@ export const registerCashierHandler = async (req, res, next) => {
         role: "cashier",
       },
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetCashierPasswordHandler = async (req, res, next) => {
+  try {
+    const { error, value } = resetCashierPasswordSchema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      res.status(400).json({
+        message: "Validation failed.",
+        errors: error.details.map((detail) => detail.message),
+      });
+      return;
+    }
+
+    const cashier = await findCashierInstanceByEmail(value.email);
+
+    if (!cashier) {
+      res.status(404).json({ message: "Cashier email not found." });
+      return;
+    }
+
+    const hashedPassword = await bcrypt.hash(value.new_password, 10);
+
+    await cashier.update({
+      password: hashedPassword,
+      updated_at: new Date(),
+    });
+
+    res.json({ message: "Your password has been successfully reset." });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const requestCashierPasswordResetHandler = async (req, res, next) => {
+  try {
+    const { error, value } = requestCashierPasswordResetSchema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      res.status(400).json({
+        message: "Validation failed.",
+        errors: error.details.map((detail) => detail.message),
+      });
+      return;
+    }
+
+    const cashier = await findCashierByEmail(value.email);
+
+    if (!cashier) {
+      res.status(404).json({ message: "Cashier email not found." });
+      return;
+    }
+
+    res.json({ message: "Cashier email found." });
   } catch (error) {
     next(error);
   }

@@ -135,6 +135,38 @@ export const useAuthStore = create(
           throw error;
         }
       },
+      requestCashierPasswordReset: async (payload) => {
+        set({ isSubmitting: true, error: "" });
+
+        try {
+          const response = await requestApi("/auth/cashier/request-reset-password", {
+            method: "POST",
+            body: payload,
+          });
+
+          set({ isSubmitting: false, error: "" });
+          return response;
+        } catch (error) {
+          set({ error: error.message, isSubmitting: false });
+          throw error;
+        }
+      },
+      resetCashierPassword: async (payload) => {
+        set({ isSubmitting: true, error: "" });
+
+        try {
+          const response = await requestApi("/auth/cashier/reset-password", {
+            method: "POST",
+            body: payload,
+          });
+
+          set({ isSubmitting: false, error: "" });
+          return response;
+        } catch (error) {
+          set({ error: error.message, isSubmitting: false });
+          throw error;
+        }
+      },
       refreshCurrentUser: async () => {
         const token = get().token;
 

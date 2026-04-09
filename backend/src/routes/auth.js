@@ -4,6 +4,8 @@ import {
   registerAdminHandler,
   loginCashierHandler,
   registerCashierHandler,
+  requestCashierPasswordResetHandler,
+  resetCashierPasswordHandler,
   getMeHandler,
   updateMeHandler,
   updateMePasswordHandler,
@@ -19,6 +21,8 @@ router.post("/admin/register", registerAdminHandler);
 // Cashier auth
 router.post("/cashier/login", loginCashierHandler);
 router.post("/cashier/register", registerCashierHandler);
+router.post("/cashier/request-reset-password", requestCashierPasswordResetHandler);
+router.post("/cashier/reset-password", resetCashierPasswordHandler);
 
 // Current user profile (requires token)
 router.get("/me", authenticate, getMeHandler);
