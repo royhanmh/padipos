@@ -59,7 +59,6 @@ const FilterField = ({ placeholder, icon, suffixIcon }) => {
 };
 
 const DashboardPage = () => {
-
   const { transactions, fetchTransactions } = useTransactionsStore(
     useShallow((state) => ({
       transactions: state.transactions,
@@ -149,6 +148,13 @@ const DashboardPage = () => {
 
   const [activeCategory, setActiveCategory] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [isCompactChart, setIsCompactChart] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return window.matchMedia("(max-width: 1023px)").matches;
+  });
 
   const activeDetail = activeCategory ? categoryDetails[activeCategory] : null;
   const filteredItems = activeDetail
@@ -166,6 +172,29 @@ const DashboardPage = () => {
     setActiveCategory(null);
     setSearchKeyword("");
   };
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 1023px)");
+    const handleChange = (event) => setIsCompactChart(event.matches);
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", handleChange);
+      return () => mediaQuery.removeEventListener("change", handleChange);
+    }
+
+    mediaQuery.addListener(handleChange);
+    return () => mediaQuery.removeListener(handleChange);
+  }, []);
+
+  const chartMargin = isCompactChart
+    ? { top: 8, right: 2, left: -24, bottom: 0 }
+    : { top: 10, right: 10, left: -16, bottom: 0 };
+  const chartTicks = isCompactChart
+    ? [0, 100000, 200000, 300000]
+    : [0, 50000, 100000, 150000, 200000, 250000, 300000];
+  const chartTickFontSize = isCompactChart ? 10 : 12;
+  const chartBarSize = isCompactChart ? 16 : 22;
+  const chartLegendPaddingTop = isCompactChart ? "10px" : "18px";
 
   return (
     <DashboardLayout sidebarProps={{ activeItem: "dashboard" }}>
@@ -215,12 +244,12 @@ const DashboardPage = () => {
             </div>
           </div>
 
-          <div className="mt-7 h-[400px] w-full max-lg:h-[380px]">
+          <div className="mt-7 h-[400px] min-w-0 w-full overflow-hidden max-lg:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={omzetData}
-                margin={{ top: 10, right: 10, left: -16, bottom: 0 }}
-                barCategoryGap={18}
+                margin={chartMargin}
+                barCategoryGap={isCompactChart ? 12 : 18}
               >
                 <CartesianGrid
                   stroke="#E8E8E8"
@@ -231,15 +260,17 @@ const DashboardPage = () => {
                   dataKey="day"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#9C9C9C", fontSize: 12 }}
+                  interval={isCompactChart ? 1 : 0}
+                  tick={{ fill: "#9C9C9C", fontSize: chartTickFontSize }}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#9C9C9C", fontSize: 12 }}
+                  width={isCompactChart ? 34 : 44}
+                  tick={{ fill: "#9C9C9C", fontSize: chartTickFontSize }}
                   tickFormatter={formatAxisTick}
                   domain={[0, 300000]}
-                  ticks={[0, 50000, 100000, 150000, 200000, 250000, 300000]}
+                  ticks={chartTicks}
                 />
                 <Tooltip
                   formatter={(value) => formatCurrency(value)}
@@ -250,10 +281,15 @@ const DashboardPage = () => {
                   }}
                 />
                 <Legend
-                  wrapperStyle={{ paddingTop: "18px" }}
+                  wrapperStyle={{ paddingTop: chartLegendPaddingTop }}
                   iconType="square"
+                  iconSize={isCompactChart ? 10 : 14}
                   formatter={(value) => (
-                    <span className="text-sm text-[#4A4A4A]">{value}</span>
+                    <span
+                      className={`text-[#4A4A4A] ${isCompactChart ? "text-xs" : "text-sm"}`}
+                    >
+                      {value}
+                    </span>
                   )}
                 />
                 <Bar
@@ -261,21 +297,21 @@ const DashboardPage = () => {
                   name="Food"
                   fill="#1C49A6"
                   radius={[3, 3, 0, 0]}
-                  maxBarSize={22}
+                  maxBarSize={chartBarSize}
                 />
                 <Bar
                   dataKey="beverage"
                   name="Beverage"
                   fill="#3572EF"
                   radius={[3, 3, 0, 0]}
-                  maxBarSize={22}
+                  maxBarSize={chartBarSize}
                 />
                 <Bar
                   dataKey="dessert"
                   name="Dessert"
                   fill="#C2D4FA"
                   radius={[3, 3, 0, 0]}
-                  maxBarSize={22}
+                  maxBarSize={chartBarSize}
                 />
               </BarChart>
             </ResponsiveContainer>

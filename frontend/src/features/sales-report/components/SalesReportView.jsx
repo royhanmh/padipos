@@ -40,6 +40,7 @@ const DEFAULT_EXPORT_CONFIG = {
   title: "Sales Report",
   filenamePrefix: "sales-report",
 };
+const MOBILE_SKELETON_CARDS = 4;
 
 const toDateAtStartOfDay = (value) => {
   if (!value) {
@@ -216,6 +217,72 @@ const SalesReportView = ({
     setIsExportOpen(false);
   };
 
+  const handlePrintReceipt = () => {
+    const printContent = document.getElementById("sales-report-receipt-content");
+    if (!printContent) {
+      return;
+    }
+
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "absolute";
+    iframe.style.width = "0px";
+    iframe.style.height = "0px";
+    iframe.style.border = "none";
+    document.body.appendChild(iframe);
+
+    const completeHtml = `
+      <html>
+        <head>
+          <title>POS Receipt</title>
+          <style>
+            @page { margin: 0; }
+            body { margin: 0.5cm; font-family: sans-serif; color: #111; max-width: 340px; }
+            .flex { display: flex; }
+            .justify-between { justify-content: space-between; }
+            .items-center { align-items: center; }
+            .items-start { align-items: flex-start; }
+            .gap-4 { gap: 16px; }
+            .font-semibold { font-weight: 600; }
+            .mt-1 { margin-top: 4px; }
+            .mt-2 { margin-top: 8px; }
+            .mt-2\\.5 { margin-top: 10px; }
+            .mt-3 { margin-top: 12px; }
+            .mt-4 { margin-top: 16px; }
+            .pt-3 { padding-top: 12px; }
+            .pt-4 { padding-top: 16px; }
+            .pb-4 { padding-bottom: 16px; }
+            .px-4 { padding-left: 16px; padding-right: 16px; }
+            .px-5 { padding-left: 20px; padding-right: 20px; }
+            .py-4 { padding-top: 16px; padding-bottom: 16px; }
+            .py-5 { padding-top: 20px; padding-bottom: 20px; }
+            .border-t { border-top-width: 1px; border-top-style: dashed; border-top-color: #cfcfcf; }
+            .text-\\[12px\\] { font-size: 12px; }
+            .text-\\[13px\\] { font-size: 13px; }
+            .text-\\[14px\\] { font-size: 14px; }
+            .text-\\[18px\\] { font-size: 18px; }
+            .text-\\[24px\\] { font-size: 24px; }
+            .text-\\[\\#8E8E8E\\], .text-\\[\\#666666\\], .text-\\[\\#767676\\], .text-\\[\\#6D6D6D\\], .text-\\[\\#585858\\] { color: #555; }
+            .text-\\[\\#323232\\], .text-\\[\\#1E1E1E\\], .text-\\[\\#272727\\], .text-\\[\\#2F2F2F\\] { color: #111; }
+            span[aria-hidden="true"] { display: none; }
+          </style>
+        </head>
+        <body>
+          ${printContent.innerHTML}
+        </body>
+      </html>
+    `;
+
+    iframe.contentDocument.open();
+    iframe.contentDocument.write(completeHtml);
+    iframe.contentDocument.close();
+
+    iframe.onload = () => {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+      setTimeout(() => document.body.removeChild(iframe), 500);
+    };
+  };
+
   const renderOrderTypeLine = (order) => {
     if (order.orderType === "dine-in") {
       return `Dine-in - No.Meja ${order.tableNumber ?? "-"}`;
@@ -329,60 +396,139 @@ const SalesReportView = ({
             />
           </div>
 
-          <div className="mt-5 overflow-hidden rounded-xl border border-[#EFEFEF]">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-245 border-collapse">
-                <thead className="bg-[#F2F2F2] text-left">
-                  <tr className="text-base font-semibold text-[#1F1F1F]">
-                    <th className="px-6 py-5">No Order</th>
-                    <th className="px-6 py-5">Order Date</th>
-                    <th className="px-6 py-5">Order Type</th>
-                    <th className="px-6 py-5">Category</th>
-                    <th className="px-6 py-5">Customer Name</th>
-                    <th className="px-6 py-5 text-center">Detail</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {isLoading ? (
-                    [...Array(5)].map((_, index) => (
-                      <SkeletonTableRow key={index} />
-                    ))
-                  ) : paginatedOrders.length > 0 ? (
-                    paginatedOrders.map((order) => (
-                      <tr
-                        key={order.id ?? order.uuid ?? order.orderNumber}
-                        className="border-t border-[#F0F0F0] text-base text-[#353535]"
-                      >
-                        <td className="px-6 py-5">{order.orderNumber}</td>
-                        <td className="px-6 py-5">{formatSalesOrderDate(order.orderDate)}</td>
-                        <td className="px-6 py-5">{getOrderTypeLabel(order.orderType)}</td>
-                        <td className="px-6 py-5">{getCategoryLabel(order.category)}</td>
-                        <td className="px-6 py-5">{order.customerName}</td>
-                        <td className="px-6 py-5 text-center">
-                          <button
-                            type="button"
-                            aria-label={`Open order ${order.orderNumber}`}
-                            onClick={() => setSelectedOrder(order)}
-                            className="text-[#3572EF] transition hover:text-[#1255DE]"
-                          >
-                            <PiArrowUpRightLight className="inline text-[26px]" />
-                          </button>
+          <div className="mt-5 min-w-0 overflow-hidden rounded-xl border border-[#EFEFEF]">
+            <div className="hidden lg:block">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-245 border-collapse">
+                  <thead className="bg-[#F2F2F2] text-left">
+                    <tr className="text-base font-semibold text-[#1F1F1F]">
+                      <th className="px-6 py-5">No Order</th>
+                      <th className="px-6 py-5">Order Date</th>
+                      <th className="px-6 py-5">Order Type</th>
+                      <th className="px-6 py-5">Category</th>
+                      <th className="px-6 py-5">Customer Name</th>
+                      <th className="px-6 py-5 text-center">Detail</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {isLoading ? (
+                      [...Array(5)].map((_, index) => (
+                        <SkeletonTableRow key={index} />
+                      ))
+                    ) : paginatedOrders.length > 0 ? (
+                      paginatedOrders.map((order) => (
+                        <tr
+                          key={order.id ?? order.uuid ?? order.orderNumber}
+                          className="border-t border-[#F0F0F0] text-base text-[#353535]"
+                        >
+                          <td className="px-6 py-5">{order.orderNumber}</td>
+                          <td className="px-6 py-5">{formatSalesOrderDate(order.orderDate)}</td>
+                          <td className="px-6 py-5">{getOrderTypeLabel(order.orderType)}</td>
+                          <td className="px-6 py-5">{getCategoryLabel(order.category)}</td>
+                          <td className="px-6 py-5">{order.customerName}</td>
+                          <td className="px-6 py-5 text-center">
+                            <button
+                              type="button"
+                              aria-label={`Open order ${order.orderNumber}`}
+                              onClick={() => setSelectedOrder(order)}
+                              className="text-[#3572EF] transition hover:text-[#1255DE]"
+                            >
+                              <PiArrowUpRightLight className="inline text-[26px]" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr className="border-t border-[#F0F0F0]">
+                        <td colSpan={6} className="px-5 py-11 text-center text-base text-[#939393]">
+                          {renderTableState()}
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr className="border-t border-[#F0F0F0]">
-                      <td colSpan={6} className="px-5 py-11 text-center text-base text-[#939393]">
-                        {renderTableState()}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
-            <div className="flex items-center justify-between gap-4 border-t border-[#EFEFEF] px-6 py-5 max-lg:flex-col max-lg:items-start">
-              <label className="flex items-center gap-3 text-base text-[#5E5E5E]">
+            <div className="space-y-3 p-4 lg:hidden">
+              {isLoading ? (
+                [...Array(MOBILE_SKELETON_CARDS)].map((_, index) => (
+                  <div
+                    key={index}
+                    className="rounded-xl border border-[#EFEFEF] bg-white p-4"
+                  >
+                    <div className="h-4 w-24 animate-pulse rounded-md bg-[#F1F1F1]" />
+                    <div className="mt-2 h-6 w-40 animate-pulse rounded-md bg-[#F1F1F1]" />
+                    <div className="mt-4 space-y-2.5">
+                      {[...Array(4)].map((__, innerIndex) => (
+                        <div key={innerIndex} className="flex items-center justify-between gap-4">
+                          <div className="h-3 w-22 animate-pulse rounded-md bg-[#F1F1F1]" />
+                          <div className="h-3 w-32 animate-pulse rounded-md bg-[#F1F1F1]" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              ) : paginatedOrders.length > 0 ? (
+                paginatedOrders.map((order) => (
+                  <article
+                    key={order.id ?? order.uuid ?? order.orderNumber}
+                    className="rounded-xl border border-[#EFEFEF] bg-white p-4"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-xs text-[#9B9B9B]">No Order</p>
+                        <p className="mt-1 truncate text-base font-semibold text-[#1F1F1F]">
+                          {order.orderNumber}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        aria-label={`Open order ${order.orderNumber}`}
+                        onClick={() => setSelectedOrder(order)}
+                        className="text-[#3572EF] transition hover:text-[#1255DE]"
+                      >
+                        <PiArrowUpRightLight className="text-[24px]" />
+                      </button>
+                    </div>
+
+                    <div className="mt-4 space-y-2.5">
+                      <div className="flex items-start justify-between gap-4">
+                        <p className="text-sm text-[#8D8D8D]">Order Date</p>
+                        <p className="max-w-[62%] text-right text-sm text-[#353535]">
+                          {formatSalesOrderDate(order.orderDate)}
+                        </p>
+                      </div>
+                      <div className="flex items-start justify-between gap-4">
+                        <p className="text-sm text-[#8D8D8D]">Order Type</p>
+                        <p className="max-w-[62%] text-right text-sm text-[#353535]">
+                          {getOrderTypeLabel(order.orderType)}
+                        </p>
+                      </div>
+                      <div className="flex items-start justify-between gap-4">
+                        <p className="text-sm text-[#8D8D8D]">Category</p>
+                        <p className="max-w-[62%] text-right text-sm text-[#353535]">
+                          {getCategoryLabel(order.category)}
+                        </p>
+                      </div>
+                      <div className="flex items-start justify-between gap-4">
+                        <p className="text-sm text-[#8D8D8D]">Customer Name</p>
+                        <p className="max-w-[62%] break-words text-right text-sm text-[#353535]">
+                          {order.customerName || "-"}
+                        </p>
+                      </div>
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <div className="rounded-xl border border-dashed border-[#E8E8E8] bg-white px-4 py-8 text-center text-sm text-[#939393]">
+                  {renderTableState()}
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between gap-4 border-t border-[#EFEFEF] px-6 py-5 max-lg:flex-col max-lg:items-stretch max-lg:px-4 max-lg:py-4">
+              <label className="flex items-center gap-3 text-base text-[#5E5E5E] max-lg:justify-between">
                 <span>Show:</span>
                 <select
                   value={rowsPerPage}
@@ -398,11 +544,13 @@ const SalesReportView = ({
                 <span>Entries</span>
               </label>
 
-              <PaginationControls
-                page={page}
-                totalPages={totalPages}
-                onPageChange={setPage}
-              />
+              <div className="max-lg:overflow-x-auto">
+                <PaginationControls
+                  page={page}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -414,89 +562,97 @@ const SalesReportView = ({
           onClick={closeDetailModal}
         >
           <div
-            className="relative max-h-[90vh] w-full max-w-155 overflow-y-auto rounded-[20px] bg-white px-9 py-10 shadow-[0_22px_60px_rgba(17,24,39,0.2)] scrollbar-hide max-lg:px-5 max-lg:py-6 xl:scale-80"
+            className="relative max-h-[90vh] w-full max-w-155 overflow-y-auto rounded-[20px] bg-white px-9 py-10 shadow-[0_22px_60px_rgba(17,24,39,0.2)] scrollbar-hide max-lg:max-h-[calc(100vh-1.25rem)] max-lg:max-w-[360px] max-lg:rounded-[16px] max-lg:px-4 max-lg:py-4 xl:scale-80"
             onClick={(event) => event.stopPropagation()}
           >
             <button
               type="button"
               aria-label="Close detail"
               onClick={closeDetailModal}
-              className="absolute right-6 top-6 text-[#4A4A4A] transition hover:text-[#1B1B1B] max-lg:right-4 max-lg:top-4"
+              className="absolute right-6 top-6 text-[#4A4A4A] transition hover:text-[#1B1B1B] max-lg:right-3 max-lg:top-3"
             >
-              <PiXLight className="text-[26px]" />
+              <PiXLight className="text-[26px] max-lg:text-[20px]" />
             </button>
 
-            <h2 className="pt-4 text-center text-[36px] font-semibold tracking-[-0.03em] text-[#111111]">
+            <h2 className="pt-4 text-center text-[36px] font-semibold tracking-[-0.03em] text-[#111111] max-lg:pt-1 max-lg:text-[22px]">
               Transaction Detail
             </h2>
 
-            <div className="mx-auto mt-7 w-full max-w-102.5">
-              <div className="overflow-hidden rounded-t-xs bg-[#F3F3F3] px-5 py-5">
-                <p className="text-[13px] text-[#8E8E8E]">
+            <div id="sales-report-receipt-content" className="mx-auto mt-7 w-full max-w-102.5 max-lg:mt-4">
+              <div className="overflow-hidden rounded-t-xs bg-[#F3F3F3] px-5 py-5 max-lg:px-3 max-lg:py-3">
+                <p className="text-[13px] text-[#8E8E8E] max-lg:text-[11px]">
                   No Order <span className="text-[#666666]">{selectedOrder.orderNumber}</span>
                 </p>
-                <p className="mt-2 text-[13px] text-[#8E8E8E]">
+                <p className="mt-2 text-[13px] text-[#8E8E8E] max-lg:mt-1.5 max-lg:text-[11px]">
                   Order Date <span className="text-[#666666]">{formatSalesOrderDate(selectedOrder.orderDate)}</span>
                 </p>
-                <p className="mt-2 text-[13px] text-[#8E8E8E]">
+                <p className="mt-2 text-[13px] text-[#8E8E8E] max-lg:mt-1.5 max-lg:text-[11px]">
                   Customer Name <span className="text-[#666666]">{selectedOrder.customerName}</span>
                 </p>
-                <p className="mt-2.5 text-[14px] text-[#323232]">{renderOrderTypeLine(selectedOrder)}</p>
+                <p className="mt-2.5 text-[14px] text-[#323232] max-lg:mt-2 max-lg:text-[12px]">{renderOrderTypeLine(selectedOrder)}</p>
 
-                <div className="mt-4 border-t border-dashed border-[#CFCFCF] pt-4">
-                  <div className="space-y-4">
+                <div className="mt-4 border-t border-dashed border-[#CFCFCF] pt-4 max-lg:mt-3 max-lg:pt-3">
+                  <div className="space-y-4 max-lg:space-y-3">
                     {selectedOrder.items.map((item) => (
                       <div key={item.id ?? item.name} className="flex items-start justify-between gap-4">
                         <div>
-                          <p className="text-[18px] font-semibold text-[#1E1E1E]">{item.name}</p>
-                          <p className="text-[14px] text-[#767676]">
-                            {item.quantity} x {formatCurrency(item.unitPrice)}
+                          <p className="text-[18px] font-semibold text-[#1E1E1E] max-lg:text-[15px]">{item.name}</p>
+                          <p className="text-[14px] text-[#767676] max-lg:text-[12px]">
+                            {item.quantity} x {formatCurrency(item.unitPrice ?? item.price ?? 0)}
                           </p>
                         </div>
-                        <p className="text-[12px] font-semibold text-[#272727]">
-                          {formatCurrency(item.quantity * item.unitPrice)}
+                        <p className="text-[12px] font-semibold text-[#272727] max-lg:text-[11px]">
+                          {formatCurrency(item.quantity * (item.unitPrice ?? item.price ?? 0))}
                         </p>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="mt-4 border-t border-dashed border-[#CFCFCF] pt-4">
-                  <div className="flex items-center justify-between text-[14px] text-[#6D6D6D]">
+                <div className="mt-4 border-t border-dashed border-[#CFCFCF] pt-4 max-lg:mt-3 max-lg:pt-3">
+                  <div className="flex items-center justify-between text-[14px] text-[#6D6D6D] max-lg:text-[12px]">
                     <p>Sub Total</p>
                     <p>{formatCurrency(selectedOrder.subTotal)}</p>
                   </div>
-                  <div className="mt-2.5 flex items-center justify-between text-[14px] text-[#6D6D6D]">
+                  <div className="mt-2.5 flex items-center justify-between text-[14px] text-[#6D6D6D] max-lg:mt-2 max-lg:text-[12px]">
                     <p>Tax</p>
                     <p>{formatCurrency(selectedOrder.tax)}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="relative border-t border-dashed border-[#CFCFCF] bg-[#ECECEC] px-5 pb-5 pt-6">
+              <div className="relative border-t border-dashed border-[#CFCFCF] bg-[#ECECEC] px-5 pb-5 pt-6 max-lg:px-3 max-lg:pb-3 max-lg:pt-4">
                 <span
                   aria-hidden="true"
-                  className="absolute -left-3 top-0 h-6 w-6 -translate-y-1/2 rounded-full bg-white"
+                  className="absolute -left-3 top-0 h-6 w-6 -translate-y-1/2 rounded-full bg-white max-lg:-left-2 max-lg:h-4 max-lg:w-4"
                 />
                 <span
                   aria-hidden="true"
-                  className="absolute -right-3 top-0 h-6 w-6 -translate-y-1/2 rounded-full bg-white"
+                  className="absolute -right-3 top-0 h-6 w-6 -translate-y-1/2 rounded-full bg-white max-lg:-right-2 max-lg:h-4 max-lg:w-4"
                 />
                 <div className="flex items-center justify-between">
-                  <p className="text-[18px] text-[#2F2F2F]">Total</p>
-                  <p className="text-[24px] font-semibold text-[#272727]">{formatCurrency(selectedOrder.total)}</p>
+                  <p className="text-[18px] text-[#2F2F2F] max-lg:text-[14px]">Total</p>
+                  <p className="text-[24px] font-semibold text-[#272727] max-lg:text-[18px]">{formatCurrency(selectedOrder.total)}</p>
                 </div>
 
-                <div className="mt-3 flex items-center justify-between text-base text-[#585858]">
+                <div className="mt-3 flex items-center justify-between text-base text-[#585858] max-lg:mt-2 max-lg:text-[12px]">
                   <p>Diterima</p>
                   <p>{formatCurrency(selectedOrder.amountPaid)}</p>
                 </div>
-                <div className="mt-2.5 flex items-center justify-between pb-10 text-base text-[#585858]">
+                <div className="mt-2.5 flex items-center justify-between pb-10 text-base text-[#585858] max-lg:mt-2 max-lg:pb-6 max-lg:text-[12px]">
                   <p>Kembalian</p>
                   <p>{formatCurrency(selectedOrder.change)}</p>
                 </div>
               </div>
             </div>
+
+            <button
+              type="button"
+              onClick={handlePrintReceipt}
+              className="mx-auto mt-5 flex h-[42px] w-full max-w-102.5 items-center justify-center rounded-[10px] bg-[#3572EF] text-[14px] font-medium text-white transition hover:brightness-105 max-lg:mt-4 max-lg:h-[40px] max-lg:max-w-none"
+            >
+              Print Struk
+            </button>
           </div>
         </div>
       ) : null}
