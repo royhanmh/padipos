@@ -25,6 +25,7 @@ import {
 import StatCardComponent from "../../components/StatCardComponent";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import DatePickerField from "../../features/sales-report/components/DatePickerField";
+import { formatTodayLabel } from "../../features/sales-report/utils/reportFormatters";
 
 const formatAxisTick = (value) => {
   if (value === 0) {
@@ -289,9 +290,7 @@ const DashboardPage = () => {
           <h1 className="text-[28px] font-semibold tracking-[-0.03em] text-[#242424] max-lg:text-[26px]">
             Dashboard
           </h1>
-          <p className="text-base text-[#757575]">
-            Today, Rabu, 8 April 2026
-          </p>
+          <p className="text-base text-[#757575]">{formatTodayLabel()}</p>
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-5 max-lg:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-6">
