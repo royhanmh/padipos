@@ -743,7 +743,7 @@ const CatalogPage = () => {
               </p>
             </div>
 
-            <div className="mt-3 overflow-y-auto pr-1 max-lg:pr-0 xl:min-h-0 xl:flex-1">
+            <div className="mt-3 overflow-y-auto scrollbar-hide pr-1 max-lg:pr-0 xl:min-h-0 xl:flex-1">
               {isLoading ? (
                 <div className="grid grid-cols-3 gap-4 max-lg:grid-cols-2 xl:grid-cols-4">
                   {[...Array(8)].map((_, index) => (
