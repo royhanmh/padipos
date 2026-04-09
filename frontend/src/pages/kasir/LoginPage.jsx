@@ -7,6 +7,8 @@ import LoginCardComponent from "../../components/LoginCardComponent";
 import PrimaryButtonComponent from "../../components/PrimaryButtonComponent";
 import { getHomePathForRole, useAuthStore } from "../../stores/authStore";
 
+import DocumentTitle from "../../components/DocumentTitle";
+
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -67,6 +69,7 @@ const LoginPage = () => {
 
   return (
     <AuthPageShell>
+      <DocumentTitle title="Login Kasir" />
       <LoginCardComponent>
         <form onSubmit={handleSubmit}>
           <DefaultInputComponent

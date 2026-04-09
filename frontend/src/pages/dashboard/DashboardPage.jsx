@@ -161,6 +161,8 @@ const buildOmzetData = (
   }));
 };
 
+import DocumentTitle from "../../components/DocumentTitle";
+
 const DashboardPage = () => {
   const { transactions, isLoading, fetchTransactions } = useTransactionsStore(
     useShallow((state) => ({
@@ -319,6 +321,7 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout sidebarProps={{ activeItem: "dashboard" }}>
+      <DocumentTitle title="Dashboard Ringkasan" />
       <section className="min-h-full bg-[#F7F7F7] px-6 py-6 max-lg:px-4 max-lg:py-4 xl:px-8 xl:py-7">
         <div className="flex items-center justify-between gap-3 max-lg:flex-col max-lg:items-start">
           <h1 className="text-[28px] font-semibold tracking-[-0.03em] text-[#242424] max-lg:text-[26px]">

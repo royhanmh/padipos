@@ -182,6 +182,8 @@ const PanelFrame = ({ title, actions, children }) => {
   );
 };
 
+import DocumentTitle from "../../components/DocumentTitle";
+
 const CatalogPage = () => {
   const {
     products: menus,
@@ -708,6 +710,7 @@ const CatalogPage = () => {
         searchPlaceholder: "Enter the keyword here...",
       }}
     >
+      <DocumentTitle title="Kelola Katalog" />
       <section className="relative min-h-full bg-[#F7F7F7] px-6 py-6 max-lg:px-4 max-lg:py-4 xl:px-8 xl:py-7">
         <div className="grid min-h-0 grid-cols-[minmax(0,1fr)_340px] gap-5 max-lg:grid-cols-1 lg:h-[calc(100vh-120px)] xl:h-[calc(100vh-120px)] xl:grid-cols-[minmax(0,1fr)_430px]">
           <div className="flex min-h-0 flex-col">

@@ -3,6 +3,7 @@ import { useShallow } from "zustand/react/shallow";
 import SalesReportView from "../../features/sales-report/components/SalesReportView";
 import { toReportOrders } from "../../lib/transactionAdapters";
 import { useTransactionsStore } from "../../stores/transactionsStore";
+import DocumentTitle from "../../components/DocumentTitle";
 
 const SalesReportPage = () => {
   const { transactions, isLoading, error, fetchTransactions } = useTransactionsStore(
@@ -19,17 +20,21 @@ const SalesReportPage = () => {
   }, [fetchTransactions]);
 
   return (
-    <SalesReportView
+    <>
+      <DocumentTitle title="Laporan Penjualan" />
+      <SalesReportView
       orders={toReportOrders(transactions)}
       isLoading={isLoading}
       errorMessage={error}
-      pageTitle="Sales Report"
+      pageTitle="Laporan Penjualan"
       layoutSidebarProps={{ activeItem: "orders" }}
       exportConfig={{
         title: "Sales Report",
         filenamePrefix: "sales-report",
       }}
+      showStats
     />
+    </>
   );
 };
 

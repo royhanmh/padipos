@@ -6,6 +6,7 @@ import SalesReportView from "../../features/sales-report/components/SalesReportV
 import { toReportOrders } from "../../lib/transactionAdapters";
 import { useAuthStore } from "../../stores/authStore";
 import { useTransactionsStore } from "../../stores/transactionsStore";
+import DocumentTitle from "../../components/DocumentTitle";
 
 const KasirSalesReportPage = () => {
   const user = useAuthStore((state) => state.user);
@@ -23,7 +24,9 @@ const KasirSalesReportPage = () => {
   }, [fetchTransactions]);
 
   return (
-    <SalesReportView
+    <>
+      <DocumentTitle title="Laporan Harian Kasir" />
+      <SalesReportView
       orders={toReportOrders(transactions)}
       isLoading={isLoading}
       errorMessage={error}
@@ -62,6 +65,7 @@ const KasirSalesReportPage = () => {
       }}
       showStats
     />
+    </>
   );
 };
 

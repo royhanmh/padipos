@@ -24,6 +24,7 @@ import { useTransactionsStore } from "../../stores/transactionsStore";
 import { useArchiveStore } from "../../stores/archiveStore";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import SkeletonCard from "../../components/SkeletonCard";
+import DocumentTitle from "../../components/DocumentTitle";
 
 const ORDER_TYPE = { DINE_IN: "dine-in", TAKE_AWAY: "take-away" };
 const TAX_AMOUNT = 5000;
@@ -378,11 +379,10 @@ const KasirCatalogPage = () => {
         searchValue,
         onSearchChange: setSearchValue,
         searchPlaceholder: "Enter the keyword here...",
-        beforeProfile: (
-          <CashierOrderArchiveControl onRestore={restoreArchiveOrder} />
-        ),
+        beforeProfile: <CashierOrderArchiveControl onRestore={restoreArchiveOrder} />,
       }}
     >
+      <DocumentTitle title="Katalog Kasir" />
       <section className="relative min-h-full bg-[#F7F7F7] px-6 py-6 max-lg:px-4 max-lg:py-4 xl:px-8 xl:py-7">
         <div className="grid min-h-0 grid-cols-[minmax(0,1fr)_340px] gap-5 max-lg:grid-cols-1 xl:h-[calc(100vh-120px)] xl:grid-cols-[minmax(0,1fr)_430px]">
           <div className="flex min-h-0 flex-col">

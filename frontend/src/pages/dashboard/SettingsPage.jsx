@@ -1,5 +1,6 @@
 import SettingsView from "../../features/settings/components/SettingsView";
 import { useAuthStore } from "../../stores/authStore";
+import DocumentTitle from "../../components/DocumentTitle";
 
 const DEFAULT_AVATAR = "/images/UserImage.png";
 const formatStatus = (status) => (status === "nonactive" ? "Inactive" : "Active");
@@ -8,7 +9,9 @@ const SettingsPage = () => {
   const user = useAuthStore((state) => state.user);
 
   return (
-    <SettingsView
+    <>
+      <DocumentTitle title="Pengaturan Admin" />
+      <SettingsView
       layoutSidebarProps={{ activeItem: "settings" }}
       accountDefaults={{
         email: user?.email,
@@ -18,6 +21,7 @@ const SettingsPage = () => {
         avatar: user?.image_profile || DEFAULT_AVATAR,
       }}
     />
+    </>
   );
 };
 

@@ -1,9 +1,12 @@
 import { PiCloudSlashLight } from "react-icons/pi";
+import DocumentTitle from "../../components/DocumentTitle";
 import SystemStatePage from "../../components/SystemStatePage";
 
 const ServerErrorPage = () => {
   return (
-    <SystemStatePage
+    <>
+      <DocumentTitle title="Kesalahan Server" />
+      <SystemStatePage
       tone="error"
       icon={PiCloudSlashLight}
       title="Server Error"
@@ -17,6 +20,7 @@ const ServerErrorPage = () => {
         to: "/",
       }}
     />
+    </>
   );
 };
 

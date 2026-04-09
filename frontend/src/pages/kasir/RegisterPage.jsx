@@ -7,6 +7,8 @@ import LoginCardComponent from "../../components/LoginCardComponent";
 import PrimaryButtonComponent from "../../components/PrimaryButtonComponent";
 import { useAuthStore } from "../../stores/authStore";
 
+import DocumentTitle from "../../components/DocumentTitle";
+
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { registerCashier, isSubmitting, error, clearError } = useAuthStore(
@@ -84,6 +86,7 @@ const RegisterPage = () => {
 
   return (
     <AuthPageShell>
+      <DocumentTitle title="Register Akun Kasir" />
       <LoginCardComponent subtitle="Create Your Account Here">
         <form onSubmit={handleSubmit}>
           <DefaultInputComponent

@@ -1,4 +1,5 @@
 import { PiMagnifyingGlassLight } from "react-icons/pi";
+import DocumentTitle from "../../components/DocumentTitle";
 import SystemStatePage from "../../components/SystemStatePage";
 
 const NotFoundPage = () => {
