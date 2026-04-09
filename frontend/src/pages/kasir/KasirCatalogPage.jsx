@@ -499,13 +499,15 @@ const KasirCatalogPage = () => {
           </div>
 
           <aside
-            className={`transition-all duration-300 scrollbar-hide lg:flex lg:h-full lg:min-h-0 lg:overflow-y-auto lg:rounded-2xl lg:bg-white lg:px-5 lg:py-5 lg:shadow-[0_12px_30px_rgba(25,45,88,0.04)] ${
+            className={`transition-all duration-300 lg:block lg:h-full lg:min-h-0 lg:overflow-y-auto lg:rounded-2xl lg:bg-white lg:px-5 lg:py-5 lg:shadow-[0_12px_30px_rgba(25,45,88,0.04)] ${
               isCartOpen
-                ? "fixed inset-0 z-50 flex flex-col bg-white p-6 md:p-8"
+                ? "fixed inset-0 z-50 flex flex-col bg-white lg:static lg:bg-transparent"
                 : "hidden"
-            } ${isEmpty ? "lg:flex lg:flex-col" : "lg:flex lg:flex-col"}`}
+            } lg:block`}
           >
-            <div className="flex items-start justify-between">
+            <div className="flex-1 min-h-0">
+              <div className="flex h-full min-h-0 flex-col rounded-none bg-white p-6 md:p-8 lg:h-auto lg:min-h-fit lg:rounded-none lg:bg-transparent lg:p-0 lg:shadow-none">
+            <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-xl font-semibold text-[#171717]">List Pesanan</h2>
                 <p className="mt-1 text-xs text-[#A2A2A2]">
@@ -604,21 +606,23 @@ const KasirCatalogPage = () => {
             </div>
 
             {isEmpty ? (
-              <div className="flex flex-1 flex-col">
+              <div className="mt-4 flex min-h-0 flex-1 flex-col lg:block">
                 <div className="flex flex-1 items-center justify-center">
                   <p className="text-[20px] text-[#909090]">No Menu Selected</p>
                 </div>
-                <button
-                  type="button"
-                  disabled
-                  className="h-11 w-full rounded-xl bg-[#B6B6B8] text-[16px] font-medium text-[#ECECEC]"
-                >
-                  Pay
-                </button>
+                <div className="mt-4 border-t border-[#EFEFEF] pt-4">
+                  <button
+                    type="button"
+                    disabled
+                    className="h-11 w-full rounded-xl bg-[#B6B6B8] text-[16px] font-medium text-[#ECECEC]"
+                  >
+                    Pay
+                  </button>
+                </div>
               </div>
             ) : (
-              <div className="mt-4 flex min-h-0 flex-1 flex-col">
-                <div className="pr-1">
+              <div className="mt-4 flex min-h-0 flex-1 flex-col lg:block">
+                <div className="min-h-0 flex-1 overflow-y-auto pr-1 scrollbar-hide lg:flex-none lg:overflow-visible lg:pr-0">
                   <div className="space-y-5">
                     {cartItems.map((item) => (
                       <article key={item.id} className="flex gap-3 relative">
@@ -723,7 +727,7 @@ const KasirCatalogPage = () => {
                   </div>
                 </div>
 
-                <div className="mt-4">
+                <div className="mt-4 border-t border-[#EFEFEF] pt-4">
                   <div className="relative rounded-[12px] bg-[#F7F7F7] pb-4 pt-4">
                     <div className="px-5">
                       <div className="flex items-center justify-between text-[13px] text-[#737373]">
@@ -810,6 +814,8 @@ const KasirCatalogPage = () => {
                 </div>
               </div>
             )}
+              </div>
+            </div>
           </aside>
         </div>
       </section>
