@@ -9,6 +9,7 @@ import {
   PiBowlFoodLight,
   PiCoffeeLight,
   PiCookieLight,
+  PiMagnifyingGlassLight,
 } from "react-icons/pi";
 import StatCardComponent from "../../../components/StatCardComponent";
 import { exportSalesToExcel, exportSalesToPdf } from "../export";
@@ -102,6 +103,8 @@ const SalesReportView = ({
   const [page, setPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   const exportMenuRef = useRef(null);
 
@@ -144,33 +147,77 @@ const SalesReportView = ({
     return orders.filter((order) => isSameLocalDayAsToday(order.orderDate));
   }, [orders]);
 
-  const stats = useMemo(() => {
+  const { stats, categoryDetails } = useMemo(() => {
     let totalOmzet = 0;
     let allMenuSales = 0;
     let foodsCount = 0;
     let beveragesCount = 0;
     let dessertsCount = 0;
 
+    const categoryItemSales = {
+      food: {},
+      beverage: {},
+      dessert: {},
+    };
+
     todayOrders.forEach((order) => {
       totalOmzet += order.total;
       (order.items || []).forEach((item) => {
         allMenuSales += item.quantity;
         const cat = item.category;
+
         if (cat === "food") foodsCount += item.quantity;
         if (cat === "beverage") beveragesCount += item.quantity;
         if (cat === "dessert") dessertsCount += item.quantity;
+
+        if (cat && categoryItemSales[cat]) {
+          categoryItemSales[cat][item.name] = (categoryItemSales[cat][item.name] || 0) + item.quantity;
+        }
       });
     });
 
-    return [
+    const formatCatData = (catKey, title) => {
+      const items = Object.keys(categoryItemSales[catKey]).map(name => ({
+        name,
+        totalSales: categoryItemSales[catKey][name]
+      })).sort((a,b) => b.totalSales - a.totalSales);
+      return { title, items };
+    };
+
+    const computedCategoryDetails = {
+      food: formatCatData("food", "Foods"),
+      beverage: formatCatData("beverage", "Beverages"),
+      dessert: formatCatData("dessert", "Desserts")
+    };
+
+    const computedStats = [
       { label: "Total Orders", value: String(todayOrders.length), icon: PiReceiptLight },
       { label: "Total Omzet", value: formatCurrency(totalOmzet), icon: PiCoinsLight },
       { label: "All Menu Orders", value: String(allMenuSales), icon: PiNotebookLight },
-      { label: "Foods", value: String(foodsCount), icon: PiBowlFoodLight, accent: true },
-      { label: "Beverages", value: String(beveragesCount), icon: PiCoffeeLight, accent: true },
-      { label: "Desserts", value: String(dessertsCount), icon: PiCookieLight, accent: true },
+      { label: "Foods", value: String(foodsCount), icon: PiBowlFoodLight, accent: true, categoryKey: "food" },
+      { label: "Beverages", value: String(beveragesCount), icon: PiCoffeeLight, accent: true, categoryKey: "beverage" },
+      { label: "Desserts", value: String(dessertsCount), icon: PiCookieLight, accent: true, categoryKey: "dessert" },
     ];
+
+    return { stats: computedStats, categoryDetails: computedCategoryDetails };
   }, [todayOrders]);
+
+  const activeDetail = activeCategory ? categoryDetails[activeCategory] : null;
+  const filteredItems = activeDetail
+    ? activeDetail.items.filter((item) =>
+        item.name.toLowerCase().includes(searchKeyword.toLowerCase()),
+      )
+    : [];
+
+  const openCategoryModal = (category) => {
+    setActiveCategory(category);
+    setSearchKeyword("");
+  };
+
+  const closeCategoryModal = () => {
+    setActiveCategory(null);
+    setSearchKeyword("");
+  };
 
   useEffect(() => {
     if (!isExportOpen) {
@@ -330,7 +377,11 @@ const SalesReportView = ({
         {showStats && (
           <div className="mt-6 grid grid-cols-2 gap-5 max-lg:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-6">
             {stats.map((stat) => (
-              <StatCardComponent key={stat.label} {...stat} />
+              <StatCardComponent
+                key={stat.label}
+                {...stat}
+                onClick={stat.categoryKey ? () => openCategoryModal(stat.categoryKey) : undefined}
+              />
             ))}
           </div>
         )}
@@ -668,6 +719,63 @@ const SalesReportView = ({
             >
               Print Struk
             </button>
+          </div>
+        </div>
+      ) : null}
+      {activeDetail ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(31,41,55,0.18)] px-4"
+          onClick={closeCategoryModal}
+        >
+          <div
+            className="w-full max-w-[500px] rounded-xl bg-white shadow-[0_24px_60px_rgba(17,24,39,0.18)] max-lg:max-w-105"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-[#EFEFEF] px-5 py-4">
+              <h3 className="text-[34px] font-semibold tracking-[-0.03em] text-[#212121] max-lg:text-[32px]">
+                {activeDetail.title}
+              </h3>
+              <button
+                type="button"
+                aria-label="Close popup"
+                className="flex h-10 w-10 items-center justify-center rounded-full text-[#646464] transition hover:bg-[#F6F6F6] max-lg:h-9 max-lg:w-9"
+                onClick={closeCategoryModal}
+              >
+                <PiXLight className="text-[22px]" />
+              </button>
+            </div>
+
+            <div className="px-5 py-4">
+              <label className="relative block">
+                <PiMagnifyingGlassLight className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-[#C2C2C2]" />
+                <input
+                  type="text"
+                  value={searchKeyword}
+                  onChange={(event) => setSearchKeyword(event.target.value)}
+                  placeholder="Enter the keyword here..."
+                  className="h-12 w-full rounded-xl border border-[#E9E9E9] bg-white pl-11 pr-4 text-base text-[#4B4B4B] outline-none placeholder:text-[#D0D0D0] focus:border-[#C8D8FF] max-lg:h-11 max-lg:pl-10"
+                />
+              </label>
+
+              <div className="mt-4 overflow-hidden rounded-xl border border-[#F0F0F0]">
+                <div className="grid grid-cols-[1fr_132px] bg-[#F7F7F7] px-5 py-3 text-sm font-semibold text-[#2F2F2F]">
+                  <p>Menu Name</p>
+                  <p>Total Sales</p>
+                </div>
+
+                <div className="max-h-72 overflow-y-auto">
+                  {filteredItems.map((item) => (
+                    <div
+                      key={item.name}
+                      className="grid grid-cols-[1fr_132px] border-t border-[#F3F3F3] px-5 py-4 text-base text-[#313131]"
+                    >
+                      <p>{item.name}</p>
+                      <p>{item.totalSales}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       ) : null}
