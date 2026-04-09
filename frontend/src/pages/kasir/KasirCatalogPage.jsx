@@ -277,7 +277,7 @@ const KasirCatalogPage = () => {
       setOrderNumber(createOrderNumber());
     } catch (error) {
       console.error(error);
-      alert(error.message || "Failed to create transaction.");
+      alert(error?.message || "Unable to complete the transaction right now.");
     }
   };
 

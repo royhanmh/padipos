@@ -9,6 +9,12 @@ export class ApiError extends Error {
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000/api";
+const FRIENDLY_NETWORK_ERROR_MESSAGE =
+  "Unable to reach the server. Please try again in a moment.";
+const FRIENDLY_SERVER_ERROR_MESSAGE =
+  "Something went wrong on our side. Please try again.";
+
+const isDevelopment = import.meta.env.DEV;
 
 const buildHeaders = ({ token, headers, body }) => {
   const nextHeaders = new Headers(headers ?? {});
@@ -50,36 +56,62 @@ const parseResponseBody = async (response) => {
   return null;
 };
 
-export const requestApi = async (path, options = {}) => {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    method: options.method ?? "GET",
-    headers: buildHeaders({
-      token: options.token,
-      headers: options.headers,
-      body: options.body,
-    }),
-    body: buildBody(options.body),
-    signal: options.signal,
+const buildNetworkError = (error) => {
+  return new ApiError(
+    isDevelopment && error?.message
+      ? `${FRIENDLY_NETWORK_ERROR_MESSAGE} (${error.message})`
+      : FRIENDLY_NETWORK_ERROR_MESSAGE,
+    {
+      status: 0,
+      details: [],
+      data: null,
+    },
+  );
+};
+
+const buildHttpError = (response, responseBody) => {
+  const textMessage =
+    typeof responseBody === "string" && responseBody.trim()
+      ? responseBody.trim()
+      : null;
+  const status = response.status;
+  const isServerError = status >= 500;
+  const backendMessage =
+    responseBody?.message ?? responseBody?.error?.message ?? textMessage ?? "";
+
+  const message = isServerError
+    ? FRIENDLY_SERVER_ERROR_MESSAGE
+    : backendMessage || "Request failed.";
+
+  return new ApiError(message, {
+    status,
+    details: responseBody?.errors ?? [],
+    data: isDevelopment ? responseBody : null,
   });
+};
+
+export const requestApi = async (path, options = {}) => {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      method: options.method ?? "GET",
+      headers: buildHeaders({
+        token: options.token,
+        headers: options.headers,
+        body: options.body,
+      }),
+      body: buildBody(options.body),
+      signal: options.signal,
+    });
+  } catch (error) {
+    throw buildNetworkError(error);
+  }
 
   const responseBody = await parseResponseBody(response);
 
   if (!response.ok) {
-    const textMessage =
-      typeof responseBody === "string" && responseBody.trim()
-        ? responseBody.trim()
-        : null;
-    const message =
-      responseBody?.message ??
-      responseBody?.error?.message ??
-      textMessage ??
-      "Request failed.";
-
-    throw new ApiError(message, {
-      status: response.status,
-      details: responseBody?.errors ?? [],
-      data: responseBody,
-    });
+    throw buildHttpError(response, responseBody);
   }
 
   return responseBody;
