@@ -436,7 +436,7 @@ const DashboardPage = () => {
                     width={50}
                     tick={{ fill: "#9C9C9C", fontSize: chartTickFontSize }}
                     tickFormatter={formatAxisTick}
-                    domain={[0, 300000]}
+                    domain={[0, (dataMax) => Math.max(300000, Math.ceil(dataMax / 50000) * 50000)]}
                     ticks={chartTicks}
                   />
                   <Tooltip
