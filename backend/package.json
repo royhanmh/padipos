@@ -7,7 +7,12 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
-    "seed": "node src/seeder.js"
+    "seed": "npm run db:seed:all",
+    "db:migrate": "node src/db/migrate.js",
+    "db:migrate:undo": "node src/db/migrate.js undo",
+    "db:seed:all": "node src/db/seed.js",
+    "db:seed:undo:all": "node src/db/seed.js undo:all",
+    "db:reset": "node src/db/reset.js"
   },
   "keywords": [],
   "author": "",

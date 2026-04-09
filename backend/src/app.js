@@ -2,7 +2,6 @@ import cors from "cors";
 import express from "express";
 import { sequelize } from "./models/index.js";
 import routes from "./routes/index.js";
-import { prepareSchema } from "./prepareSchema.js";
 
 const FRONTEND_ORIGIN =
   (process.env.FRONTEND_ORIGIN ?? "http://localhost:5173").replace(/\/$/, "");
@@ -47,10 +46,6 @@ export const startServer = async () => {
   try {
     await sequelize.authenticate();
     console.log("Database connection established");
-
-    await prepareSchema();
-    await sequelize.sync({ alter: true });
-    console.log("Database synced");
 
     const app = createApp();
     const port = Number(process.env.PORT) || 4000;
