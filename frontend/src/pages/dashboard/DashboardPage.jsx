@@ -88,15 +88,22 @@ const createDateRangeMap = (start, finish) => {
     // For short ranges, show "Mon". For longer ranges, show "1 Mar"
     const diffTime = Math.abs(end - current);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     let label;
     if (diffDays <= 7) {
-      label = date.toLocaleDateString("en-US", { weekday: "short" });
+      label = date.toLocaleDateString("id-ID", { weekday: "short" });
     } else {
-      label = `${date.getDate()} ${date.toLocaleDateString("en-US", { month: "short" })}`;
+      label = `${date.getDate()} ${date.toLocaleDateString("id-ID", { month: "short" })}`;
     }
 
-    dayMap[dateKey] = { day: label, food: 0, beverage: 0, dessert: 0 };
+    const fullDate = date.toLocaleDateString("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    dayMap[dateKey] = { day: label, fullDate, food: 0, beverage: 0, dessert: 0 };
     date.setDate(date.getDate() + 1);
   }
 
@@ -276,8 +283,8 @@ const DashboardPage = () => {
   }, []);
 
   const chartMargin = isCompactChart
-    ? { top: 8, right: 5, left: 10, bottom: 0 }
-    : { top: 10, right: 10, left: 10, bottom: 0 };
+    ? { top: 8, right: 5, left: -15, bottom: 0 }
+    : { top: 10, right: 10, left: -10, bottom: 0 };
   const chartTicks = [0, 50000, 100000, 150000, 200000, 250000, 300000];
   const chartTickFontSize = isCompactChart ? 10 : 12;
   const chartBarSize = isCompactChart ? 16 : 22;
@@ -426,13 +433,19 @@ const DashboardPage = () => {
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    width={80}
+                    width={50}
                     tick={{ fill: "#9C9C9C", fontSize: chartTickFontSize }}
                     tickFormatter={formatAxisTick}
                     domain={[0, 300000]}
                     ticks={chartTicks}
                   />
                   <Tooltip
+                    labelFormatter={(value, payload) => {
+                      if (payload && payload.length > 0) {
+                        return payload[0].payload.fullDate;
+                      }
+                      return value;
+                    }}
                     formatter={(value) => formatCurrency(value)}
                     contentStyle={{
                       borderRadius: "16px",
