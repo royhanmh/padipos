@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useAuthStore } from "../stores/authStore";
 
@@ -11,7 +11,6 @@ const AuthSessionBootstrap = ({ children }) => {
     })),
   );
   const checkedTokenRef = useRef(null);
-  const [isCheckingSession, setIsCheckingSession] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
@@ -24,27 +23,24 @@ const AuthSessionBootstrap = ({ children }) => {
 
     if (!token) {
       checkedTokenRef.current = null;
-      setIsCheckingSession(false);
       return () => {
         isMounted = false;
       };
     }
 
     if (checkedTokenRef.current === token) {
-      setIsCheckingSession(false);
       return () => {
         isMounted = false;
       };
     }
 
     checkedTokenRef.current = token;
-    setIsCheckingSession(true);
 
     refreshCurrentUser()
       .catch(() => null)
       .finally(() => {
         if (isMounted) {
-          setIsCheckingSession(false);
+          // No-op
         }
       });
 

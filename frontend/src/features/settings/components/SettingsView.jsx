@@ -120,12 +120,7 @@ const SettingsView = ({
   const initialSettings = useMemo(
     () => createDefaultSettings(accountDefaults),
     [
-      accountDefaults?.email,
-      accountDefaults?.username,
-      accountDefaults?.role,
-      accountDefaults?.status,
-      accountDefaults?.language,
-      accountDefaults?.avatar,
+      accountDefaults,
     ],
   );
 

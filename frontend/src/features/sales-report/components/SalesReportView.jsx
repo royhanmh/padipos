@@ -30,9 +30,11 @@ import SkeletonTableRow from "./SkeletonTableRow";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 
 const ROW_OPTIONS = [10, 25, 50];
+const todayString = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD format
+
 const DEFAULT_FILTERS = {
-  startDate: "",
-  finishDate: "",
+  startDate: todayString,
+  finishDate: todayString,
   category: "all",
   orderType: "all",
 };

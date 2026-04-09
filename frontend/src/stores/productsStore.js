@@ -12,7 +12,7 @@ const requireToken = () => {
   return token;
 };
 
-export const useProductsStore = create((set, get) => ({
+export const useProductsStore = create((set) => ({
   products: [],
   isLoading: false,
   error: "",

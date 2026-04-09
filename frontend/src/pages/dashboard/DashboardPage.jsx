@@ -399,15 +399,15 @@ const DashboardPage = () => {
                     <div className="flex w-full items-end justify-center gap-1.5">
                       <div
                         className="w-[16%] animate-pulse rounded-t bg-[#F0F0F0]"
-                        style={{ height: `${20 + Math.random() * 40}%` }}
+                        style={{ height: `${20 + (i % 3) * 15}%` }}
                       />
                       <div
                         className="w-[16%] animate-pulse rounded-t bg-[#F5F5F5]"
-                        style={{ height: `${30 + Math.random() * 50}%` }}
+                        style={{ height: `${30 + (i % 2) * 20}%` }}
                       />
                       <div
                         className="w-[16%] animate-pulse rounded-t bg-[#FAFAFA]"
-                        style={{ height: `${10 + Math.random() * 30}%` }}
+                        style={{ height: `${10 + (i % 4) * 10}%` }}
                       />
                     </div>
                     <div className="h-3 w-10 animate-pulse rounded bg-[#F2F2F2]" />
