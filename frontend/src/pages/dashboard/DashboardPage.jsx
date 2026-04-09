@@ -65,19 +65,39 @@ const toDateAtEndOfDay = (value) => {
   return new Date(`${value}T23:59:59`);
 };
 
-const createLast7DaysMap = () => {
+const createDateRangeMap = (start, finish) => {
   const dayMap = {};
-  const today = new Date();
+  let current;
+  let end;
 
-  for (let index = 6; index >= 0; index -= 1) {
-    const date = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate() - index,
-    );
+  if (start && finish) {
+    current = new Date(start);
+    end = new Date(finish);
+  } else {
+    const today = new Date();
+    current = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6);
+    end = today;
+  }
+
+  current.setHours(0, 0, 0, 0);
+  end.setHours(23, 59, 59, 999);
+
+  const date = new Date(current);
+  while (date <= end) {
     const dateKey = date.toDateString();
-    const dayName = date.toLocaleDateString("en-US", { weekday: "short" });
-    dayMap[dateKey] = { day: dayName, food: 0, beverage: 0, dessert: 0 };
+    // For short ranges, show "Mon". For longer ranges, show "1 Mar"
+    const diffTime = Math.abs(end - current);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    let label;
+    if (diffDays <= 7) {
+      label = date.toLocaleDateString("en-US", { weekday: "short" });
+    } else {
+      label = `${date.getDate()} ${date.toLocaleDateString("en-US", { month: "short" })}`;
+    }
+
+    dayMap[dateKey] = { day: label, food: 0, beverage: 0, dessert: 0 };
+    date.setDate(date.getDate() + 1);
   }
 
   return dayMap;
@@ -89,7 +109,7 @@ const buildOmzetData = (
 ) => {
   const start = toDateAtStartOfDay(startDate);
   const finish = toDateAtEndOfDay(finishDate);
-  const dayMap = createLast7DaysMap();
+  const dayMap = createDateRangeMap(start, finish);
 
   transactions.forEach((transaction) => {
     const transactionDate = new Date(transaction.created_at);
@@ -256,11 +276,9 @@ const DashboardPage = () => {
   }, []);
 
   const chartMargin = isCompactChart
-    ? { top: 8, right: 2, left: -24, bottom: 0 }
-    : { top: 10, right: 10, left: -16, bottom: 0 };
-  const chartTicks = isCompactChart
-    ? [0, 100000, 200000, 300000]
-    : [0, 50000, 100000, 150000, 200000, 250000, 300000];
+    ? { top: 8, right: 5, left: 10, bottom: 0 }
+    : { top: 10, right: 10, left: 10, bottom: 0 };
+  const chartTicks = [0, 50000, 100000, 150000, 200000, 250000, 300000];
   const chartTickFontSize = isCompactChart ? 10 : 12;
   const chartBarSize = isCompactChart ? 16 : 22;
   const chartLegendPaddingTop = isCompactChart ? "10px" : "18px";
@@ -283,6 +301,14 @@ const DashboardPage = () => {
     startDate,
     transactions,
   ]);
+
+  const xAxisInterval = useMemo(() => {
+    const count = filteredOmzetData.length;
+    if (count > 60) return 9; // Show approx ~6 ticks for 2 months
+    if (count > 30) return 4; // Show approx ~6 ticks for 1 month
+    if (count > 14) return 1; // Show every 2nd tick
+    return 0; // Show all
+  }, [filteredOmzetData.length]);
 
   return (
     <DashboardLayout sidebarProps={{ activeItem: "dashboard" }}>
@@ -355,7 +381,7 @@ const DashboardPage = () => {
             </p>
           ) : null}
 
-          <div className="mt-7 h-[400px] min-w-0 w-full overflow-hidden max-lg:h-[300px]">
+          <div className="mt-7 h-[400px] min-w-0 w-full max-lg:h-[300px]">
             {isLoading ? (
               <div className="flex h-full w-full items-end justify-between gap-4 pb-12 px-2 pt-6">
                 {[...Array(7)].map((_, i) => (
@@ -394,13 +420,13 @@ const DashboardPage = () => {
                     dataKey="day"
                     axisLine={false}
                     tickLine={false}
-                    interval={isCompactChart ? 1 : 0}
+                    interval={xAxisInterval}
                     tick={{ fill: "#9C9C9C", fontSize: chartTickFontSize }}
                   />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    width={isCompactChart ? 34 : 44}
+                    width={80}
                     tick={{ fill: "#9C9C9C", fontSize: chartTickFontSize }}
                     tickFormatter={formatAxisTick}
                     domain={[0, 300000]}
