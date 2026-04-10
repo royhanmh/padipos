@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useShallow } from "zustand/react/shallow";
+import AlertBannerComponent from "../../components/AlertBannerComponent";
 import AuthPageShell from "../../components/AuthPageShell";
 import DefaultInputComponent from "../../components/DefaultInputComponent";
 import LoginCardComponent from "../../components/LoginCardComponent";
@@ -22,6 +23,10 @@ const DashboardLoginPage = () => {
   );
   const [form, setForm] = useState({ email: "", password: "" });
   const [fieldErrors, setFieldErrors] = useState({});
+  const loginRequiredMessage =
+    location.state?.message === "Anda harus login terlebih dahulu"
+      ? location.state.message
+      : "";
 
   const nextPath = useMemo(() => {
     const requestedPath = location.state?.from?.pathname;
@@ -71,6 +76,14 @@ const DashboardLoginPage = () => {
     <AuthPageShell>
       <DocumentTitle title="Login Admin Dashboard" />
       <LoginCardComponent>
+        {!error && loginRequiredMessage ? (
+          <AlertBannerComponent
+            message={loginRequiredMessage}
+            variant="error"
+            className="mb-4"
+          />
+        ) : null}
+
         <form onSubmit={handleSubmit}>
           <DefaultInputComponent
             id="email"

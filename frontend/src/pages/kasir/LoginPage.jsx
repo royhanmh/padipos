@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useShallow } from "zustand/react/shallow";
+import AlertBannerComponent from "../../components/AlertBannerComponent";
 import AuthPageShell from "../../components/AuthPageShell";
 import DefaultInputComponent from "../../components/DefaultInputComponent";
 import LoginCardComponent from "../../components/LoginCardComponent";
@@ -22,7 +23,11 @@ const LoginPage = () => {
   );
   const [form, setForm] = useState({ email: "", password: "" });
   const [fieldErrors, setFieldErrors] = useState({});
-  const registrationMessage = location.state?.message ?? "";
+  const routeMessage = location.state?.message ?? "";
+  const registrationMessage =
+    routeMessage === "Anda harus login terlebih dahulu" ? "" : routeMessage;
+  const loginRequiredMessage =
+    routeMessage === "Anda harus login terlebih dahulu" ? routeMessage : "";
 
   const nextPath = useMemo(() => {
     const requestedPath = location.state?.from?.pathname;
@@ -71,6 +76,14 @@ const LoginPage = () => {
     <AuthPageShell>
       <DocumentTitle title="Login Kasir" />
       <LoginCardComponent>
+        {!error && loginRequiredMessage ? (
+          <AlertBannerComponent
+            message={loginRequiredMessage}
+            variant="error"
+            className="mb-4"
+          />
+        ) : null}
+
         <form onSubmit={handleSubmit}>
           <DefaultInputComponent
             id="email"

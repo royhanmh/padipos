@@ -7,6 +7,7 @@ import {
 } from "../stores/authStore";
 
 const AuthRouteFallback = () => null;
+const LOGIN_REQUIRED_MESSAGE = "Anda harus login terlebih dahulu";
 
 export const HomeRedirect = () => {
   const { isHydrated, isAuthenticated, role } = useAuthStore(
@@ -67,7 +68,10 @@ export const RequireRole = ({ role: requiredRole }) => {
       <Navigate
         to={getLoginPathForRole(requiredRole)}
         replace
-        state={{ from: location }}
+        state={{
+          from: location,
+          message: LOGIN_REQUIRED_MESSAGE,
+        }}
       />
     );
   }
