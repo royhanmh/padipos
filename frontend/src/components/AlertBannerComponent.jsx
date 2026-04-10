@@ -16,13 +16,24 @@ const VARIANT_CLASSES = {
   },
 };
 
+const AUTH_SUCCESS_CLASSES = {
+  wrapper: "rounded-[10px] border border-[#B7E6C1] bg-[#F3FCF5]",
+  body: "px-6 py-5 text-[#166534]",
+  icon: "mt-0.5 text-[30px] text-[#16A34A]",
+  message: "mt-1.5 flex-1 text-base",
+};
+
 const AlertBannerComponent = ({
   variant = "success",
   message,
   onDismiss,
   className = "",
+  authSuccessStyle = false,
 }) => {
-  const styles = VARIANT_CLASSES[variant] ?? VARIANT_CLASSES.success;
+  const styles =
+    variant === "success" && authSuccessStyle
+      ? AUTH_SUCCESS_CLASSES
+      : VARIANT_CLASSES[variant] ?? VARIANT_CLASSES.success;
   const dismissible = typeof onDismiss === "function";
 
   return (
@@ -37,7 +48,11 @@ const AlertBannerComponent = ({
             type="button"
             aria-label="Dismiss notification"
             onClick={onDismiss}
-            className="text-[#3F3F3F] transition hover:text-[#151515]"
+            className={
+              variant === "success" && authSuccessStyle
+                ? "text-[#166534] transition hover:text-[#14532D]"
+                : "text-[#3F3F3F] transition hover:text-[#151515]"
+            }
           >
             <PiXLight className="text-[20px]" />
           </button>

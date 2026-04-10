@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useShallow } from "zustand/react/shallow";
 import AlertBannerComponent from "../../components/AlertBannerComponent";
@@ -9,6 +9,9 @@ import PrimaryButtonComponent from "../../components/PrimaryButtonComponent";
 import { getHomePathForRole, useAuthStore } from "../../stores/authStore";
 
 import DocumentTitle from "../../components/DocumentTitle";
+
+const LOGIN_REQUIRED_MESSAGE = "Anda harus login terlebih dahulu";
+const LOGIN_ALERT_AUTO_CLOSE_MS = 3000;
 
 const DashboardLoginPage = () => {
   const navigate = useNavigate();
@@ -23,10 +26,39 @@ const DashboardLoginPage = () => {
   );
   const [form, setForm] = useState({ email: "", password: "" });
   const [fieldErrors, setFieldErrors] = useState({});
-  const loginRequiredMessage =
-    location.state?.message === "Anda harus login terlebih dahulu"
-      ? location.state.message
-      : "";
+  const routeMessage = location.state?.message ?? "";
+  const redirectedFromProtectedAdminRoute = Boolean(
+    location.state?.from?.pathname?.startsWith("/dashboard"),
+  );
+  const [dismissedAlertKey, setDismissedAlertKey] = useState("");
+
+  const activeAlert = useMemo(() => {
+    if (error) {
+      return {
+        key: `error:${error}`,
+        message: error,
+        variant: "error",
+        source: "error",
+      };
+    }
+
+    if (
+      routeMessage === LOGIN_REQUIRED_MESSAGE ||
+      redirectedFromProtectedAdminRoute
+    ) {
+      return {
+        key: `route:${LOGIN_REQUIRED_MESSAGE}`,
+        message: LOGIN_REQUIRED_MESSAGE,
+        variant: "error",
+        source: "route",
+      };
+    }
+
+    return null;
+  }, [error, redirectedFromProtectedAdminRoute, routeMessage]);
+
+  const visibleAlert =
+    activeAlert && activeAlert.key !== dismissedAlertKey ? activeAlert : null;
 
   const nextPath = useMemo(() => {
     const requestedPath = location.state?.from?.pathname;
@@ -40,6 +72,39 @@ const DashboardLoginPage = () => {
     setFieldErrors((current) => ({ ...current, [field]: "" }));
     clearError();
   };
+
+  const dismissAlert = (alert) => {
+    if (!alert) {
+      return;
+    }
+
+    setDismissedAlertKey(alert.key);
+
+    if (alert.source === "error") {
+      clearError();
+    }
+  };
+
+  useEffect(() => {
+    if (!activeAlert) {
+      setDismissedAlertKey("");
+      return undefined;
+    }
+
+    setDismissedAlertKey((current) =>
+      current.startsWith(`${activeAlert.source}:`) && current !== activeAlert.key
+        ? ""
+        : current,
+    );
+
+    const timeoutId = window.setTimeout(() => {
+      dismissAlert(activeAlert);
+    }, LOGIN_ALERT_AUTO_CLOSE_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [activeAlert]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -76,11 +141,12 @@ const DashboardLoginPage = () => {
     <AuthPageShell>
       <DocumentTitle title="Login Admin Dashboard" />
       <LoginCardComponent>
-        {!error && loginRequiredMessage ? (
+        {visibleAlert ? (
           <AlertBannerComponent
-            message={loginRequiredMessage}
-            variant="error"
+            message={visibleAlert.message}
+            variant={visibleAlert.variant}
             className="mb-4"
+            onDismiss={() => dismissAlert(visibleAlert)}
           />
         ) : null}
 
@@ -112,12 +178,6 @@ const DashboardLoginPage = () => {
             }
             helpTextClassName="mt-2.5 text-right md:mt-3"
           />
-
-          {error ? (
-            <p className="mb-4 rounded-[10px] border border-[#FAD7DB] bg-[#FFF7F8] px-4 py-3 text-sm text-[#B42318] md:text-base">
-              {error}
-            </p>
-          ) : null}
 
           <PrimaryButtonComponent type="submit" className="mt-3" disabled={isSubmitting}>
             {isSubmitting ? "Logging in..." : "Login"}

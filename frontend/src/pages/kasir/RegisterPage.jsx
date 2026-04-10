@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useShallow } from "zustand/react/shallow";
+import AlertBannerComponent from "../../components/AlertBannerComponent";
 import AuthPageShell from "../../components/AuthPageShell";
 import DefaultInputComponent from "../../components/DefaultInputComponent";
 import LoginCardComponent from "../../components/LoginCardComponent";
@@ -8,6 +9,8 @@ import PrimaryButtonComponent from "../../components/PrimaryButtonComponent";
 import { useAuthStore } from "../../stores/authStore";
 
 import DocumentTitle from "../../components/DocumentTitle";
+
+const ALERT_AUTO_CLOSE_MS = 3000;
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -26,12 +29,62 @@ const RegisterPage = () => {
     confirmPassword: "",
   });
   const [fieldErrors, setFieldErrors] = useState({});
+  const [dismissedAlertKey, setDismissedAlertKey] = useState("");
+
+  const activeAlert = useMemo(() => {
+    if (!error) {
+      return null;
+    }
+
+    return {
+      key: `error:${error}`,
+      message: error,
+      variant: "error",
+      source: "error",
+    };
+  }, [error]);
+
+  const visibleAlert =
+    activeAlert && activeAlert.key !== dismissedAlertKey ? activeAlert : null;
 
   const handleChange = (field, value) => {
     setForm((current) => ({ ...current, [field]: value }));
     setFieldErrors((current) => ({ ...current, [field]: "" }));
     clearError();
   };
+
+  const dismissAlert = (alert) => {
+    if (!alert) {
+      return;
+    }
+
+    setDismissedAlertKey(alert.key);
+
+    if (alert.source === "error") {
+      clearError();
+    }
+  };
+
+  useEffect(() => {
+    if (!activeAlert) {
+      setDismissedAlertKey("");
+      return undefined;
+    }
+
+    setDismissedAlertKey((current) =>
+      current.startsWith(`${activeAlert.source}:`) && current !== activeAlert.key
+        ? ""
+        : current,
+    );
+
+    const timeoutId = window.setTimeout(() => {
+      dismissAlert(activeAlert);
+    }, ALERT_AUTO_CLOSE_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [activeAlert]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -88,6 +141,16 @@ const RegisterPage = () => {
     <AuthPageShell>
       <DocumentTitle title="Register Akun Kasir" />
       <LoginCardComponent subtitle="Create Your Account Here">
+        {visibleAlert ? (
+          <AlertBannerComponent
+            message={visibleAlert.message}
+            variant={visibleAlert.variant}
+            authSuccessStyle={visibleAlert.variant === "success"}
+            className="mb-4"
+            onDismiss={() => dismissAlert(visibleAlert)}
+          />
+        ) : null}
+
         <form onSubmit={handleSubmit}>
           <DefaultInputComponent
             id="username"
@@ -125,12 +188,6 @@ const RegisterPage = () => {
             onChange={(event) => handleChange("confirmPassword", event.target.value)}
             error={fieldErrors.confirmPassword}
           />
-
-          {error ? (
-            <p className="mb-4 rounded-[10px] border border-[#FAD7DB] bg-[#FFF7F8] px-4 py-3 text-sm text-[#B42318] md:text-base">
-              {error}
-            </p>
-          ) : null}
 
           <PrimaryButtonComponent type="submit" className="mt-3" disabled={isSubmitting}>
             {isSubmitting ? "Creating account..." : "Create Account"}

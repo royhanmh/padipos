@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { useShallow } from "zustand/react/shallow";
 import AlertBannerComponent from "../../components/AlertBannerComponent";
@@ -8,6 +8,8 @@ import LoginCardComponent from "../../components/LoginCardComponent";
 import PrimaryButtonComponent from "../../components/PrimaryButtonComponent";
 import DocumentTitle from "../../components/DocumentTitle";
 import { useAuthStore } from "../../stores/authStore";
+
+const ALERT_AUTO_CLOSE_MS = 3000;
 
 const RequestResetPasswordPage = () => {
   const navigate = useNavigate();
@@ -21,6 +23,23 @@ const RequestResetPasswordPage = () => {
   );
   const [email, setEmail] = useState("");
   const [fieldError, setFieldError] = useState("");
+  const [dismissedAlertKey, setDismissedAlertKey] = useState("");
+
+  const activeAlert = useMemo(() => {
+    if (!error) {
+      return null;
+    }
+
+    return {
+      key: `error:${error}`,
+      message: error,
+      variant: "error",
+      source: "error",
+    };
+  }, [error]);
+
+  const visibleAlert =
+    activeAlert && activeAlert.key !== dismissedAlertKey ? activeAlert : null;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -57,6 +76,39 @@ const RequestResetPasswordPage = () => {
     clearError();
   };
 
+  const dismissAlert = (alert) => {
+    if (!alert) {
+      return;
+    }
+
+    setDismissedAlertKey(alert.key);
+
+    if (alert.source === "error") {
+      clearError();
+    }
+  };
+
+  useEffect(() => {
+    if (!activeAlert) {
+      setDismissedAlertKey("");
+      return undefined;
+    }
+
+    setDismissedAlertKey((current) =>
+      current.startsWith(`${activeAlert.source}:`) && current !== activeAlert.key
+        ? ""
+        : current,
+    );
+
+    const timeoutId = window.setTimeout(() => {
+      dismissAlert(activeAlert);
+    }, ALERT_AUTO_CLOSE_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [activeAlert]);
+
   return (
     <AuthPageShell>
       <DocumentTitle title="Request Reset Password" />
@@ -65,6 +117,16 @@ const RequestResetPasswordPage = () => {
         subtitle="Please enter your registered email here!"
         className="pb-24 max-lg:pb-20"
       >
+        {visibleAlert ? (
+          <AlertBannerComponent
+            variant={visibleAlert.variant}
+            message={visibleAlert.message}
+            authSuccessStyle={visibleAlert.variant === "success"}
+            className="mb-4"
+            onDismiss={() => dismissAlert(visibleAlert)}
+          />
+        ) : null}
+
         <form onSubmit={handleSubmit}>
           <DefaultInputComponent
             id="reset-email"
@@ -75,13 +137,6 @@ const RequestResetPasswordPage = () => {
             onChange={(event) => handleChange(event.target.value)}
             error={fieldError}
           />
-          {error ? (
-            <AlertBannerComponent
-              variant="error"
-              message={error}
-              className="mb-4"
-            />
-          ) : null}
           <PrimaryButtonComponent type="submit" className="mt-3" disabled={isSubmitting}>
             {isSubmitting ? "Checking..." : "Continue"}
           </PrimaryButtonComponent>

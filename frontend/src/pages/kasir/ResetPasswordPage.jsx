@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useShallow } from "zustand/react/shallow";
 import AuthPageShell from "../../components/AuthPageShell";
@@ -8,6 +8,8 @@ import DocumentTitle from "../../components/DocumentTitle";
 import LoginCardComponent from "../../components/LoginCardComponent";
 import PrimaryButtonComponent from "../../components/PrimaryButtonComponent";
 import { useAuthStore } from "../../stores/authStore";
+
+const ALERT_AUTO_CLOSE_MS = 3000;
 
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
@@ -27,6 +29,32 @@ const ResetPasswordPage = () => {
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const [dismissedAlertKey, setDismissedAlertKey] = useState("");
+
+  const activeAlert = useMemo(() => {
+    if (error) {
+      return {
+        key: `error:${error}`,
+        message: error,
+        variant: "error",
+        source: "error",
+      };
+    }
+
+    if (successMessage) {
+      return {
+        key: `success:${successMessage}`,
+        message: successMessage,
+        variant: "success",
+        source: "success",
+      };
+    }
+
+    return null;
+  }, [error, successMessage]);
+
+  const visibleAlert =
+    activeAlert && activeAlert.key !== dismissedAlertKey ? activeAlert : null;
 
   useEffect(() => {
     clearError();
@@ -37,6 +65,39 @@ const ResetPasswordPage = () => {
       navigate("/reset", { replace: true });
     }
   }, [email, navigate]);
+
+  const dismissAlert = (alert) => {
+    if (!alert) {
+      return;
+    }
+
+    setDismissedAlertKey(alert.key);
+
+    if (alert.source === "error") {
+      clearError();
+    }
+  };
+
+  useEffect(() => {
+    if (!activeAlert) {
+      setDismissedAlertKey("");
+      return undefined;
+    }
+
+    setDismissedAlertKey((current) =>
+      current.startsWith(`${activeAlert.source}:`) && current !== activeAlert.key
+        ? ""
+        : current,
+    );
+
+    const timeoutId = window.setTimeout(() => {
+      dismissAlert(activeAlert);
+    }, ALERT_AUTO_CLOSE_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [activeAlert]);
 
   const handleChange = (field, value) => {
     setForm((current) => ({
@@ -96,9 +157,18 @@ const ResetPasswordPage = () => {
         subtitle="Please enter your new password and confirm!"
         className="pb-24 max-lg:pb-20"
       >
+        {visibleAlert ? (
+          <AlertBannerComponent
+            message={visibleAlert.message}
+            variant={visibleAlert.variant}
+            authSuccessStyle={visibleAlert.variant === "success"}
+            className="mb-4"
+            onDismiss={() => dismissAlert(visibleAlert)}
+          />
+        ) : null}
+
         {successMessage ? (
           <div>
-            <AlertBannerComponent message={successMessage} className="mb-4" />
             <p className="mb-5 text-sm text-[#5E5E5E] md:text-base">
               Your cashier password has been updated. Continue to login with your
               new password.
@@ -132,14 +202,6 @@ const ResetPasswordPage = () => {
               }
               error={fieldErrors.confirmPassword}
             />
-
-            {error ? (
-              <AlertBannerComponent
-                variant="error"
-                message={error}
-                className="mb-4"
-              />
-            ) : null}
 
             <PrimaryButtonComponent type="submit" className="mt-3" disabled={isSubmitting}>
               {isSubmitting ? "Resetting..." : "Reset Password"}
