@@ -23,12 +23,18 @@ export const shouldLogoutForAuthError = (error) => {
     return false;
   }
 
-  if (error.status === 401 || error.status === 404) {
-    return true;
+  const message = String(error.message ?? "");
+
+  if (error.status === 401) {
+    return /authentication required|token expired|invalid token/i.test(message);
+  }
+
+  if (error.status === 404) {
+    return /user not found/i.test(message);
   }
 
   if (error.status === 403) {
-    return /inactive|not active|activation/i.test(String(error.message ?? ""));
+    return /inactive|not active|activation/i.test(message);
   }
 
   return false;
