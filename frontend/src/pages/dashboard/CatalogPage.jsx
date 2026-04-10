@@ -168,11 +168,23 @@ const ReadOnlyField = ({ label, value, multiline = false }) => {
   );
 };
 
-const PanelFrame = ({ title, actions, children }) => {
+const PanelFrame = ({ title, actions, mobileCloseAction, children }) => {
   return (
     <aside className="relative flex h-full flex-col rounded-[10px] border border-[#F0F0F0] bg-white px-4 py-4 shadow-[0_14px_36px_rgba(25,45,88,0.05)] xl:min-h-0 2xl:rounded-[20px] 2xl:px-4 2xl:py-4">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-[20px] font-semibold text-[#161616]">{title}</h2>
+        <div className="flex min-w-0 items-center gap-3">
+          {mobileCloseAction ? (
+            <button
+              type="button"
+              aria-label="Close detail panel"
+              onClick={mobileCloseAction}
+              className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-[#E5E7EB] text-[#3F3F3F] transition hover:bg-[#F8FAFC] hover:text-[#151515] lg:hidden"
+            >
+              <PiXLight className="text-[22px]" />
+            </button>
+          ) : null}
+          <h2 className="min-w-0 text-[20px] font-semibold text-[#161616]">{title}</h2>
+        </div>
         <div className="flex items-center gap-3">{actions}</div>
       </div>
       <div className="mt-6 flex flex-1 flex-col border-t border-[#EFEFEF] pt-5 xl:min-h-0 xl:overflow-y-auto">
@@ -617,6 +629,7 @@ const CatalogPage = () => {
     return (
       <PanelFrame
         title="Detail Menu"
+        mobileCloseAction={resetToEmptyPanel}
         actions={
           <>
             <button
