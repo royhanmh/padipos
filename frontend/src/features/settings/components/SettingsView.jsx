@@ -8,6 +8,9 @@ import {
 import { useShallow } from "zustand/react/shallow";
 import AlertBannerComponent from "../../../components/AlertBannerComponent";
 import ConfirmationModalComponent from "../../../components/ConfirmationModalComponent";
+import FloatingToastComponent, {
+  createFloatingToastState,
+} from "../../../components/FloatingToastComponent";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import { useAuthStore } from "../../../stores/authStore";
 
@@ -130,7 +133,7 @@ const SettingsView = ({
   const [committedSettings, setCommittedSettings] = useState(() =>
     createDefaultSettings(accountDefaults),
   );
-  const [toastMessage, setToastMessage] = useState("");
+  const [toast, setToast] = useState(null);
   const [accountError, setAccountError] = useState("");
   const [isSavingAccount, setIsSavingAccount] = useState(false);
   const [isSaveConfirmOpen, setIsSaveConfirmOpen] = useState(false);
@@ -152,16 +155,16 @@ const SettingsView = ({
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    if (!toastMessage) {
+    if (!toast) {
       return undefined;
     }
 
     const timeoutId = window.setTimeout(() => {
-      setToastMessage("");
-    }, 2800);
+      setToast(null);
+    }, 3200);
 
     return () => window.clearTimeout(timeoutId);
-  }, [toastMessage]);
+  }, [toast]);
 
   useEffect(() => {
     if (!isPasswordModalOpen || isPasswordConfirmOpen) {
@@ -417,7 +420,7 @@ const SettingsView = ({
         ...currentValue,
         account: nextAccount,
       }));
-      setToastMessage("Saved successfully.");
+      setToast(createFloatingToastState("Saved successfully."));
     } catch (error) {
       const firstDetail = error?.details?.[0];
       setAccountError(
@@ -528,7 +531,7 @@ const SettingsView = ({
       }));
       closePasswordConfirmModal();
       closePasswordModal();
-      setToastMessage("Password changed successfully.");
+      setToast(createFloatingToastState("Password changed successfully."));
     } catch (error) {
       closePasswordConfirmModal();
       if (error?.status === 401) {
@@ -551,18 +554,19 @@ const SettingsView = ({
       topbarProps={layoutTopbarProps}
     >
       <section className="min-h-full bg-[#F7F7F7] px-6 py-6 max-lg:px-4 max-lg:py-4 xl:px-8 xl:py-7">
-        <div className="mx-auto w-full max-w-[1280px]">
+        <div className="relative mx-auto w-full max-w-[1280px]">
+          {toast ? (
+            <FloatingToastComponent
+              message={toast.message}
+              onDismiss={() => setToast(null)}
+              placement="fixed"
+              className="lg:right-8 xl:right-10"
+              toastClassName="max-w-[360px]"
+            />
+          ) : null}
           <h1 className="text-[32px] font-semibold tracking-[-0.03em] text-[#1D1D1D] max-lg:text-[30px]">
             {pageTitle}
           </h1>
-
-          {toastMessage ? (
-            <AlertBannerComponent
-              message={toastMessage}
-              onDismiss={() => setToastMessage("")}
-              className="mt-4"
-            />
-          ) : null}
 
           <section className="mt-6">
             <h2 className="text-[24px] font-semibold tracking-[-0.03em] text-[#353535]">

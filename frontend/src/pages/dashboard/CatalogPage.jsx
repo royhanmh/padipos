@@ -3,7 +3,6 @@ import {
   PiArrowUpRightLight,
   PiBowlFoodLight,
   PiCaretDownLight,
-  PiCheckCircleLight,
   PiCoffeeLight,
   PiCookieLight,
   PiPencilSimpleLineLight,
@@ -15,6 +14,9 @@ import {
 import { useShallow } from "zustand/react/shallow";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useProductsStore } from "../../stores/productsStore";
+import FloatingToastComponent, {
+  createFloatingToastState,
+} from "../../components/FloatingToastComponent";
 import SkeletonCard from "../../components/SkeletonCard";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
@@ -130,11 +132,6 @@ const readFileAsDataUrl = (file) =>
     reader.onerror = () => reject(new Error("Failed to read file."));
     reader.readAsDataURL(file);
   });
-
-const createToastState = (message) => ({
-  id: Date.now(),
-  message,
-});
 
 const FormField = ({ label, children, error }) => {
   return (
@@ -365,7 +362,7 @@ const CatalogPage = () => {
   };
 
   const showSuccessToast = (message) => {
-    setToast(createToastState(message));
+    setToast(createFloatingToastState(message));
   };
 
   const buildPayload = () => ({
@@ -853,20 +850,21 @@ const CatalogPage = () => {
 
           <div className="relative min-h-0 lg:h-full lg:flex lg:flex-col">
             {toast ? (
-              <div className="mb-5 rounded-[10px] border border-[#EAEAEA] bg-white shadow-[0_16px_36px_rgba(25,45,88,0.08)]">
-                <div className="flex items-start gap-4 border-l-[3px] border-[#22C55E] px-6 py-6">
-                  <PiCheckCircleLight className="mt-0.5 text-[30px] text-[#16A34A]" />
-                  <p className="mt-1.5 flex-1 text-base text-[#171717]">{toast.message}</p>
-                  <button
-                    type="button"
-                    aria-label="Dismiss notification"
-                    onClick={() => setToast(null)}
-                    className="text-[#3F3F3F] transition hover:text-[#151515]"
-                  >
-                    <PiXLight className="text-[20px]" />
-                  </button>
-                </div>
-              </div>
+              <>
+                <FloatingToastComponent
+                  message={toast.message}
+                  onDismiss={() => setToast(null)}
+                  placement="fixed"
+                  className="lg:hidden"
+                  toastClassName="max-w-[360px]"
+                />
+                <FloatingToastComponent
+                  message={toast.message}
+                  onDismiss={() => setToast(null)}
+                  placement="panel-top"
+                  className="hidden lg:block"
+                />
+              </>
             ) : null}
 
             {requestError ? (
