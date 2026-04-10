@@ -59,13 +59,37 @@ From the deployed app, users can:
 
 ## Access Flow
 
-1. User visits [https://padipos.vercel.app/](https://padipos.vercel.app/).
-2. User signs in as **admin** or **cashier**.
-3. Backend authenticates the account and stores the session using a **JWT in an HttpOnly cookie**.
-4. Admin is redirected to the dashboard area to manage products and settings.
-5. Cashier is redirected to the cashier workflow to handle transactions and sales activity.
-6. Protected requests use the session cookie automatically.
-7. User logs out, and the auth cookie is cleared.
+### Public entry points
+
+- `/` - home entry that redirects based on the current session and role
+- `/login` - cashier login page
+- `/dashboard/login` - admin login page
+- `/register` - cashier registration page
+- `/reset` - cashier password reset request page
+- `/reset/form` - cashier password reset form page
+
+### Role-based protected routes
+
+- `/kasir` - redirects to `/kasir/catalog`
+- `/kasir/catalog` - cashier catalog and order workflow
+- `/kasir/sales-report` - cashier sales report page
+- `/kasir/settings` - cashier settings page
+- `/dashboard` - admin dashboard landing page
+- `/dashboard/catalog` - admin catalog management page
+- `/dashboard/sales-report` - admin sales report page
+- `/dashboard/settings` - admin settings page
+
+Protected routes require an authenticated session with the correct role. Successful login creates a **JWT stored in an HttpOnly cookie**, and protected pages can be restored on refresh using that session. If a user is unauthenticated or tries to open the wrong role area, the app redirects to the appropriate login route.
+
+### End-to-end flow
+
+1. User visits [https://padipos.vercel.app/](https://padipos.vercel.app/) or opens a direct route such as `/login` or `/dashboard/login`.
+2. Cashier users sign in from `/login`, while admin users sign in from `/dashboard/login`.
+3. After a successful login, the backend creates an **HttpOnly cookie session** using JWT.
+4. Cashier users continue to `/kasir/catalog`, `/kasir/sales-report`, or `/kasir/settings`.
+5. Admin users continue to `/dashboard`, `/dashboard/catalog`, `/dashboard/sales-report`, or `/dashboard/settings`.
+6. Refreshing a protected page keeps the user signed in while the session cookie is still valid.
+7. Logging out clears the auth cookie and returns the user to the appropriate login page.
 
 ### Local / Demo Seed Accounts
 
