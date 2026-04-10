@@ -6,6 +6,7 @@ import {
   softDeleteProductByUuid,
   updateProductByUuid,
 } from "../models/productModel.js";
+import { parsePaginationQuery } from "../libs/pagination.js";
 import { PRODUCT_CATEGORIES } from "../types/product.js";
 import { uploadImage, deleteImage } from "../libs/cloudinary.js";
 
@@ -32,9 +33,10 @@ const updateProductSchema = Joi.object({
   quantity: Joi.number().integer().min(0),
 }).min(1);
 
-export const listProductsHandler = async (_req, res, next) => {
+export const listProductsHandler = async (req, res, next) => {
   try {
-    const products = await listProducts();
+    const pagination = parsePaginationQuery(req.query);
+    const products = await listProducts({ pagination });
     res.json(products);
   } catch (error) {
     next(error);

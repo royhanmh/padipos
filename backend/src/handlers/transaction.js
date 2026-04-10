@@ -4,6 +4,7 @@ import {
   getTransactionByUuid,
   listTransactions,
 } from "../models/transactionModel.js";
+import { parsePaginationQuery } from "../libs/pagination.js";
 import { TRANSACTION_ORDER_TYPES } from "../types/transaction.js";
 
 const transactionItemSchema = Joi.object({
@@ -51,9 +52,11 @@ const normalizeCreatePayload = (value) => ({
 
 export const listTransactionsHandler = async (req, res, next) => {
   try {
+    const pagination = parsePaginationQuery(req.query);
     const transactions = await listTransactions({
       role: req.user.role,
       userUuid: req.user.uuid,
+      pagination,
     });
 
     res.json(transactions);

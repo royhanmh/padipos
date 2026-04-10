@@ -1,5 +1,6 @@
 import { Cashier, Product, Transaction, TransactionItem, sequelize } from "./index.js";
 import { TRANSACTION_TAX_AMOUNT } from "../types/transaction.js";
+import { buildPaginatedResponse } from "../libs/pagination.js";
 
 const CATEGORY_ORDER = ["food", "beverage", "dessert"];
 
@@ -229,7 +230,7 @@ export const createTransaction = async ({ cashierUuid, payload }) => {
   });
 };
 
-export const listTransactions = async ({ role, userUuid }) => {
+export const listTransactions = async ({ role, userUuid, pagination } = {}) => {
   const where = {};
 
   if (role === "cashier") {
@@ -242,13 +243,31 @@ export const listTransactions = async ({ role, userUuid }) => {
     where.cashier_id = cashier.id;
   }
 
-  const transactions = await Transaction.findAll({
+  if (!pagination?.enabled) {
+    const transactions = await Transaction.findAll({
+      where,
+      include: transactionInclude,
+      order: transactionOrder,
+    });
+
+    return transactions.map(toTransactionResponse);
+  }
+
+  const result = await Transaction.findAndCountAll({
     where,
     include: transactionInclude,
     order: transactionOrder,
+    distinct: true,
+    limit: pagination.limit,
+    offset: pagination.offset,
   });
 
-  return transactions.map(toTransactionResponse);
+  return buildPaginatedResponse({
+    rows: result.rows.map(toTransactionResponse),
+    count: result.count,
+    page: pagination.page,
+    limit: pagination.limit,
+  });
 };
 
 export const getTransactionByUuid = async ({ transactionUuid, role, userUuid }) => {

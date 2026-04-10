@@ -1,13 +1,29 @@
 import { Product } from "./index.js";
+import { buildPaginatedResponse } from "../libs/pagination.js";
 
 const toPlain = (instance) => instance.get({ plain: true });
 
-export const listProducts = async () => {
-  const products = await Product.findAll({
+export const listProducts = async ({ pagination } = {}) => {
+  if (!pagination?.enabled) {
+    const products = await Product.findAll({
+      order: [["created_at", "DESC"]],
+    });
+
+    return products.map(toPlain);
+  }
+
+  const result = await Product.findAndCountAll({
     order: [["created_at", "DESC"]],
+    limit: pagination.limit,
+    offset: pagination.offset,
   });
 
-  return products.map(toPlain);
+  return buildPaginatedResponse({
+    rows: result.rows.map(toPlain),
+    count: result.count,
+    page: pagination.page,
+    limit: pagination.limit,
+  });
 };
 
 export const getProductByUuid = async (uuid) => {

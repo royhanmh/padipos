@@ -384,6 +384,66 @@
                     ]
                 },
                 {
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseurl}}/products?page={{page}}&limit={{limit}}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "{{acceptType}}"
+                            }
+                        ]
+                    },
+                    "name": "List Products Paginated",
+                    "event": [
+                        {
+                            "script": {
+                                "exec": [
+                                    "{",
+                                    "    const data = pm.response.json();",
+                                    "    pm.test(\"response has data array\", function () { pm.expect(Array.isArray(data.data)).to.eql(true); });",
+                                    "    pm.test(\"response has pagination meta\", function () {",
+                                    "        pm.expect(data.meta).to.be.an(\"object\");",
+                                    "        pm.expect(data.meta.page).to.eql(Number(pm.environment.get(\"page\")));",
+                                    "        pm.expect(data.meta.limit).to.eql(Number(pm.environment.get(\"limit\")));",
+                                    "    });",
+                                    "    if (Array.isArray(data.data) && data.data.length > 0 && data.data[0].uuid) { pm.environment.set(\"productUuid\", data.data[0].uuid); }",
+                                    "    if (Array.isArray(data.data) && data.data.length > 1 && data.data[1].uuid) { pm.environment.set(\"secondProductUuid\", data.data[1].uuid); }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            },
+                            "listen": "test"
+                        }
+                    ]
+                },
+                {
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseurl}}/products?page=0&limit={{limit}}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "{{acceptType}}"
+                            }
+                        ]
+                    },
+                    "name": "List Products With Invalid Page"
+                },
+                {
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseurl}}/products?page={{page}}&limit=0",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "{{acceptType}}"
+                            }
+                        ]
+                    },
+                    "name": "List Products With Invalid Limit"
+                },
+                {
                     "name": "Get Product By UUID",
                     "request": {
                         "method": "GET",
@@ -728,6 +788,42 @@
                     }
                 },
                 {
+                    "name": "List Transactions As Cashier Paginated",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseurl}}/transactions?page={{page}}&limit={{limit}}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "{{acceptType}}"
+                            },
+                            {
+                                "key": "Cookie",
+                                "value": "{{cashierCookie}}"
+                            }
+                        ]
+                    },
+                    "event": [
+                        {
+                            "script": {
+                                "exec": [
+                                    "{",
+                                    "    const data = pm.response.json();",
+                                    "    pm.test(\"response has data array\", function () { pm.expect(Array.isArray(data.data)).to.eql(true); });",
+                                    "    pm.test(\"response has pagination meta\", function () {",
+                                    "        pm.expect(data.meta).to.be.an(\"object\");",
+                                    "        pm.expect(data.meta.page).to.eql(Number(pm.environment.get(\"page\")));",
+                                    "        pm.expect(data.meta.limit).to.eql(Number(pm.environment.get(\"limit\")));",
+                                    "    });",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            },
+                            "listen": "test"
+                        }
+                    ]
+                },
+                {
                     "name": "Get Own Transaction As Cashier",
                     "request": {
                         "method": "GET",
@@ -749,6 +845,76 @@
                     "request": {
                         "method": "GET",
                         "url": "{{baseurl}}/transactions",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "{{acceptType}}"
+                            },
+                            {
+                                "key": "Cookie",
+                                "value": "{{adminCookie}}"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "List Transactions As Admin Paginated",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseurl}}/transactions?page={{page}}&limit={{limit}}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "{{acceptType}}"
+                            },
+                            {
+                                "key": "Cookie",
+                                "value": "{{adminCookie}}"
+                            }
+                        ]
+                    },
+                    "event": [
+                        {
+                            "script": {
+                                "exec": [
+                                    "{",
+                                    "    const data = pm.response.json();",
+                                    "    pm.test(\"response has data array\", function () { pm.expect(Array.isArray(data.data)).to.eql(true); });",
+                                    "    pm.test(\"response has pagination meta\", function () {",
+                                    "        pm.expect(data.meta).to.be.an(\"object\");",
+                                    "        pm.expect(data.meta.page).to.eql(Number(pm.environment.get(\"page\")));",
+                                    "        pm.expect(data.meta.limit).to.eql(Number(pm.environment.get(\"limit\")));",
+                                    "    });",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            },
+                            "listen": "test"
+                        }
+                    ]
+                },
+                {
+                    "name": "List Transactions As Admin With Invalid Page",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseurl}}/transactions?page=0&limit={{limit}}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "{{acceptType}}"
+                            },
+                            {
+                                "key": "Cookie",
+                                "value": "{{adminCookie}}"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "List Transactions As Admin With Invalid Limit",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseurl}}/transactions?page={{page}}&limit=0",
                         "header": [
                             {
                                 "key": "Accept",
