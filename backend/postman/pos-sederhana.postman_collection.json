@@ -69,7 +69,8 @@
                                 "exec": [
                                     "{",
                                     "    const data = pm.response.json();",
-                                    "    if (data.token) { pm.environment.set(\"adminToken\", data.token); }",
+                                    "    const authCookie = pm.response.headers.get(\"Set-Cookie\");",
+                                    "    if (authCookie) { pm.environment.set(\"adminCookie\", authCookie.split(\";\")[0]); }",
                                     "    if (data.user && data.user.uuid) { pm.environment.set(\"adminUuid\", data.user.uuid); }",
                                     "}"
                                 ],
@@ -110,7 +111,8 @@
                                 "exec": [
                                     "{",
                                     "    const data = pm.response.json();",
-                                    "    if (data.token) { pm.environment.set(\"adminToken\", data.token); }",
+                                    "    const authCookie = pm.response.headers.get(\"Set-Cookie\");",
+                                    "    if (authCookie) { pm.environment.set(\"adminCookie\", authCookie.split(\";\")[0]); }",
                                     "    if (data.user && data.user.uuid) { pm.environment.set(\"adminUuid\", data.user.uuid); }",
                                     "}"
                                 ],
@@ -131,8 +133,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
+                                "key": "Cookie",
+                                "value": "{{adminCookie}}"
                             }
                         ]
                     }
@@ -168,7 +170,6 @@
                                 "exec": [
                                     "{",
                                     "    const data = pm.response.json();",
-                                    "    if (data.token) { pm.environment.set(\"cashierToken\", data.token); }",
                                     "    if (data.user && data.user.uuid) { pm.environment.set(\"cashierUuid\", data.user.uuid); }",
                                     "}"
                                 ],
@@ -209,7 +210,8 @@
                                 "exec": [
                                     "{",
                                     "    const data = pm.response.json();",
-                                    "    if (data.token) { pm.environment.set(\"cashierToken\", data.token); }",
+                                    "    const authCookie = pm.response.headers.get(\"Set-Cookie\");",
+                                    "    if (authCookie) { pm.environment.set(\"cashierCookie\", authCookie.split(\";\")[0]); }",
                                     "    if (data.user && data.user.uuid) { pm.environment.set(\"cashierUuid\", data.user.uuid); }",
                                     "}"
                                 ],
@@ -230,8 +232,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{cashierToken}}"
+                                "key": "Cookie",
+                                "value": "{{cashierCookie}}"
                             }
                         ]
                     }
@@ -267,7 +269,6 @@
                                 "exec": [
                                     "{",
                                     "    const data = pm.response.json();",
-                                    "    if (data.token) { pm.environment.set(\"otherCashierToken\", data.token); }",
                                     "    if (data.user && data.user.uuid) { pm.environment.set(\"otherCashierUuid\", data.user.uuid); }",
                                     "}"
                                 ],
@@ -308,7 +309,8 @@
                                 "exec": [
                                     "{",
                                     "    const data = pm.response.json();",
-                                    "    if (data.token) { pm.environment.set(\"otherCashierToken\", data.token); }",
+                                    "    const authCookie = pm.response.headers.get(\"Set-Cookie\");",
+                                    "    if (authCookie) { pm.environment.set(\"otherCashierCookie\", authCookie.split(\";\")[0]); }",
                                     "    if (data.user && data.user.uuid) { pm.environment.set(\"otherCashierUuid\", data.user.uuid); }",
                                     "}"
                                 ],
@@ -342,8 +344,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{invalidToken}}"
+                                "key": "Cookie",
+                                "value": "pos_sederhana_auth={{invalidToken}}"
                             }
                         ]
                     }
@@ -417,8 +419,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
+                                "key": "Cookie",
+                                "value": "{{adminCookie}}"
                             }
                         ]
                     },
@@ -475,8 +477,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
+                                "key": "Cookie",
+                                "value": "{{adminCookie}}"
                             }
                         ]
                     }
@@ -492,8 +494,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
+                                "key": "Cookie",
+                                "value": "{{adminCookie}}"
                             }
                         ]
                     }
@@ -548,8 +550,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{cashierToken}}"
+                                "key": "Cookie",
+                                "value": "{{cashierCookie}}"
                             }
                         ]
                     }
@@ -578,8 +580,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
+                                "key": "Cookie",
+                                "value": "{{adminCookie}}"
                             }
                         ]
                     }
@@ -608,8 +610,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
+                                "key": "Cookie",
+                                "value": "{{adminCookie}}"
                             }
                         ]
                     }
@@ -625,8 +627,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
+                                "key": "Cookie",
+                                "value": "{{adminCookie}}"
                             }
                         ]
                     }
@@ -687,8 +689,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{cashierToken}}"
+                                "key": "Cookie",
+                                "value": "{{cashierCookie}}"
                             }
                         ]
                     },
@@ -719,8 +721,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{cashierToken}}"
+                                "key": "Cookie",
+                                "value": "{{cashierCookie}}"
                             }
                         ]
                     }
@@ -736,8 +738,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{cashierToken}}"
+                                "key": "Cookie",
+                                "value": "{{cashierCookie}}"
                             }
                         ]
                     }
@@ -753,8 +755,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
+                                "key": "Cookie",
+                                "value": "{{adminCookie}}"
                             }
                         ]
                     }
@@ -770,8 +772,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
+                                "key": "Cookie",
+                                "value": "{{adminCookie}}"
                             }
                         ]
                     }
@@ -826,8 +828,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
+                                "key": "Cookie",
+                                "value": "{{adminCookie}}"
                             }
                         ]
                     }
@@ -856,8 +858,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{cashierToken}}"
+                                "key": "Cookie",
+                                "value": "{{cashierCookie}}"
                             }
                         ]
                     }
@@ -886,8 +888,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{cashierToken}}"
+                                "key": "Cookie",
+                                "value": "{{cashierCookie}}"
                             }
                         ]
                     }
@@ -916,8 +918,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{cashierToken}}"
+                                "key": "Cookie",
+                                "value": "{{cashierCookie}}"
                             }
                         ]
                     }
@@ -933,8 +935,8 @@
                                 "value": "{{acceptType}}"
                             },
                             {
-                                "key": "Authorization",
-                                "value": "Bearer {{otherCashierToken}}"
+                                "key": "Cookie",
+                                "value": "{{otherCashierCookie}}"
                             }
                         ]
                     }

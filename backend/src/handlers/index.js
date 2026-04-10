@@ -13,6 +13,7 @@ export {
   registerCashierHandler,
   requestCashierPasswordResetHandler,
   resetCashierPasswordHandler,
+  logoutHandler,
   getMeHandler,
   updateMeHandler,
   updateMePasswordHandler,

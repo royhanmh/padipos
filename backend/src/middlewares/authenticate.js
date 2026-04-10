@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { findAdminInstanceByUuid } from "../models/adminModel.js";
 import { findCashierInstanceByUuid } from "../models/cashierModel.js";
+import { getAuthTokenFromRequest } from "../libs/authCookie.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -17,14 +18,12 @@ const findAuthenticatedUser = async ({ uuid, role }) => {
 };
 
 export const authenticate = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const token = getAuthTokenFromRequest(req);
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!token) {
     res.status(401).json({ message: "Authentication required." });
     return;
   }
-
-  const token = authHeader.split(" ")[1];
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);

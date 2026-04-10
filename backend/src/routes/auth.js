@@ -6,6 +6,7 @@ import {
   registerCashierHandler,
   requestCashierPasswordResetHandler,
   resetCashierPasswordHandler,
+  logoutHandler,
   getMeHandler,
   updateMeHandler,
   updateMePasswordHandler,
@@ -24,9 +25,10 @@ router.post("/cashier/register", registerCashierHandler);
 router.post("/cashier/request-reset-password", requestCashierPasswordResetHandler);
 router.post("/cashier/reset-password", resetCashierPasswordHandler);
 
-// Current user profile (requires token)
+// Current user profile (requires auth cookie)
 router.get("/me", authenticate, getMeHandler);
 router.patch("/me", authenticate, updateMeHandler);
 router.patch("/me/password", authenticate, updateMePasswordHandler);
+router.post("/logout", logoutHandler);
 
 export default router;

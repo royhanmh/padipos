@@ -16,12 +16,8 @@ const FRIENDLY_SERVER_ERROR_MESSAGE =
 
 const isDevelopment = import.meta.env.DEV;
 
-const buildHeaders = ({ token, headers, body }) => {
+const buildHeaders = ({ headers, body }) => {
   const nextHeaders = new Headers(headers ?? {});
-
-  if (token) {
-    nextHeaders.set("Authorization", `Bearer ${token}`);
-  }
 
   if (
     body !== undefined &&
@@ -97,11 +93,11 @@ export const requestApi = async (path, options = {}) => {
     response = await fetch(`${API_BASE_URL}${path}`, {
       method: options.method ?? "GET",
       headers: buildHeaders({
-        token: options.token,
         headers: options.headers,
         body: options.body,
       }),
       body: buildBody(options.body),
+      credentials: "include",
       signal: options.signal,
     });
   } catch (error) {

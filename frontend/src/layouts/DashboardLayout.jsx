@@ -20,9 +20,9 @@ const DashboardLayout = ({
     })),
   );
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     const currentRole = user?.role ?? "cashier";
-    logout();
+    await logout();
     navigate(getLoginPathForRole(currentRole), { replace: true });
   };
 

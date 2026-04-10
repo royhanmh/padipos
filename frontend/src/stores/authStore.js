@@ -1,8 +1,5 @@
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
-import { ApiError, requestApi } from "../lib/apiClient";
-
-const STORAGE_KEY = "pos-sederhana-auth";
+import { requestApi } from "../lib/apiClient";
 
 const normalizeUser = (user, fallbackRole = null) => {
   if (!user) {
@@ -15,11 +12,10 @@ const normalizeUser = (user, fallbackRole = null) => {
   };
 };
 
-const buildSessionState = ({ token = null, user = null } = {}) => ({
-  token,
+const buildSessionState = ({ user = null } = {}) => ({
   user,
   role: user?.role ?? null,
-  isAuthenticated: Boolean(token && user),
+  isAuthenticated: Boolean(user),
 });
 
 export const shouldLogoutForAuthError = (error) => {
@@ -40,7 +36,7 @@ export const shouldLogoutForAuthError = (error) => {
 
 export const handleProtectedAuthError = (error) => {
   if (shouldLogoutForAuthError(error)) {
-    useAuthStore.getState().logout();
+    useAuthStore.getState().clearSession();
   }
 
   return error;
@@ -62,175 +58,170 @@ export const getLoginPathForRole = (role) => {
   return "/login";
 };
 
-export const useAuthStore = create(
-  persist(
-    (set, get) => ({
+export const useAuthStore = create((set, get) => ({
+  ...buildSessionState(),
+  isHydrated: false,
+  isSubmitting: false,
+  error: "",
+  clearError: () => set({ error: "" }),
+  clearSession: () =>
+    set({
       ...buildSessionState(),
-      isHydrated: false,
+      isHydrated: true,
       isSubmitting: false,
       error: "",
-      setHydrated: () =>
-        set((state) => ({
-          isHydrated: true,
-          isAuthenticated: Boolean(state.token && state.user),
-          role: state.user?.role ?? null,
-        })),
-      clearError: () => set({ error: "" }),
-      setSession: ({ token, user }) => {
-        const normalizedUser = normalizeUser(user);
-
-        set({
-          ...buildSessionState({ token, user: normalizedUser }),
-          error: "",
-          isSubmitting: false,
-        });
-      },
-      loginCashier: async (payload) => {
-        set({ isSubmitting: true, error: "" });
-
-        try {
-          const response = await requestApi("/auth/cashier/login", {
-            method: "POST",
-            body: payload,
-          });
-          const user = normalizeUser(response.user, "cashier");
-
-          get().setSession({ token: response.token, user });
-          return { ...response, user };
-        } catch (error) {
-          set({ error: error.message, isSubmitting: false });
-          throw error;
-        }
-      },
-      loginAdmin: async (payload) => {
-        set({ isSubmitting: true, error: "" });
-
-        try {
-          const response = await requestApi("/auth/admin/login", {
-            method: "POST",
-            body: payload,
-          });
-          const user = normalizeUser(response.user, "admin");
-
-          get().setSession({ token: response.token, user });
-          return { ...response, user };
-        } catch (error) {
-          set({ error: error.message, isSubmitting: false });
-          throw error;
-        }
-      },
-      registerCashier: async (payload) => {
-        set({ isSubmitting: true, error: "" });
-
-        try {
-          const response = await requestApi("/auth/cashier/register", {
-            method: "POST",
-            body: payload,
-          });
-          const user = normalizeUser(response.user, "cashier");
-          set({ isSubmitting: false, error: "" });
-          return { ...response, user };
-        } catch (error) {
-          set({ error: error.message, isSubmitting: false });
-          throw error;
-        }
-      },
-      requestCashierPasswordReset: async (payload) => {
-        set({ isSubmitting: true, error: "" });
-
-        try {
-          const response = await requestApi("/auth/cashier/request-reset-password", {
-            method: "POST",
-            body: payload,
-          });
-
-          set({ isSubmitting: false, error: "" });
-          return response;
-        } catch (error) {
-          set({ error: error.message, isSubmitting: false });
-          throw error;
-        }
-      },
-      resetCashierPassword: async (payload) => {
-        set({ isSubmitting: true, error: "" });
-
-        try {
-          const response = await requestApi("/auth/cashier/reset-password", {
-            method: "POST",
-            body: payload,
-          });
-
-          set({ isSubmitting: false, error: "" });
-          return response;
-        } catch (error) {
-          set({ error: error.message, isSubmitting: false });
-          throw error;
-        }
-      },
-      refreshCurrentUser: async () => {
-        const token = get().token;
-
-        if (!token) {
-          return null;
-        }
-
-        try {
-          const user = await requestApi("/auth/me", { token });
-          get().setSession({ token, user: normalizeUser(user) });
-          return user;
-        } catch (error) {
-          handleProtectedAuthError(error);
-
-          throw error;
-        }
-      },
-      updateCurrentUserProfile: async (payload) => {
-        const token = get().token;
-
-        if (!token) {
-          throw new ApiError("Authentication required.", { status: 401 });
-        }
-
-        const response = await requestApi("/auth/me", {
-          method: "PATCH",
-          token,
-          body: payload,
-        });
-
-        get().setSession({ token, user: normalizeUser(response.user) });
-        return response.user;
-      },
-      updateCurrentUserPassword: async (payload) => {
-        const token = get().token;
-
-        if (!token) {
-          throw new ApiError("Authentication required.", { status: 401 });
-        }
-
-        return requestApi("/auth/me/password", {
-          method: "PATCH",
-          token,
-          body: payload,
-        });
-      },
-      logout: () =>
-        set({
-          ...buildSessionState(),
-          isHydrated: true,
-          isSubmitting: false,
-          error: "",
-        }),
     }),
-    {
-      name: STORAGE_KEY,
-      storage: createJSONStorage(() => sessionStorage),
-      partialize: (state) => ({
-        token: state.token,
-        user: state.user,
-      }),
-      onRehydrateStorage: () => (state) => {
-        state?.setHydrated?.();
-      },
-    },
-  ),
-);
+  setSession: (user) => {
+    const normalizedUser = normalizeUser(user);
+
+    set({
+      ...buildSessionState({ user: normalizedUser }),
+      isHydrated: true,
+      error: "",
+      isSubmitting: false,
+    });
+  },
+  initializeAuth: async () => {
+    try {
+      const user = await requestApi("/auth/me");
+      get().setSession(user);
+      return user;
+    } catch (error) {
+      if (shouldLogoutForAuthError(error)) {
+        get().clearSession();
+        return null;
+      }
+
+      set({ isHydrated: true });
+      throw error;
+    }
+  },
+  loginCashier: async (payload) => {
+    set({ isSubmitting: true, error: "" });
+
+    try {
+      const response = await requestApi("/auth/cashier/login", {
+        method: "POST",
+        body: payload,
+      });
+      const user = normalizeUser(response.user, "cashier");
+
+      get().setSession(user);
+      return { ...response, user };
+    } catch (error) {
+      set({ error: error.message, isSubmitting: false });
+      throw error;
+    }
+  },
+  loginAdmin: async (payload) => {
+    set({ isSubmitting: true, error: "" });
+
+    try {
+      const response = await requestApi("/auth/admin/login", {
+        method: "POST",
+        body: payload,
+      });
+      const user = normalizeUser(response.user, "admin");
+
+      get().setSession(user);
+      return { ...response, user };
+    } catch (error) {
+      set({ error: error.message, isSubmitting: false });
+      throw error;
+    }
+  },
+  registerCashier: async (payload) => {
+    set({ isSubmitting: true, error: "" });
+
+    try {
+      const response = await requestApi("/auth/cashier/register", {
+        method: "POST",
+        body: payload,
+      });
+      const user = normalizeUser(response.user, "cashier");
+      set({ isSubmitting: false, error: "" });
+      return { ...response, user };
+    } catch (error) {
+      set({ error: error.message, isSubmitting: false });
+      throw error;
+    }
+  },
+  requestCashierPasswordReset: async (payload) => {
+    set({ isSubmitting: true, error: "" });
+
+    try {
+      const response = await requestApi("/auth/cashier/request-reset-password", {
+        method: "POST",
+        body: payload,
+      });
+
+      set({ isSubmitting: false, error: "" });
+      return response;
+    } catch (error) {
+      set({ error: error.message, isSubmitting: false });
+      throw error;
+    }
+  },
+  resetCashierPassword: async (payload) => {
+    set({ isSubmitting: true, error: "" });
+
+    try {
+      const response = await requestApi("/auth/cashier/reset-password", {
+        method: "POST",
+        body: payload,
+      });
+
+      set({ isSubmitting: false, error: "" });
+      return response;
+    } catch (error) {
+      set({ error: error.message, isSubmitting: false });
+      throw error;
+    }
+  },
+  refreshCurrentUser: async () => {
+    try {
+      const user = await requestApi("/auth/me");
+      get().setSession(user);
+      return user;
+    } catch (error) {
+      handleProtectedAuthError(error);
+      throw error;
+    }
+  },
+  updateCurrentUserProfile: async (payload) => {
+    try {
+      const response = await requestApi("/auth/me", {
+        method: "PATCH",
+        body: payload,
+      });
+
+      get().setSession(response.user);
+      return response.user;
+    } catch (error) {
+      handleProtectedAuthError(error);
+      throw error;
+    }
+  },
+  updateCurrentUserPassword: async (payload) => {
+    try {
+      return await requestApi("/auth/me/password", {
+        method: "PATCH",
+        body: payload,
+      });
+    } catch (error) {
+      handleProtectedAuthError(error);
+      throw error;
+    }
+  },
+  logout: async () => {
+    try {
+      await requestApi("/auth/logout", {
+        method: "POST",
+      });
+    } catch {
+      // Clear local session even if server-side cookie clear fails.
+    } finally {
+      get().clearSession();
+    }
+  },
+}));

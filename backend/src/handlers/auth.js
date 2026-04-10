@@ -15,6 +15,7 @@ import {
   createCashier,
 } from "../models/cashierModel.js";
 import { uploadImage, deleteImage } from "../libs/cloudinary.js";
+import { clearAuthCookie, setAuthCookie } from "../libs/authCookie.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "24h";
@@ -157,10 +158,10 @@ export const loginAdminHandler = async (req, res, next) => {
     }
 
     const token = generateToken({ uuid: admin.uuid, role: "admin" });
+    setAuthCookie(res, token);
 
     res.json({
       message: "Login successful.",
-      token,
       user: buildAdminResponse(admin),
     });
   } catch (error) {
@@ -200,10 +201,10 @@ export const registerAdminHandler = async (req, res, next) => {
     });
 
     const token = generateToken({ uuid: admin.uuid, role: "admin" });
+    setAuthCookie(res, token);
 
     res.status(201).json({
       message: "Admin registered successfully.",
-      token,
       user: buildAdminResponse(admin),
     });
   } catch (error) {
@@ -250,10 +251,10 @@ export const loginCashierHandler = async (req, res, next) => {
     }
 
     const token = generateToken({ uuid: cashier.uuid, role: "cashier" });
+    setAuthCookie(res, token);
 
     res.json({
       message: "Login successful.",
-      token,
       user: buildCashierResponse(cashier),
     });
   } catch (error) {
@@ -506,6 +507,15 @@ export const updateMePasswordHandler = async (req, res, next) => {
     });
 
     res.json({ message: "Password updated successfully." });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const logoutHandler = async (_req, res, next) => {
+  try {
+    clearAuthCookie(res);
+    res.json({ message: "Logout successful." });
   } catch (error) {
     next(error);
   }

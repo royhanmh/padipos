@@ -1,16 +1,6 @@
 import { create } from "zustand";
 import { requestApi } from "../lib/apiClient";
-import { handleProtectedAuthError, useAuthStore } from "./authStore";
-
-const requireToken = () => {
-  const token = useAuthStore.getState().token;
-
-  if (!token) {
-    throw new Error("Authentication required.");
-  }
-
-  return token;
-};
+import { handleProtectedAuthError } from "./authStore";
 
 export const useTransactionsStore = create((set) => ({
   transactions: [],
@@ -23,9 +13,7 @@ export const useTransactionsStore = create((set) => ({
     set({ isLoading: true, error: "" });
 
     try {
-      const transactions = await requestApi("/transactions", {
-        token: requireToken(),
-      });
+      const transactions = await requestApi("/transactions");
 
       set({ transactions, isLoading: false, error: "" });
       return transactions;
@@ -40,7 +28,6 @@ export const useTransactionsStore = create((set) => ({
 
     try {
       const transaction = await requestApi(`/transactions/${transactionUuid}`, {
-        token: requireToken(),
       });
 
       set({ selectedTransaction: transaction, isLoading: false, error: "" });
@@ -57,7 +44,6 @@ export const useTransactionsStore = create((set) => ({
     try {
       const transaction = await requestApi("/transactions", {
         method: "POST",
-        token: requireToken(),
         body: payload,
       });
 

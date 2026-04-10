@@ -3,51 +3,24 @@ import { useShallow } from "zustand/react/shallow";
 import { useAuthStore } from "../stores/authStore";
 
 const AuthSessionBootstrap = ({ children }) => {
-  const { isHydrated, token, refreshCurrentUser } = useAuthStore(
+  const { isHydrated, initializeAuth } = useAuthStore(
     useShallow((state) => ({
       isHydrated: state.isHydrated,
-      token: state.token,
-      refreshCurrentUser: state.refreshCurrentUser,
+      initializeAuth: state.initializeAuth,
     })),
   );
-  const checkedTokenRef = useRef(null);
+  const initializedRef = useRef(false);
 
   useEffect(() => {
-    let isMounted = true;
-
-    if (!isHydrated) {
-      return () => {
-        isMounted = false;
-      };
+    if (initializedRef.current || isHydrated) {
+      return undefined;
     }
 
-    if (!token) {
-      checkedTokenRef.current = null;
-      return () => {
-        isMounted = false;
-      };
-    }
+    initializedRef.current = true;
 
-    if (checkedTokenRef.current === token) {
-      return () => {
-        isMounted = false;
-      };
-    }
-
-    checkedTokenRef.current = token;
-
-    refreshCurrentUser()
-      .catch(() => null)
-      .finally(() => {
-        if (isMounted) {
-          // No-op
-        }
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [isHydrated, refreshCurrentUser, token]);
+    initializeAuth().catch(() => null);
+    return undefined;
+  }, [initializeAuth, isHydrated]);
 
   return children;
 };

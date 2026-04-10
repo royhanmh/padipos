@@ -1,16 +1,6 @@
 import { create } from "zustand";
 import { requestApi } from "../lib/apiClient";
-import { handleProtectedAuthError, useAuthStore } from "./authStore";
-
-const requireToken = () => {
-  const token = useAuthStore.getState().token;
-
-  if (!token) {
-    throw new Error("Authentication required.");
-  }
-
-  return token;
-};
+import { handleProtectedAuthError } from "./authStore";
 
 export const useProductsStore = create((set) => ({
   products: [],
@@ -36,7 +26,6 @@ export const useProductsStore = create((set) => ({
     try {
       const createdProduct = await requestApi("/products", {
         method: "POST",
-        token: requireToken(),
         body: payload,
       });
 
@@ -59,7 +48,6 @@ export const useProductsStore = create((set) => ({
     try {
       const updatedProduct = await requestApi(`/products/${productUuid}`, {
         method: "PATCH",
-        token: requireToken(),
         body: payload,
       });
 
@@ -84,7 +72,6 @@ export const useProductsStore = create((set) => ({
     try {
       await requestApi(`/products/${productUuid}`, {
         method: "DELETE",
-        token: requireToken(),
       });
 
       set((state) => ({
