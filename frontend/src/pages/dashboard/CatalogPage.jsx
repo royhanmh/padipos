@@ -538,7 +538,7 @@ const CatalogPage = () => {
         </button>
       }
     >
-      <form className="space-y-6" onSubmit={handleSubmit}>
+      <form className="space-y-6 pb-8 lg:pb-0" onSubmit={handleSubmit}>
         {renderUploadArea({ isEdit })}
 
         <FormField label="Title" error={formErrors.title}>
@@ -603,7 +603,7 @@ const CatalogPage = () => {
         <button
           type="submit"
           disabled={isLoading}
-          className={`mt-9 flex h-[54px] w-full items-center justify-center rounded-[10px] bg-[#3572EF] text-base font-medium text-white shadow-[0_12px_28px_rgba(53,114,239,0.24)] transition hover:brightness-105 ${isLoading ? "cursor-not-allowed brightness-95" : ""}`}
+          className={`mt-9 flex h-[54px] w-full items-center justify-center rounded-[10px] bg-[#3572EF] text-base font-medium text-white shadow-[0_12px_28px_rgba(53,114,239,0.24)] transition hover:brightness-105 max-lg:mb-4 ${isLoading ? "cursor-not-allowed brightness-95" : ""}`}
         >
           {isLoading ? (
             <div className="flex items-center gap-2">
