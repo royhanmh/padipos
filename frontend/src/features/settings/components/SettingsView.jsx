@@ -61,9 +61,6 @@ const createDefaultSettings = (accountDefaults = {}) => ({
     fontSize: "16",
     zoom: "100",
   },
-  security: {
-    passwordChangedAt: null,
-  },
 });
 
 const readFileAsDataUrl = (file) =>
@@ -88,25 +85,6 @@ const isCloudinaryAvatar = (value) =>
   value.startsWith("http") &&
   value.includes("cloudinary.com");
 
-const formatPasswordChangedAt = (value) => {
-  if (!value) {
-    return "Not changed yet";
-  }
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return "Not changed yet";
-  }
-
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
-};
-
 const SettingsView = ({
   layoutSidebarProps,
   layoutTopbarProps,
@@ -122,9 +100,7 @@ const SettingsView = ({
 
   const initialSettings = useMemo(
     () => createDefaultSettings(accountDefaults),
-    [
-      accountDefaults,
-    ],
+    [accountDefaults],
   );
 
   const [formSettings, setFormSettings] = useState(() =>
@@ -319,7 +295,10 @@ const SettingsView = ({
     const currentAvatar = formSettings.account.avatar;
 
     if (!isCloudinaryAvatar(currentAvatar)) {
-      updateAccountField("avatar", committedSettings.account.avatar || DEFAULT_AVATAR);
+      updateAccountField(
+        "avatar",
+        committedSettings.account.avatar || DEFAULT_AVATAR,
+      );
       setAvatarError("");
       setAccountError("");
       return;
@@ -513,22 +492,6 @@ const SettingsView = ({
 
     try {
       await updateCurrentUserPassword(pendingPasswordUpdate);
-
-      const nextPasswordChangedAt = new Date().toISOString();
-      setFormSettings((currentValue) => ({
-        ...currentValue,
-        security: {
-          ...currentValue.security,
-          passwordChangedAt: nextPasswordChangedAt,
-        },
-      }));
-      setCommittedSettings((currentValue) => ({
-        ...currentValue,
-        security: {
-          ...currentValue.security,
-          passwordChangedAt: nextPasswordChangedAt,
-        },
-      }));
       closePasswordConfirmModal();
       closePasswordModal();
       setToast(createFloatingToastState("Password changed successfully."));
@@ -725,12 +688,6 @@ const SettingsView = ({
               >
                 Change Password
               </button>
-              <p className="mt-2 text-sm text-[#8A8A8A]">
-                Last changed:{" "}
-                {formatPasswordChangedAt(
-                  formSettings.security.passwordChangedAt,
-                )}
-              </p>
             </div>
           </section>
 
