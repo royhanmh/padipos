@@ -167,7 +167,7 @@ const ReadOnlyField = ({ label, value, multiline = false }) => {
 
 const PanelFrame = ({ title, actions, mobileCloseAction, children }) => {
   return (
-    <aside className="relative flex h-full flex-col rounded-[10px] border border-[#F0F0F0] bg-white px-4 py-4 shadow-[0_14px_36px_rgba(25,45,88,0.05)] xl:min-h-0 2xl:rounded-[20px] 2xl:px-4 2xl:py-4">
+    <aside className="relative flex h-full flex-col rounded-[10px] border border-[#F0F0F0] bg-white px-4 py-4 shadow-[0_14px_36px_rgba(25,45,88,0.05)] xl:min-h-0 2xl:rounded-[10px] 2xl:px-4 2xl:py-4">
       <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
           {mobileCloseAction ? (
@@ -471,7 +471,7 @@ const CatalogPage = () => {
           <img
             src={panelForm.image || DEFAULT_IMAGE}
             alt={panelForm.title || "Menu preview"}
-            className="h-48 w-full rounded-[22px] object-cover 2xl:h-55 2xl:rounded-[24px]"
+            className="h-48 w-full rounded-[10px] object-cover 2xl:h-55 2xl:rounded-[10px]"
           />
           <div className="mt-3 flex justify-center">
             <button
@@ -493,7 +493,7 @@ const CatalogPage = () => {
             <img
               src={panelForm.image}
               alt={panelForm.title || "Selected preview"}
-              className="h-44 w-full rounded-[18px] object-cover 2xl:h-48 2xl:rounded-[20px]"
+              className="h-44 w-full rounded-[10px] object-cover 2xl:h-48 2xl:rounded-[10px]"
             />
           ) : (
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-[#D8DDEA] text-[#373737]">
@@ -652,7 +652,7 @@ const CatalogPage = () => {
           <img
             src={selectedMenu.image}
             alt={selectedMenu.title}
-            className="h-48 w-full rounded-[22px] object-cover 2xl:h-55 2xl:rounded-[24px]"
+            className="h-48 w-full rounded-[10px] object-cover 2xl:h-55 2xl:rounded-[10px]"
           />
 
           <ReadOnlyField label="Title" value={selectedMenu.title} />
@@ -734,7 +734,7 @@ const CatalogPage = () => {
                     key={category.id}
                     type="button"
                     onClick={() => setActiveCategory(category.id)}
-                    className={`flex h-[46px] items-center justify-center gap-2 rounded-[12px] border px-4 text-[15px] font-medium transition ${isActive
+                    className={`flex h-[46px] items-center justify-center gap-2 rounded-[10px] border px-4 text-[15px] font-medium transition ${isActive
                         ? "border-[#3572EF] bg-[#3572EF] text-white"
                         : "border-[#BEBEBE] bg-white text-[#A9A9A9] hover:border-[#C2D4FA] hover:text-[#5E5E5E]"
                       }`}
@@ -832,7 +832,7 @@ const CatalogPage = () => {
                   })}
                 </div>
               ) : (
-                <div className="flex min-h-84 items-center justify-center rounded-3xl border border-dashed border-[#D7DDEA] bg-white px-7 text-center">
+                <div className="flex min-h-84 items-center justify-center rounded-[10px] border border-dashed border-[#D7DDEA] bg-white px-7 text-center">
                   <div>
                     <p className="text-2xl font-semibold text-[#2A2A2A]">
                       {requestError ? "Products could not be loaded" : "No menu matched your filters"}
@@ -902,12 +902,12 @@ const CatalogPage = () => {
         {isDeleteDialogOpen ? (
           <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[rgba(17,24,39,0.28)] px-4">
             <div
-              className="w-full max-w-[540px] rounded-[20px] bg-white px-8 py-9 text-center shadow-[0_22px_65px_rgba(17,24,39,0.2)]"
+              className="w-full max-w-[540px] rounded-[10px] bg-white px-8 py-9 text-center shadow-[0_22px_65px_rgba(17,24,39,0.2)]"
               role="dialog"
               aria-modal="true"
               aria-labelledby="delete-menu-title"
             >
-              <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[24px] border-2 border-[#FF3333] text-[#FF3333]">
+              <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[10px] border-2 border-[#FF3333] text-[#FF3333]">
                 <PiTrashLight className="text-[40px]" />
               </div>
 

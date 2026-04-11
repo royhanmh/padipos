@@ -8,7 +8,7 @@ const LoginCardComponent = ({
 }) => {
   return (
     <div
-      className={`mx-auto w-full max-w-155 rounded-[20px] bg-white px-12 pb-14 shadow-[0_22px_60px_rgba(17,24,39,0.2)] lg:ml-20 max-lg:px-7 max-lg:pb-12 xl:scale-75 ${className}`}
+      className={`mx-auto w-full max-w-155 rounded-[10px] bg-white px-12 pb-14 shadow-[0_22px_60px_rgba(17,24,39,0.2)] lg:ml-20 max-lg:px-7 max-lg:pb-12 xl:scale-75 ${className}`}
     >
       <div className="text-center">
         <img

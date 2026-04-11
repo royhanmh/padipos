@@ -38,12 +38,12 @@ const defaultItems = [
 
 const desktopItemClassName = (isActive, variant) => {
   if (variant === "kasir") {
-    return `flex h-10 w-10 items-center justify-center rounded-2xl transition ${
+    return `flex h-10 w-10 items-center justify-center rounded-[10px] transition ${
       isActive ? "text-[#3572EF]" : "text-[#C2C2C2] hover:text-[#A1A1A1]"
     }`;
   }
 
-  return `flex h-10 w-10 items-center justify-center rounded-2xl transition ${
+  return `flex h-10 w-10 items-center justify-center rounded-[10px] transition ${
     isActive
       ? "text-[#3572EF]"
       : "text-[#B9C8EA] hover:bg-white hover:text-[#6392F3]"
@@ -51,7 +51,7 @@ const desktopItemClassName = (isActive, variant) => {
 };
 
 const mobileItemClassName = (isActive) =>
-  `flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl px-2 text-[12px] font-medium transition ${
+  `flex min-h-12 flex-col items-center justify-center gap-1 rounded-[10px] px-2 text-[12px] font-medium transition ${
     isActive
       ? "bg-[#EEF4FF] text-[#3572EF]"
       : "text-[#9CA3AF] hover:bg-[#F6F8FC] hover:text-[#5E5E5E]"

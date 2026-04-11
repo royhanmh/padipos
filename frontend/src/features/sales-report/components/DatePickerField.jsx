@@ -198,7 +198,7 @@ const DatePickerField = ({
         disabled={disabled}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
-        className={`h-12 w-full rounded-xl border px-4 pr-10 text-left text-base outline-none transition md:h-13 md:px-5 ${
+        className={`h-12 w-full rounded-[10px] border px-4 pr-10 text-left text-base outline-none transition md:h-13 md:px-5 ${
           disabled
             ? "cursor-not-allowed border-[#E8E8E8] bg-[#F7F7F7] text-[#C6C6C6]"
             : isOpen
@@ -215,13 +215,13 @@ const DatePickerField = ({
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 top-[calc(100%+8px)] z-40 w-76 overflow-hidden rounded-xl border border-[#E6EAF3] bg-white shadow-[0_16px_36px_rgba(21,33,62,0.14)]">
+        <div className="absolute left-0 top-[calc(100%+8px)] z-40 w-76 overflow-hidden rounded-[10px] border border-[#E6EAF3] bg-white shadow-[0_16px_36px_rgba(21,33,62,0.14)]">
           <div className="grid grid-cols-[1fr_1fr_auto_auto] gap-2 border-b border-[#F0F0F0] px-3 py-3">
             <div className="relative">
               <select
                 value={viewDate.getMonth()}
                 onChange={handleMonthChange}
-                className="h-8 w-full appearance-none rounded-md border border-[#E2E6ED] bg-white px-2 pr-6 text-xs text-[#595959] outline-none"
+                className="h-8 w-full appearance-none rounded-[10px] border border-[#E2E6ED] bg-white px-2 pr-6 text-xs text-[#595959] outline-none"
               >
                 {MONTH_OPTIONS.map((month) => (
                   <option key={month.value} value={month.value}>
@@ -236,7 +236,7 @@ const DatePickerField = ({
               <select
                 value={viewDate.getFullYear()}
                 onChange={handleYearChange}
-                className="h-8 w-full appearance-none rounded-md border border-[#E2E6ED] bg-white px-2 pr-6 text-xs text-[#595959] outline-none"
+                className="h-8 w-full appearance-none rounded-[10px] border border-[#E2E6ED] bg-white px-2 pr-6 text-xs text-[#595959] outline-none"
               >
                 {years.map((year) => (
                   <option key={year} value={year}>
@@ -251,7 +251,7 @@ const DatePickerField = ({
               type="button"
               aria-label="Previous month"
               onClick={goPrevMonth}
-              className="flex h-8 w-8 items-center justify-center rounded-md border border-[#E2E6ED] text-[#77829A] transition hover:bg-[#F8FAFF]"
+              className="flex h-8 w-8 items-center justify-center rounded-[10px] border border-[#E2E6ED] text-[#77829A] transition hover:bg-[#F8FAFF]"
             >
               <PiCaretLeftBold className="text-[11px]" />
             </button>
@@ -260,7 +260,7 @@ const DatePickerField = ({
               type="button"
               aria-label="Next month"
               onClick={goNextMonth}
-              className="flex h-8 w-8 items-center justify-center rounded-md border border-[#E2E6ED] text-[#77829A] transition hover:bg-[#F8FAFF]"
+              className="flex h-8 w-8 items-center justify-center rounded-[10px] border border-[#E2E6ED] text-[#77829A] transition hover:bg-[#F8FAFF]"
             >
               <PiCaretRightBold className="text-[11px]" />
             </button>
@@ -297,7 +297,7 @@ const DatePickerField = ({
                     key={dayValue}
                     type="button"
                     onClick={() => handlePickDate(day)}
-                    className={`flex h-8 items-center justify-center rounded-md border text-xs transition ${
+                    className={`flex h-8 items-center justify-center rounded-[10px] border text-xs transition ${
                       isSelected
                         ? "border-transparent font-medium text-white"
                         : isCurrentMonth

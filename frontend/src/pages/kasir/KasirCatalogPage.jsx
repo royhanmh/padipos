@@ -395,7 +395,7 @@ const KasirCatalogPage = () => {
                     key={category.id}
                     type="button"
                     onClick={() => setActiveCategory(category.id)}
-                    className={`flex h-[46px] items-center justify-center gap-2 rounded-[12px] border px-4 text-[15px] font-medium transition ${isActive
+                    className={`flex h-[46px] items-center justify-center gap-2 rounded-[10px] border px-4 text-[15px] font-medium transition ${isActive
                         ? "border-[#3572EF] bg-[#3572EF] text-white"
                         : "border-[#BEBEBE] text-[#A9A9A9] hover:border-[#C2D4FA] hover:text-[#5E5E5E] bg-white"
                       }`}
@@ -499,7 +499,7 @@ const KasirCatalogPage = () => {
           </div>
 
           <aside
-            className={`transition-all duration-300 lg:block lg:h-full lg:min-h-0 lg:overflow-y-auto lg:rounded-2xl lg:bg-white lg:px-5 lg:py-5 lg:shadow-[0_12px_30px_rgba(25,45,88,0.04)] ${
+            className={`transition-all duration-300 lg:block lg:h-full lg:min-h-0 lg:overflow-y-auto lg:rounded-[10px] lg:bg-white lg:px-5 lg:py-5 lg:shadow-[0_12px_30px_rgba(25,45,88,0.04)] ${
               isCartOpen
                 ? "fixed inset-0 z-50 flex flex-col bg-white lg:static lg:bg-transparent"
                 : "hidden"
@@ -576,7 +576,7 @@ const KasirCatalogPage = () => {
                     value={customerName}
                     onChange={(event) => setCustomerName(event.target.value)}
                     placeholder="Customer Name"
-                    className="h-9 w-full rounded-[8px] border border-[#D6D6D6] px-3 text-[14px] text-[#2B2B2B] placeholder:text-[#BFBFBF] outline-none transition focus:border-[#C2D4FA]"
+                    className="h-9 w-full rounded-[10px] border border-[#D6D6D6] px-3 text-[14px] text-[#2B2B2B] placeholder:text-[#BFBFBF] outline-none transition focus:border-[#C2D4FA]"
                   />
                 </label>
 
@@ -589,7 +589,7 @@ const KasirCatalogPage = () => {
                       <select
                         value={tableNumber}
                         onChange={(event) => setTableNumber(event.target.value)}
-                        className="h-9 w-full appearance-none rounded-[8px] border border-[#D6D6D6] px-3 text-[14px] text-[#2B2B2B] outline-none transition focus:border-[#C2D4FA]"
+                        className="h-9 w-full appearance-none rounded-[10px] border border-[#D6D6D6] px-3 text-[14px] text-[#2B2B2B] outline-none transition focus:border-[#C2D4FA]"
                       >
                         <option value="">Select No.Table</option>
                         {TABLE_OPTIONS.map((table) => (
@@ -614,7 +614,7 @@ const KasirCatalogPage = () => {
                   <button
                     type="button"
                     disabled
-                    className="h-11 w-full rounded-xl bg-[#B6B6B8] text-[16px] font-medium text-[#ECECEC]"
+                    className="h-11 w-full rounded-[10px] bg-[#B6B6B8] text-[16px] font-medium text-[#ECECEC]"
                   >
                     Pay
                   </button>
@@ -650,7 +650,7 @@ const KasirCatalogPage = () => {
                                   prev.filter((nextItem) => nextItem.id !== item.id),
                                 )
                               }
-                              className="flex shrink-0 h-[26px] w-[26px] items-center justify-center rounded-[6px] border border-[#FFD4D4] text-[#FF3333] transition hover:bg-[#FFF3F3]"
+                              className="flex shrink-0 h-[26px] w-[26px] items-center justify-center rounded-[10px] border border-[#FFD4D4] text-[#FF3333] transition hover:bg-[#FFF3F3]"
                             >
                               <PiTrashLight className="text-[14px]" />
                             </button>
@@ -669,7 +669,7 @@ const KasirCatalogPage = () => {
                                     setDetailNote(item.note || "");
                                   }
                                 }}
-                                className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[6px] border border-[#3572EF] text-[#3572EF] transition hover:bg-[#F0F5FF]"
+                                className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[10px] border border-[#3572EF] text-[#3572EF] transition hover:bg-[#F0F5FF]"
                               >
                                 <PiPencilSimpleLineLight className="text-[14px]" />
                               </button>
@@ -728,7 +728,7 @@ const KasirCatalogPage = () => {
                 </div>
 
                 <div className="mt-4 border-t border-[#EFEFEF] pt-4">
-                  <div className="relative rounded-[12px] bg-[#F7F7F7] pb-4 pt-4">
+                  <div className="relative rounded-[10px] bg-[#F7F7F7] pb-4 pt-4">
                     <div className="px-5">
                       <div className="flex items-center justify-between text-[13px] text-[#737373]">
                         <p>Sub Total</p>
@@ -771,7 +771,7 @@ const KasirCatalogPage = () => {
                               setSelectedNominal(nominal);
                               setCustomNominal(formatNominalInput(String(nominal)));
                             }}
-                            className={`h-[36px] rounded-[8px] border text-[13px] transition ${isActive
+                            className={`h-[36px] rounded-[10px] border text-[13px] transition ${isActive
                                 ? "border-[#3572EF] bg-[#3572EF] text-white"
                                 : "border-[#CCCCCC] text-[#A8A8A8] hover:border-[#3572EF] hover:text-[#3572EF]"
                               }`}
@@ -828,7 +828,7 @@ const KasirCatalogPage = () => {
           <div
             role="dialog"
             aria-modal="true"
-            className="w-full max-w-[320px] rounded-[20px] bg-white shadow-[0_24px_64px_rgba(17,24,39,0.2)]"
+            className="w-full max-w-[320px] rounded-[10px] bg-white shadow-[0_24px_64px_rgba(17,24,39,0.2)]"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-[#ECECEC] px-4 py-3">
@@ -852,7 +852,7 @@ const KasirCatalogPage = () => {
               <img
                 src={detailMenu.image}
                 alt={detailMenu.title}
-                className="h-[130px] w-full rounded-[12px] object-cover"
+                className="h-[130px] w-full rounded-[10px] object-cover"
               />
               <span className="mt-2.5 inline-flex rounded-full bg-[#3572EF] px-2 py-0.5 text-[10px] text-white">
                 {categoryMap[detailMenu.category]?.shortLabel ?? "Food"}
@@ -879,7 +879,7 @@ const KasirCatalogPage = () => {
                     onChange={(event) => setDetailNote(event.target.value)}
                     placeholder="Add note here..."
                     rows={2}
-                    className="w-full rounded-[8px] bg-[#F7F7F7] px-3.5 py-2.5 text-[13px] text-[#2A2A2A] outline-none placeholder:text-[#B2B2B2]"
+                    className="w-full rounded-[10px] bg-[#F7F7F7] px-3.5 py-2.5 text-[13px] text-[#2A2A2A] outline-none placeholder:text-[#B2B2B2]"
                   />
                 </label>
               </div>
@@ -903,7 +903,7 @@ const KasirCatalogPage = () => {
                   setEditCartItemId(null);
                 }}
                 disabled={!detailNote.trim()}
-                className={`mt-3 h-[40px] w-full rounded-[8px] text-[14px] font-medium transition ${detailNote.trim()
+                className={`mt-3 h-[40px] w-full rounded-[10px] text-[14px] font-medium transition ${detailNote.trim()
                     ? "bg-[#3572EF] text-white hover:bg-[#1C61ED]"
                     : "bg-[#B6B6B8] text-[#ECECEC]"
                   }`}
@@ -923,7 +923,7 @@ const KasirCatalogPage = () => {
           <div
             role="dialog"
             aria-modal="true"
-            className="relative w-full max-w-[340px] max-h-[90vh] overflow-y-auto scrollbar-hide rounded-[20px] bg-white px-5 py-6 shadow-[0_22px_60px_rgba(17,24,39,0.2)]"
+            className="relative w-full max-w-[340px] max-h-[90vh] overflow-y-auto scrollbar-hide rounded-[10px] bg-white px-5 py-6 shadow-[0_22px_60px_rgba(17,24,39,0.2)]"
             onClick={(event) => event.stopPropagation()}
           >
             <button
@@ -1024,7 +1024,7 @@ const KasirCatalogPage = () => {
             <button
               type="button"
               onClick={handlePrintReceipt}
-              className="mx-auto mt-5 flex h-[40px] w-full items-center justify-center rounded-[8px] bg-[#3572EF] text-[14px] font-medium text-white transition hover:brightness-105"
+              className="mx-auto mt-5 flex h-[40px] w-full items-center justify-center rounded-[10px] bg-[#3572EF] text-[14px] font-medium text-white transition hover:brightness-105"
             >
               Print Struk
             </button>

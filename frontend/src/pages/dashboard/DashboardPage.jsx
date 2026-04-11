@@ -345,7 +345,7 @@ const DashboardPage = () => {
           ))}
         </div>
 
-        <section className="mt-5 rounded-xl border border-[#ECECEC] bg-white p-6 shadow-[0_12px_32px_rgba(25,45,88,0.05)] max-lg:p-5 xl:p-7">
+        <section className="mt-5 rounded-[10px] border border-[#ECECEC] bg-white p-6 shadow-[0_12px_32px_rgba(25,45,88,0.05)] max-lg:p-5 xl:p-7">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
             <h2 className="text-[28px] font-semibold tracking-[-0.03em] text-[#242424] max-lg:text-[26px]">
               Total Omzet
@@ -373,7 +373,7 @@ const DashboardPage = () => {
                   value={selectedChartCategory}
                   onChange={(event) => setSelectedChartCategory(event.target.value)}
                   disabled={false}
-                  className="h-12 min-w-52 w-full appearance-none rounded-xl border border-[#E9E9E9] bg-white px-5 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] max-lg:min-w-0 max-lg:px-4 max-lg:text-sm md:h-12 md:px-5"
+                  className="h-12 min-w-52 w-full appearance-none rounded-[10px] border border-[#E9E9E9] bg-white px-5 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] max-lg:min-w-0 max-lg:px-4 max-lg:text-sm md:h-12 md:px-5"
                 >
                   {CHART_CATEGORY_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -398,15 +398,15 @@ const DashboardPage = () => {
                   <div key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-4">
                     <div className="flex w-full items-end justify-center gap-1.5">
                       <div
-                        className="w-[16%] animate-pulse rounded-t bg-[#F0F0F0]"
+                        className="w-[16%] animate-pulse rounded-t-[10px] bg-[#F0F0F0]"
                         style={{ height: `${20 + (i % 3) * 15}%` }}
                       />
                       <div
-                        className="w-[16%] animate-pulse rounded-t bg-[#F5F5F5]"
+                        className="w-[16%] animate-pulse rounded-t-[10px] bg-[#F5F5F5]"
                         style={{ height: `${30 + (i % 2) * 20}%` }}
                       />
                       <div
-                        className="w-[16%] animate-pulse rounded-t bg-[#FAFAFA]"
+                        className="w-[16%] animate-pulse rounded-t-[10px] bg-[#FAFAFA]"
                         style={{ height: `${10 + (i % 4) * 10}%` }}
                       />
                     </div>
@@ -451,7 +451,7 @@ const DashboardPage = () => {
                     }}
                     formatter={(value) => formatCurrency(value)}
                     contentStyle={{
-                      borderRadius: "16px",
+                      borderRadius: "10px",
                       border: "1px solid #E6EAF2",
                       boxShadow: "0 10px 25px rgba(25,45,88,0.08)",
                     }}
@@ -501,7 +501,7 @@ const DashboardPage = () => {
             onClick={closeCategoryModal}
           >
             <div
-              className="w-full max-w-[500px] rounded-xl bg-white shadow-[0_24px_60px_rgba(17,24,39,0.18)] max-lg:max-w-105"
+              className="w-full max-w-[500px] rounded-[10px] bg-white shadow-[0_24px_60px_rgba(17,24,39,0.18)] max-lg:max-w-105"
               onClick={(event) => event.stopPropagation()}
             >
               <div className="flex items-center justify-between border-b border-[#EFEFEF] px-5 py-4">
@@ -526,11 +526,11 @@ const DashboardPage = () => {
                     value={searchKeyword}
                     onChange={(event) => setSearchKeyword(event.target.value)}
                     placeholder="Enter the keyword here..."
-                    className="h-12 w-full rounded-xl border border-[#E9E9E9] bg-white pl-11 pr-4 text-base text-[#4B4B4B] outline-none placeholder:text-[#D0D0D0] focus:border-[#C8D8FF] max-lg:h-11 max-lg:pl-10"
+                    className="h-12 w-full rounded-[10px] border border-[#E9E9E9] bg-white pl-11 pr-4 text-base text-[#4B4B4B] outline-none placeholder:text-[#D0D0D0] focus:border-[#C8D8FF] max-lg:h-11 max-lg:pl-10"
                   />
                 </label>
 
-                <div className="mt-4 overflow-hidden rounded-xl border border-[#F0F0F0]">
+                <div className="mt-4 overflow-hidden rounded-[10px] border border-[#F0F0F0]">
                   <div className="grid grid-cols-[1fr_132px] bg-[#F7F7F7] px-5 py-3 text-sm font-semibold text-[#2F2F2F]">
                     <p>Menu Name</p>
                     <p>Total Sales</p>

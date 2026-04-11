@@ -34,10 +34,10 @@ const SystemStatePage = ({
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#F7F7F7] px-6 py-10 max-lg:px-4 max-lg:py-6">
-      <div className="w-full max-w-[540px] rounded-[20px] border border-[#F0F0F0] bg-white px-12 py-14 text-center shadow-[0_14px_36px_rgba(25,45,88,0.05)] max-lg:px-8 max-lg:py-10">
+      <div className="w-full max-w-[540px] rounded-[10px] border border-[#F0F0F0] bg-white px-12 py-14 text-center shadow-[0_14px_36px_rgba(25,45,88,0.05)] max-lg:px-8 max-lg:py-10">
         {Icon && (
           <div
-            className="mx-auto mb-8 flex h-28 w-28 items-center justify-center rounded-[24px] border max-lg:h-24 max-lg:w-24"
+            className="mx-auto mb-8 flex h-28 w-28 items-center justify-center rounded-[10px] border max-lg:h-24 max-lg:w-24"
             style={{ 
               color: colors.primary, 
               borderColor: colors.border,

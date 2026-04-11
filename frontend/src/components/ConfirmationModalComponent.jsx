@@ -29,7 +29,7 @@ const ConfirmationModalComponent = ({
         aria-modal="true"
         aria-labelledby="confirmation-modal-title"
         aria-describedby="confirmation-modal-description"
-        className="w-full max-w-[520px] rounded-[20px] bg-white p-6 shadow-[0_22px_60px_rgba(17,24,39,0.2)]"
+        className="w-full max-w-[520px] rounded-[10px] bg-white p-6 shadow-[0_22px_60px_rgba(17,24,39,0.2)]"
         onClick={(event) => event.stopPropagation()}
       >
         <h3

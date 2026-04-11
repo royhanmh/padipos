@@ -376,9 +376,9 @@ const SalesReportView = ({
           </div>
         )}
 
-        <section className="mt-6 rounded-2xl border border-[#ECECEC] bg-white p-6 shadow-[0_10px_26px_rgba(25,45,88,0.06)] max-lg:p-5">
+        <section className="mt-6 rounded-[10px] border border-[#ECECEC] bg-white p-6 shadow-[0_10px_26px_rgba(25,45,88,0.06)] max-lg:p-5">
           {errorMessage ? (
-            <div className="mb-5 rounded-xl border border-[#FAD7DB] bg-[#FFF7F8] px-4 py-3 text-base text-[#B42318] max-lg:text-sm">
+            <div className="mb-5 rounded-[10px] border border-[#FAD7DB] bg-[#FFF7F8] px-4 py-3 text-base text-[#B42318] max-lg:text-sm">
               {errorMessage}
             </div>
           ) : null}
@@ -405,7 +405,7 @@ const SalesReportView = ({
                 <select
                   value={draftFilters.category}
                   onChange={(event) => handleFilterChange("category", event.target.value)}
-                  className="h-12 w-full appearance-none rounded-xl border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] md:h-13 md:px-5"
+                  className="h-12 w-full appearance-none rounded-[10px] border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] md:h-13 md:px-5"
                 >
                   {CATEGORY_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -422,7 +422,7 @@ const SalesReportView = ({
                 <select
                   value={draftFilters.orderType}
                   onChange={(event) => handleFilterChange("orderType", event.target.value)}
-                  className="h-12 w-full appearance-none rounded-xl border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] md:h-13 md:px-5"
+                  className="h-12 w-full appearance-none rounded-[10px] border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] md:h-13 md:px-5"
                 >
                   {ORDER_TYPE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -437,7 +437,7 @@ const SalesReportView = ({
             <button
               type="button"
               onClick={applySearchFilter}
-              className="h-13 w-full min-w-0 rounded-xl bg-[#3572EF] px-7 text-base font-medium text-white transition hover:brightness-105 2xl:min-w-44"
+              className="h-13 w-full min-w-0 rounded-[10px] bg-[#3572EF] px-7 text-base font-medium text-white transition hover:brightness-105 2xl:min-w-44"
             >
               Search
             </button>
@@ -452,7 +452,7 @@ const SalesReportView = ({
             />
           </div>
 
-          <div className="mt-5 min-w-0 overflow-hidden rounded-xl border border-[#EFEFEF]">
+          <div className="mt-5 min-w-0 overflow-hidden rounded-[10px] border border-[#EFEFEF]">
             <div className="hidden lg:block">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-245 border-collapse">
@@ -511,15 +511,15 @@ const SalesReportView = ({
                 [...Array(MOBILE_SKELETON_CARDS)].map((_, index) => (
                   <div
                     key={index}
-                    className="rounded-xl border border-[#EFEFEF] bg-white p-4"
+                    className="rounded-[10px] border border-[#EFEFEF] bg-white p-4"
                   >
-                    <div className="h-4 w-24 animate-pulse rounded-md bg-[#F1F1F1]" />
-                    <div className="mt-2 h-6 w-40 animate-pulse rounded-md bg-[#F1F1F1]" />
+                    <div className="h-4 w-24 animate-pulse rounded-[10px] bg-[#F1F1F1]" />
+                    <div className="mt-2 h-6 w-40 animate-pulse rounded-[10px] bg-[#F1F1F1]" />
                     <div className="mt-4 space-y-2.5">
                       {[...Array(4)].map((__, innerIndex) => (
                         <div key={innerIndex} className="flex items-center justify-between gap-4">
-                          <div className="h-3 w-22 animate-pulse rounded-md bg-[#F1F1F1]" />
-                          <div className="h-3 w-32 animate-pulse rounded-md bg-[#F1F1F1]" />
+                          <div className="h-3 w-22 animate-pulse rounded-[10px] bg-[#F1F1F1]" />
+                          <div className="h-3 w-32 animate-pulse rounded-[10px] bg-[#F1F1F1]" />
                         </div>
                       ))}
                     </div>
@@ -529,7 +529,7 @@ const SalesReportView = ({
                 orders.map((order) => (
                   <article
                     key={order.id ?? order.uuid ?? order.orderNumber}
-                    className="rounded-xl border border-[#EFEFEF] bg-white p-4"
+                    className="rounded-[10px] border border-[#EFEFEF] bg-white p-4"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
@@ -577,7 +577,7 @@ const SalesReportView = ({
                   </article>
                 ))
               ) : (
-                <div className="rounded-xl border border-dashed border-[#E8E8E8] bg-white px-4 py-8 text-center text-sm text-[#939393]">
+                <div className="rounded-[10px] border border-dashed border-[#E8E8E8] bg-white px-4 py-8 text-center text-sm text-[#939393]">
                   {renderTableState()}
                 </div>
               )}
@@ -589,7 +589,7 @@ const SalesReportView = ({
                 <select
                   value={rowsPerPage}
                   onChange={(event) => handleRowsPerPageChange(event.target.value)}
-                  className="h-9 rounded-lg border border-[#E0E0E0] bg-white px-3 text-base text-[#5C5C5C] outline-none"
+                  className="h-9 rounded-[10px] border border-[#E0E0E0] bg-white px-3 text-base text-[#5C5C5C] outline-none"
                 >
                   {ROW_OPTIONS.map((option) => (
                     <option key={option} value={option}>
@@ -618,7 +618,7 @@ const SalesReportView = ({
           onClick={closeDetailModal}
         >
           <div
-            className="relative max-h-[90vh] w-full max-w-155 overflow-y-auto rounded-[20px] bg-white px-9 py-10 shadow-[0_22px_60px_rgba(17,24,39,0.2)] scrollbar-hide max-lg:max-h-[calc(100vh-1.25rem)] max-lg:max-w-[360px] max-lg:rounded-[16px] max-lg:px-4 max-lg:py-4 xl:scale-80"
+            className="relative max-h-[90vh] w-full max-w-155 overflow-y-auto rounded-[10px] bg-white px-9 py-10 shadow-[0_22px_60px_rgba(17,24,39,0.2)] scrollbar-hide max-lg:max-h-[calc(100vh-1.25rem)] max-lg:max-w-[360px] max-lg:rounded-[10px] max-lg:px-4 max-lg:py-4 xl:scale-80"
             onClick={(event) => event.stopPropagation()}
           >
             <button
@@ -635,7 +635,7 @@ const SalesReportView = ({
             </h2>
 
             <div id="sales-report-receipt-content" className="mx-auto mt-7 w-full max-w-102.5 max-lg:mt-4">
-              <div className="overflow-hidden rounded-t-xs bg-[#F3F3F3] px-5 py-5 max-lg:px-3 max-lg:py-3">
+              <div className="overflow-hidden rounded-t-[10px] bg-[#F3F3F3] px-5 py-5 max-lg:px-3 max-lg:py-3">
                 <p className="text-[13px] text-[#8E8E8E] max-lg:text-[11px]">
                   No Order <span className="text-[#666666]">{selectedOrder.orderNumber}</span>
                 </p>
@@ -718,7 +718,7 @@ const SalesReportView = ({
           onClick={closeCategoryModal}
         >
           <div
-            className="w-full max-w-[500px] rounded-xl bg-white shadow-[0_24px_60px_rgba(17,24,39,0.18)] max-lg:max-w-105"
+            className="w-full max-w-[500px] rounded-[10px] bg-white shadow-[0_24px_60px_rgba(17,24,39,0.18)] max-lg:max-w-105"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-[#EFEFEF] px-5 py-4">
@@ -743,11 +743,11 @@ const SalesReportView = ({
                   value={searchKeyword}
                   onChange={(event) => setSearchKeyword(event.target.value)}
                   placeholder="Enter the keyword here..."
-                  className="h-12 w-full rounded-xl border border-[#E9E9E9] bg-white pl-11 pr-4 text-base text-[#4B4B4B] outline-none placeholder:text-[#D0D0D0] focus:border-[#C8D8FF] max-lg:h-11 max-lg:pl-10"
+                  className="h-12 w-full rounded-[10px] border border-[#E9E9E9] bg-white pl-11 pr-4 text-base text-[#4B4B4B] outline-none placeholder:text-[#D0D0D0] focus:border-[#C8D8FF] max-lg:h-11 max-lg:pl-10"
                 />
               </label>
 
-              <div className="mt-4 overflow-hidden rounded-xl border border-[#F0F0F0]">
+              <div className="mt-4 overflow-hidden rounded-[10px] border border-[#F0F0F0]">
                 <div className="grid grid-cols-[1fr_132px] bg-[#F7F7F7] px-5 py-3 text-sm font-semibold text-[#2F2F2F]">
                   <p>Menu Name</p>
                   <p>Total Sales</p>

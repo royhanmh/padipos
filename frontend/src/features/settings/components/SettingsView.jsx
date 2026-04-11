@@ -630,7 +630,7 @@ const SettingsView = ({
                   onChange={(event) =>
                     updateAccountField("email", event.target.value)
                   }
-                  className="h-12 w-full rounded-xl border border-[#CFCFCF] bg-white px-4 text-base text-[#404040] outline-none transition focus:border-[#C2D4FA] md:h-13"
+                  className="h-12 w-full rounded-[10px] border border-[#CFCFCF] bg-white px-4 text-base text-[#404040] outline-none transition focus:border-[#C2D4FA] md:h-13"
                 />
               </label>
 
@@ -644,7 +644,7 @@ const SettingsView = ({
                   onChange={(event) =>
                     updateAccountField("username", event.target.value)
                   }
-                  className="h-12 w-full rounded-xl border border-[#CFCFCF] bg-white px-4 text-base text-[#404040] outline-none transition focus:border-[#C2D4FA] md:h-13"
+                  className="h-12 w-full rounded-[10px] border border-[#CFCFCF] bg-white px-4 text-base text-[#404040] outline-none transition focus:border-[#C2D4FA] md:h-13"
                 />
               </label>
 
@@ -656,7 +656,7 @@ const SettingsView = ({
                   type="text"
                   value={formSettings.account.role}
                   readOnly
-                  className="h-12 w-full rounded-xl border border-[#CFCFCF] bg-[#F8F8F8] px-4 text-base text-[#4F4F4F] md:h-13"
+                  className="h-12 w-full rounded-[10px] border border-[#CFCFCF] bg-[#F8F8F8] px-4 text-base text-[#4F4F4F] md:h-13"
                 />
               </label>
 
@@ -668,7 +668,7 @@ const SettingsView = ({
                   type="text"
                   value={formSettings.account.status}
                   readOnly
-                  className="h-12 w-full rounded-xl border border-[#CFCFCF] bg-[#F8F8F8] px-4 text-base text-[#4F4F4F] md:h-13"
+                  className="h-12 w-full rounded-[10px] border border-[#CFCFCF] bg-[#F8F8F8] px-4 text-base text-[#4F4F4F] md:h-13"
                 />
               </label>
 
@@ -682,7 +682,7 @@ const SettingsView = ({
                     onChange={(event) =>
                       updateAccountField("language", event.target.value)
                     }
-                    className="h-12 w-full appearance-none rounded-xl border border-[#CFCFCF] bg-white px-4 pr-10 text-base text-[#404040] outline-none transition focus:border-[#C2D4FA] md:h-13"
+                    className="h-12 w-full appearance-none rounded-[10px] border border-[#CFCFCF] bg-white px-4 pr-10 text-base text-[#404040] outline-none transition focus:border-[#C2D4FA] md:h-13"
                   >
                     {LANGUAGE_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -713,7 +713,7 @@ const SettingsView = ({
                     type="password"
                     value="********"
                     readOnly
-                    className="h-12 w-full rounded-xl border border-[#CFCFCF] bg-white px-4 pr-11 text-base text-[#404040] md:h-13"
+                    className="h-12 w-full rounded-[10px] border border-[#CFCFCF] bg-white px-4 pr-11 text-base text-[#404040] md:h-13"
                   />
                   <PiEyeClosedLight className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[22px] text-[#A5A5A5]" />
                 </div>
@@ -752,7 +752,7 @@ const SettingsView = ({
                     onChange={(event) =>
                       updateAppearanceField("mode", event.target.value)
                     }
-                    className="h-12 w-full appearance-none rounded-xl border border-[#CFCFCF] bg-white px-4 pr-10 text-base text-[#404040] outline-none transition focus:border-[#C2D4FA] md:h-13"
+                    className="h-12 w-full appearance-none rounded-[10px] border border-[#CFCFCF] bg-white px-4 pr-10 text-base text-[#404040] outline-none transition focus:border-[#C2D4FA] md:h-13"
                   >
                     {MODE_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -774,7 +774,7 @@ const SettingsView = ({
                     onChange={(event) =>
                       updateAppearanceField("fontSize", event.target.value)
                     }
-                    className="h-12 w-full appearance-none rounded-xl border border-[#CFCFCF] bg-white px-4 pr-10 text-base text-[#404040] outline-none transition focus:border-[#C2D4FA] md:h-13"
+                    className="h-12 w-full appearance-none rounded-[10px] border border-[#CFCFCF] bg-white px-4 pr-10 text-base text-[#404040] outline-none transition focus:border-[#C2D4FA] md:h-13"
                   >
                     {FONT_SIZE_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -796,7 +796,7 @@ const SettingsView = ({
                     onChange={(event) =>
                       updateAppearanceField("zoom", event.target.value)
                     }
-                    className="h-12 w-full appearance-none rounded-xl border border-[#CFCFCF] bg-white px-4 pr-10 text-base text-[#404040] outline-none transition focus:border-[#C2D4FA] md:h-13"
+                    className="h-12 w-full appearance-none rounded-[10px] border border-[#CFCFCF] bg-white px-4 pr-10 text-base text-[#404040] outline-none transition focus:border-[#C2D4FA] md:h-13"
                   >
                     {ZOOM_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -835,7 +835,7 @@ const SettingsView = ({
           onClick={closePasswordModal}
         >
           <div
-            className="w-full max-w-[560px] rounded-[20px] bg-white p-6 shadow-[0_22px_60px_rgba(17,24,39,0.2)]"
+            className="w-full max-w-[560px] rounded-[10px] bg-white p-6 shadow-[0_22px_60px_rgba(17,24,39,0.2)]"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between">
@@ -875,7 +875,7 @@ const SettingsView = ({
                   onChange={(event) =>
                     updatePasswordField("currentPassword", event.target.value)
                   }
-                  className="h-12 w-full rounded-xl border border-[#D8D8D8] px-3 text-base text-[#2F2F2F] outline-none transition focus:border-[#C2D4FA] md:h-13"
+                  className="h-12 w-full rounded-[10px] border border-[#D8D8D8] px-3 text-base text-[#2F2F2F] outline-none transition focus:border-[#C2D4FA] md:h-13"
                 />
                 {passwordErrors.currentPassword ? (
                   <p className="mt-1 text-sm text-[#FF3333]">
@@ -894,7 +894,7 @@ const SettingsView = ({
                   onChange={(event) =>
                     updatePasswordField("newPassword", event.target.value)
                   }
-                  className="h-12 w-full rounded-xl border border-[#D8D8D8] px-3 text-base text-[#2F2F2F] outline-none transition focus:border-[#C2D4FA] md:h-13"
+                  className="h-12 w-full rounded-[10px] border border-[#D8D8D8] px-3 text-base text-[#2F2F2F] outline-none transition focus:border-[#C2D4FA] md:h-13"
                 />
                 {passwordErrors.newPassword ? (
                   <p className="mt-1 text-sm text-[#FF3333]">
@@ -913,7 +913,7 @@ const SettingsView = ({
                   onChange={(event) =>
                     updatePasswordField("confirmPassword", event.target.value)
                   }
-                  className="h-12 w-full rounded-xl border border-[#D8D8D8] px-3 text-base text-[#2F2F2F] outline-none transition focus:border-[#C2D4FA] md:h-13"
+                  className="h-12 w-full rounded-[10px] border border-[#D8D8D8] px-3 text-base text-[#2F2F2F] outline-none transition focus:border-[#C2D4FA] md:h-13"
                 />
                 {passwordErrors.confirmPassword ? (
                   <p className="mt-1 text-sm text-[#FF3333]">
