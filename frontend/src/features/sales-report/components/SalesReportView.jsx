@@ -45,22 +45,6 @@ const DEFAULT_EXPORT_CONFIG = {
 };
 const MOBILE_SKELETON_CARDS = 4;
 
-const toDateAtStartOfDay = (value) => {
-  if (!value) {
-    return null;
-  }
-
-  return new Date(`${value}T00:00:00`);
-};
-
-const toDateAtEndOfDay = (value) => {
-  if (!value) {
-    return null;
-  }
-
-  return new Date(`${value}T23:59:59`);
-};
-
 const isSameLocalDayAsToday = (value) => {
   const orderDate = new Date(value);
 
@@ -75,18 +59,6 @@ const isSameLocalDayAsToday = (value) => {
   todayEnd.setHours(23, 59, 59, 999);
 
   return orderDate >= todayStart && orderDate <= todayEnd;
-};
-
-const matchesCategoryFilter = (order, category) => {
-  if (category === "all") {
-    return true;
-  }
-
-  if (Array.isArray(order.categories) && order.categories.length > 0) {
-    return order.categories.includes(category);
-  }
-
-  return order.category === category;
 };
 
 const SalesReportView = ({

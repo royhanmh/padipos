@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useShallow } from "zustand/react/shallow";
 import AlertBannerComponent from "../../components/AlertBannerComponent";
@@ -53,7 +53,7 @@ const RegisterPage = () => {
     clearError();
   };
 
-  const dismissAlert = (alert) => {
+  const dismissAlert = useCallback((alert) => {
     if (!alert) {
       return;
     }
@@ -63,19 +63,12 @@ const RegisterPage = () => {
     if (alert.source === "error") {
       clearError();
     }
-  };
+  }, [clearError]);
 
   useEffect(() => {
     if (!activeAlert) {
-      setDismissedAlertKey("");
       return undefined;
     }
-
-    setDismissedAlertKey((current) =>
-      current.startsWith(`${activeAlert.source}:`) && current !== activeAlert.key
-        ? ""
-        : current,
-    );
 
     const timeoutId = window.setTimeout(() => {
       dismissAlert(activeAlert);
@@ -84,7 +77,7 @@ const RegisterPage = () => {
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [activeAlert]);
+  }, [activeAlert, dismissAlert]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

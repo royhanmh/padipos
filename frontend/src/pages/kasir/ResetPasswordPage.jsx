@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useShallow } from "zustand/react/shallow";
 import AuthPageShell from "../../components/AuthPageShell";
@@ -66,7 +66,7 @@ const ResetPasswordPage = () => {
     }
   }, [email, navigate]);
 
-  const dismissAlert = (alert) => {
+  const dismissAlert = useCallback((alert) => {
     if (!alert) {
       return;
     }
@@ -76,19 +76,12 @@ const ResetPasswordPage = () => {
     if (alert.source === "error") {
       clearError();
     }
-  };
+  }, [clearError]);
 
   useEffect(() => {
     if (!activeAlert) {
-      setDismissedAlertKey("");
       return undefined;
     }
-
-    setDismissedAlertKey((current) =>
-      current.startsWith(`${activeAlert.source}:`) && current !== activeAlert.key
-        ? ""
-        : current,
-    );
 
     const timeoutId = window.setTimeout(() => {
       dismissAlert(activeAlert);
@@ -97,7 +90,7 @@ const ResetPasswordPage = () => {
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [activeAlert]);
+  }, [activeAlert, dismissAlert]);
 
   const handleChange = (field, value) => {
     setForm((current) => ({

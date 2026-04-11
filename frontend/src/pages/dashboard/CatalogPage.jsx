@@ -14,11 +14,10 @@ import {
 import { useShallow } from "zustand/react/shallow";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useProductsStore } from "../../stores/productsStore";
-import FloatingToastComponent, {
-  createFloatingToastState,
-} from "../../components/FloatingToastComponent";
+import FloatingToastComponent from "../../components/FloatingToastComponent";
 import SkeletonCard from "../../components/SkeletonCard";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { createFloatingToastState } from "../../lib/toastState";
 
 const DEFAULT_IMAGE = "/images/food.png";
 

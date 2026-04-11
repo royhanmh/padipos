@@ -10,9 +10,9 @@ import { useArchiveStore } from "../../../stores/archiveStore";
 
 const formatDate = (isoString) => {
   if (!isoString) return "";
-  const d = new Date(isoString);
+  const parsedDate = new Date(isoString);
   const pad = (n) => String(n).padStart(2, "0");
-  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  return `${pad(parsedDate.getDate())}/${pad(parsedDate.getMonth() + 1)}/${parsedDate.getFullYear()} ${pad(parsedDate.getHours())}:${pad(parsedDate.getMinutes())}:${pad(parsedDate.getSeconds())}`;
 };
 
 const formatCurrency = (value) => 
@@ -100,8 +100,8 @@ const CashierOrderArchiveControl = ({ onRestore }) => {
                     type="text" 
                     name="archiveKeyword"
                     value={keyword}
-                    onChange={(e) => setKeyword(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    onChange={(event) => setKeyword(event.target.value)}
+                    onKeyDown={(event) => event.key === "Enter" && handleSearch()}
                     placeholder="Enter the keyword here..." 
                     className="h-[46px] w-full bg-white pl-[42px] pr-4 rounded-[10px] border border-[#E9E9E9] text-sm text-[#272727] placeholder:text-[#A6A6A6] outline-none transition focus:border-[#3572EF]"
                   />
@@ -111,7 +111,7 @@ const CashierOrderArchiveControl = ({ onRestore }) => {
                     <select 
                       name="archiveOrderType"
                       value={typeFilter}
-                      onChange={(e) => setTypeFilter(e.target.value)}
+                      onChange={(event) => setTypeFilter(event.target.value)}
                       className="h-[46px] w-full appearance-none rounded-[10px] border border-[#E9E9E9] bg-white pl-4 pr-10 text-sm text-[#A6A6A6] outline-none transition focus:border-[#3572EF]"
                     >
                       <option value="">Select type order</option>
@@ -151,7 +151,7 @@ const CashierOrderArchiveControl = ({ onRestore }) => {
                               <div className="h-3.5 w-[1px] bg-[#DDDDDD]" />
                               <div className="flex items-center gap-2">
                                 {order.customerName && <p className="font-medium text-[#272727]">{order.customerName}</p>}
-                                {order.customerName && order.tableNumber && <span className="text-[#D0D0D0]">Â·</span>}
+                                {order.customerName && order.tableNumber && <span className="text-[#D0D0D0]">&middot;</span>}
                                 {order.tableNumber && (
                                   <p className="font-medium text-[#272727]">No.{order.tableNumber.toString().padStart(2, '0')}</p>
                                 )}

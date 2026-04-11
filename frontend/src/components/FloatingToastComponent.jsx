@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import { PiCheckCircleLight, PiXLight } from "react-icons/pi";
 
-export const createFloatingToastState = (message) => ({
-  id: Date.now(),
-  message,
-});
-
 const FloatingToastComponent = ({
   message,
   onDismiss,
@@ -20,8 +15,6 @@ const FloatingToastComponent = ({
     if (!message) {
       return undefined;
     }
-
-    setIsLeaving(false);
 
     const frameId = window.requestAnimationFrame(() => {
       setIsVisible(true);

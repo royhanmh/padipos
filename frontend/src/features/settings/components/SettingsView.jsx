@@ -3,10 +3,9 @@ import { PiCaretDownLight, PiLockLight, PiXLight } from "react-icons/pi";
 import { useShallow } from "zustand/react/shallow";
 import AlertBannerComponent from "../../../components/AlertBannerComponent";
 import ConfirmationModalComponent from "../../../components/ConfirmationModalComponent";
-import FloatingToastComponent, {
-  createFloatingToastState,
-} from "../../../components/FloatingToastComponent";
+import FloatingToastComponent from "../../../components/FloatingToastComponent";
 import DashboardLayout from "../../../layouts/DashboardLayout";
+import { createFloatingToastState } from "../../../lib/toastState";
 import { useAuthStore } from "../../../stores/authStore";
 
 const LANGUAGE_OPTIONS = [

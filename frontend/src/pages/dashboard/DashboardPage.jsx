@@ -238,7 +238,6 @@ const DashboardPage = () => {
   const [startDate, setStartDate] = useState("");
   const [finishDate, setFinishDate] = useState("");
   const [selectedChartCategory, setSelectedChartCategory] = useState("all");
-  const [isChartReady, setIsChartReady] = useState(false);
   const chartContainerRef = useRef(null);
   const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
   const [isCompactChart, setIsCompactChart] = useState(() => {
@@ -287,11 +286,7 @@ const DashboardPage = () => {
   }, []);
 
   useEffect(() => {
-    setIsChartReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isChartReady || !chartContainerRef.current) {
+    if (!chartContainerRef.current) {
       return undefined;
     }
 
@@ -317,7 +312,7 @@ const DashboardPage = () => {
     return () => {
       resizeObserver.disconnect();
     };
-  }, [isChartReady]);
+  }, []);
 
   const chartMargin = isCompactChart
     ? { top: 8, right: 5, left: -15, bottom: 0 }
@@ -431,7 +426,7 @@ const DashboardPage = () => {
             ref={chartContainerRef}
             className="mt-7 h-[400px] min-h-[280px] min-w-0 w-full max-lg:h-[300px] max-lg:min-h-[240px]"
           >
-            {isLoading || !isChartReady || chartSize.width <= 0 || chartSize.height <= 0 ? (
+            {isLoading || chartSize.width <= 0 || chartSize.height <= 0 ? (
               <div className="flex h-full w-full items-end justify-between gap-4 pb-12 px-2 pt-6">
                 {[...Array(7)].map((_, i) => (
                   <div key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-4">
