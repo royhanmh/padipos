@@ -1,9 +1,32 @@
 import { useEffect, useState } from "react";
 
 const AUTH_BACKGROUND_SRC = "/images/background-optimized.jpg";
+const AUTH_BACKGROUND_PRELOAD_ID = "auth-background-preload";
 
 const AuthPageShell = ({ children }) => {
   const [isBackgroundReady, setIsBackgroundReady] = useState(false);
+
+  useEffect(() => {
+    const existingPreload = document.getElementById(AUTH_BACKGROUND_PRELOAD_ID);
+    let preloadLink = null;
+
+    if (!existingPreload) {
+      preloadLink = document.createElement("link");
+      preloadLink.id = AUTH_BACKGROUND_PRELOAD_ID;
+      preloadLink.rel = "preload";
+      preloadLink.as = "image";
+      preloadLink.href = AUTH_BACKGROUND_SRC;
+      preloadLink.type = "image/jpeg";
+      preloadLink.setAttribute("fetchpriority", "high");
+      document.head.appendChild(preloadLink);
+    }
+
+    return () => {
+      if (preloadLink?.parentNode) {
+        preloadLink.parentNode.removeChild(preloadLink);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
