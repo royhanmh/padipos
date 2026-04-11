@@ -4,8 +4,13 @@ import {
   getTransactionByUuid,
   listTransactions,
 } from "../models/transactionModel.js";
-import { parsePaginationQuery } from "../libs/pagination.js";
+import {
+  DEFAULT_LIMIT,
+  DEFAULT_PAGE,
+  parsePaginationQuery,
+} from "../libs/pagination.js";
 import { TRANSACTION_ORDER_TYPES } from "../types/transaction.js";
+import { PRODUCT_CATEGORIES } from "../types/product.js";
 
 const transactionItemSchema = Joi.object({
   product_uuid: Joi.string()
@@ -27,6 +32,15 @@ const createTransactionSchema = Joi.object({
   }),
   amount_paid: Joi.number().integer().min(0).required(),
   items: Joi.array().items(transactionItemSchema).min(1).required(),
+});
+
+const listTransactionsQuerySchema = Joi.object({
+  page: Joi.alternatives().try(Joi.number(), Joi.string()),
+  limit: Joi.alternatives().try(Joi.number(), Joi.string()),
+  start_date: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/),
+  finish_date: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/),
+  category: Joi.string().valid(...PRODUCT_CATEGORIES),
+  order_type: Joi.string().valid(...TRANSACTION_ORDER_TYPES),
 });
 
 const respondKnownError = (error, res) => {
@@ -52,11 +66,45 @@ const normalizeCreatePayload = (value) => ({
 
 export const listTransactionsHandler = async (req, res, next) => {
   try {
-    const pagination = parsePaginationQuery(req.query);
+    const { error, value } = listTransactionsQuerySchema.validate(req.query, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      res.status(400).json({
+        message: "Transaction query is invalid.",
+        errors: error.details.map((detail) => detail.message),
+      });
+      return;
+    }
+
+    let pagination = parsePaginationQuery(value);
+    const hasFilters =
+      Boolean(value.start_date) ||
+      Boolean(value.finish_date) ||
+      Boolean(value.category) ||
+      Boolean(value.order_type);
+
+    if (hasFilters && !pagination.enabled) {
+      pagination = {
+        enabled: true,
+        page: DEFAULT_PAGE,
+        limit: DEFAULT_LIMIT,
+        offset: 0,
+      };
+    }
+
     const transactions = await listTransactions({
       role: req.user.role,
       userUuid: req.user.uuid,
       pagination,
+      filters: {
+        startDate: value.start_date,
+        finishDate: value.finish_date,
+        category: value.category,
+        orderType: value.order_type,
+      },
     });
 
     res.json(transactions);

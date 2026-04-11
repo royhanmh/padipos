@@ -91,11 +91,15 @@ const matchesCategoryFilter = (order, category) => {
 
 const SalesReportView = ({
   orders,
+  statsOrders,
+  paginationMeta,
   isLoading = false,
+  statsLoading = isLoading,
   errorMessage = "",
   pageTitle = "Sales Report",
   layoutSidebarProps,
   layoutTopbarProps,
+  onRequestTransactions,
   exportConfig = DEFAULT_EXPORT_CONFIG,
   showStats = false,
 }) => {
@@ -110,44 +114,27 @@ const SalesReportView = ({
 
   const exportMenuRef = useRef(null);
 
-  const filteredOrders = useMemo(() => {
-    const startDate = toDateAtStartOfDay(appliedFilters.startDate);
-    const finishDate = toDateAtEndOfDay(appliedFilters.finishDate);
+  const currentPage = paginationMeta?.page ?? page;
+  const totalPages = Math.max(1, paginationMeta?.total_pages ?? 1);
 
-    return orders
-      .filter((order) => {
-        const orderDate = new Date(order.orderDate);
-        const matchesStartDate = startDate ? orderDate >= startDate : true;
-        const matchesFinishDate = finishDate ? orderDate <= finishDate : true;
-        const matchesCategory = matchesCategoryFilter(order, appliedFilters.category);
-        const matchesOrderType =
-          appliedFilters.orderType === "all" ||
-          order.orderType === appliedFilters.orderType;
+  useEffect(() => {
+    if (typeof onRequestTransactions !== "function") {
+      return;
+    }
 
-        return (
-          matchesStartDate &&
-          matchesFinishDate &&
-          matchesCategory &&
-          matchesOrderType
-        );
-      })
-      .sort((firstOrder, secondOrder) => {
-        return new Date(secondOrder.orderDate) - new Date(firstOrder.orderDate);
-      });
-  }, [appliedFilters, orders]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredOrders.length / rowsPerPage));
-  const currentPage = Math.min(page, totalPages);
-
-  const paginatedOrders = useMemo(() => {
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    return filteredOrders.slice(startIndex, endIndex);
-  }, [currentPage, filteredOrders, rowsPerPage]);
+    void onRequestTransactions({
+      page,
+      limit: rowsPerPage,
+      startDate: appliedFilters.startDate,
+      finishDate: appliedFilters.finishDate,
+      category: appliedFilters.category,
+      orderType: appliedFilters.orderType,
+    });
+  }, [appliedFilters, onRequestTransactions, page, rowsPerPage]);
 
   const todayOrders = useMemo(() => {
-    return orders.filter((order) => isSameLocalDayAsToday(order.orderDate));
-  }, [orders]);
+    return (statsOrders ?? orders).filter((order) => isSameLocalDayAsToday(order.orderDate));
+  }, [orders, statsOrders]);
 
   const { stats, categoryDetails } = useMemo(() => {
     let totalOmzet = 0;
@@ -272,12 +259,12 @@ const SalesReportView = ({
   const closeDetailModal = () => setSelectedOrder(null);
 
   const handleExportExcel = () => {
-    exportSalesToExcel(filteredOrders, appliedFilters, exportConfig);
+    exportSalesToExcel(orders, appliedFilters, exportConfig);
     setIsExportOpen(false);
   };
 
   const handleExportPdf = () => {
-    exportSalesToPdf(filteredOrders, appliedFilters, exportConfig);
+    exportSalesToPdf(orders, appliedFilters, exportConfig);
     setIsExportOpen(false);
   };
 
@@ -382,7 +369,7 @@ const SalesReportView = ({
               <StatCardComponent
                 key={stat.label}
                 {...stat}
-                isLoading={isLoading}
+                isLoading={statsLoading}
                 onClick={stat.categoryKey ? () => openCategoryModal(stat.categoryKey) : undefined}
               />
             ))}
@@ -460,7 +447,7 @@ const SalesReportView = ({
               onToggle={() => setIsExportOpen((currentOpen) => !currentOpen)}
               onExportExcel={handleExportExcel}
               onExportPdf={handleExportPdf}
-              disabled={filteredOrders.length === 0 || isLoading}
+              disabled={orders.length === 0 || isLoading}
               menuRef={exportMenuRef}
             />
           </div>
@@ -484,8 +471,8 @@ const SalesReportView = ({
                       [...Array(5)].map((_, index) => (
                         <SkeletonTableRow key={index} />
                       ))
-                    ) : paginatedOrders.length > 0 ? (
-                      paginatedOrders.map((order) => (
+                    ) : orders.length > 0 ? (
+                      orders.map((order) => (
                         <tr
                           key={order.id ?? order.uuid ?? order.orderNumber}
                           className="border-t border-[#F0F0F0] text-base text-[#353535]"
@@ -538,8 +525,8 @@ const SalesReportView = ({
                     </div>
                   </div>
                 ))
-              ) : paginatedOrders.length > 0 ? (
-                paginatedOrders.map((order) => (
+              ) : orders.length > 0 ? (
+                orders.map((order) => (
                   <article
                     key={order.id ?? order.uuid ?? order.orderNumber}
                     className="rounded-xl border border-[#EFEFEF] bg-white p-4"

@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import { Cashier, Product, Transaction, TransactionItem, sequelize } from "./index.js";
 import { TRANSACTION_TAX_AMOUNT } from "../types/transaction.js";
 import { buildPaginatedResponse } from "../libs/pagination.js";
@@ -125,6 +126,52 @@ const findTransactionInstance = async (where, options = {}) => {
 
 const generateOrderNumber = () => Number(Date.now() % 2000000000);
 
+const toDateAtStartOfDay = (value) => new Date(`${value}T00:00:00`);
+const toDateAtEndOfDay = (value) => new Date(`${value}T23:59:59.999`);
+
+const applyTransactionFilters = async ({ where, filters }) => {
+  if (filters.orderType) {
+    where.order_type = filters.orderType;
+  }
+
+  if (filters.startDate || filters.finishDate) {
+    where.created_at = {};
+
+    if (filters.startDate) {
+      where.created_at[Op.gte] = toDateAtStartOfDay(filters.startDate);
+    }
+
+    if (filters.finishDate) {
+      where.created_at[Op.lte] = toDateAtEndOfDay(filters.finishDate);
+    }
+  }
+
+  if (!filters.category) {
+    return true;
+  }
+
+  const matchedItems = await TransactionItem.findAll({
+    attributes: ["transaction_id"],
+    where: {
+      product_category: filters.category,
+    },
+    group: ["transaction_id"],
+    raw: true,
+  });
+
+  const transactionIds = matchedItems.map((item) => item.transaction_id);
+
+  if (transactionIds.length === 0) {
+    return false;
+  }
+
+  where.id = {
+    [Op.in]: transactionIds,
+  };
+
+  return true;
+};
+
 export const createTransaction = async ({ cashierUuid, payload }) => {
   return sequelize.transaction(async (dbTransaction) => {
     const cashier = await findCashierInstanceByUuid(cashierUuid, {
@@ -230,7 +277,7 @@ export const createTransaction = async ({ cashierUuid, payload }) => {
   });
 };
 
-export const listTransactions = async ({ role, userUuid, pagination } = {}) => {
+export const listTransactions = async ({ role, userUuid, pagination, filters = {} } = {}) => {
   const where = {};
 
   if (role === "cashier") {
@@ -241,6 +288,21 @@ export const listTransactions = async ({ role, userUuid, pagination } = {}) => {
     }
 
     where.cashier_id = cashier.id;
+  }
+
+  const hasMatchedTransactions = await applyTransactionFilters({ where, filters });
+
+  if (!hasMatchedTransactions) {
+    if (!pagination?.enabled) {
+      return [];
+    }
+
+    return buildPaginatedResponse({
+      rows: [],
+      count: 0,
+      page: pagination.page,
+      limit: pagination.limit,
+    });
   }
 
   if (!pagination?.enabled) {

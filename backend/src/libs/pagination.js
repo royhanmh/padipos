@@ -1,6 +1,6 @@
-const DEFAULT_PAGE = 1;
-const DEFAULT_LIMIT = 10;
-const MAX_LIMIT = 100;
+export const DEFAULT_PAGE = 1;
+export const DEFAULT_LIMIT = 10;
+export const MAX_LIMIT = 100;
 
 const createBadRequestError = (message) => {
   const error = new Error(message);
