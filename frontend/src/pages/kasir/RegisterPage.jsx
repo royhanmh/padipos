@@ -146,6 +146,7 @@ const RegisterPage = () => {
             message={visibleAlert.message}
             variant={visibleAlert.variant}
             authSuccessStyle={visibleAlert.variant === "success"}
+            isAuthLayout
             className="mb-4"
             onDismiss={() => dismissAlert(visibleAlert)}
           />

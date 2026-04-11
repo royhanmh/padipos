@@ -145,6 +145,7 @@ const DashboardLoginPage = () => {
           <AlertBannerComponent
             message={visibleAlert.message}
             variant={visibleAlert.variant}
+            isAuthLayout
             className="mb-4"
             onDismiss={() => dismissAlert(visibleAlert)}
           />

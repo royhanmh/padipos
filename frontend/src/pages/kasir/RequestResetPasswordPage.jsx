@@ -122,6 +122,7 @@ const RequestResetPasswordPage = () => {
             variant={visibleAlert.variant}
             message={visibleAlert.message}
             authSuccessStyle={visibleAlert.variant === "success"}
+            isAuthLayout
             className="mb-4"
             onDismiss={() => dismissAlert(visibleAlert)}
           />
