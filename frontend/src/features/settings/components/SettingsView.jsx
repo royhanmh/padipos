@@ -1,10 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  PiCaretDownLight,
-  PiEyeClosedLight,
-  PiLockLight,
-  PiXLight,
-} from "react-icons/pi";
+import { PiCaretDownLight, PiLockLight, PiXLight } from "react-icons/pi";
 import { useShallow } from "zustand/react/shallow";
 import AlertBannerComponent from "../../../components/AlertBannerComponent";
 import ConfirmationModalComponent from "../../../components/ConfirmationModalComponent";
@@ -678,7 +673,6 @@ const SettingsView = ({
                     readOnly
                     className="h-12 w-full rounded-[10px] border border-[#CFCFCF] bg-white px-4 pr-11 text-base text-[#404040] md:h-13"
                   />
-                  <PiEyeClosedLight className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[22px] text-[#A5A5A5]" />
                 </div>
               </label>
               <button
