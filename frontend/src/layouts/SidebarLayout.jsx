@@ -110,7 +110,7 @@ const SidebarLayout = ({
                   {isActive && (
                     <span
                       aria-hidden="true"
-                      className="absolute right-0 top-1/2 h-9 w-1 -translate-y-1/2 rounded-l-full bg-[#3572EF]"
+                      className="absolute -right-[27.5px] top-1/2 h-9 w-1 -translate-y-1/2 rounded-l-full bg-[#3572EF]"
                     />
                   )}
                 </li>
@@ -123,7 +123,9 @@ const SidebarLayout = ({
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[#EEF2F8] bg-white px-4 py-3 shadow-[0_-8px_24px_rgba(17,24,39,0.08)] lg:hidden">
         <ul
           className="mx-auto grid max-w-2xl gap-2"
-          style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+          style={{
+            gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))`,
+          }}
         >
           {items.map(({ id, icon, label, href }) => {
             const isActive = id === activeItem;
@@ -137,13 +139,21 @@ const SidebarLayout = ({
               <li key={`mobile-${label}`}>
                 {href ? (
                   <Link to={href} {...sharedProps}>
-                    {icon ? createElement(icon, { className: "text-[20px]" }) : null}
-                    <span className="max-w-full truncate leading-none">{mobileLabel}</span>
+                    {icon
+                      ? createElement(icon, { className: "text-[20px]" })
+                      : null}
+                    <span className="max-w-full truncate leading-none">
+                      {mobileLabel}
+                    </span>
                   </Link>
                 ) : (
                   <button type="button" {...sharedProps}>
-                    {icon ? createElement(icon, { className: "text-[20px]" }) : null}
-                    <span className="max-w-full truncate leading-none">{mobileLabel}</span>
+                    {icon
+                      ? createElement(icon, { className: "text-[20px]" })
+                      : null}
+                    <span className="max-w-full truncate leading-none">
+                      {mobileLabel}
+                    </span>
                   </button>
                 )}
               </li>
