@@ -39,6 +39,7 @@ const TopbarLayout = ({
             <PiMagnifyingGlassLight className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[22px] text-[#A9A9A9]" />
             <input
               type="text"
+              name="topbarSearch"
               placeholder={searchPlaceholder}
               className="h-11 w-full rounded-[10px] border border-[#D7D7D7] bg-transparent pl-11 pr-5 text-[15px] text-[#5F5F5F] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] focus:bg-white"
               {...inputProps}
@@ -84,6 +85,7 @@ const TopbarLayout = ({
           <PiMagnifyingGlassLight className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-[#A9A9A9]" />
           <input
             type="text"
+            name="topbarSearchMobile"
             placeholder={searchPlaceholder}
             className="h-10 w-full rounded-[10px] border border-[#D7D7D7] bg-transparent pl-10 pr-4 text-[14px] text-[#5F5F5F] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] focus:bg-white"
             {...inputProps}

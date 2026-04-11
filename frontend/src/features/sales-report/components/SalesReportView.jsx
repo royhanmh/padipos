@@ -403,6 +403,7 @@ const SalesReportView = ({
             <ReportFilterField label="Category">
               <div className="relative">
                 <select
+                  name="salesReportCategory"
                   value={draftFilters.category}
                   onChange={(event) => handleFilterChange("category", event.target.value)}
                   className="h-12 w-full appearance-none rounded-[10px] border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] md:h-13 md:px-5"
@@ -420,6 +421,7 @@ const SalesReportView = ({
             <ReportFilterField label="Order Type">
               <div className="relative">
                 <select
+                  name="salesReportOrderType"
                   value={draftFilters.orderType}
                   onChange={(event) => handleFilterChange("orderType", event.target.value)}
                   className="h-12 w-full appearance-none rounded-[10px] border border-[#DCDCDC] px-4 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] md:h-13 md:px-5"
@@ -587,6 +589,7 @@ const SalesReportView = ({
               <label className="flex items-center gap-3 text-base text-[#5E5E5E] max-lg:justify-between">
                 <span>Show:</span>
                 <select
+                  name="salesReportRowsPerPage"
                   value={rowsPerPage}
                   onChange={(event) => handleRowsPerPageChange(event.target.value)}
                   className="h-9 rounded-[10px] border border-[#E0E0E0] bg-white px-3 text-base text-[#5C5C5C] outline-none"
@@ -740,6 +743,7 @@ const SalesReportView = ({
                 <PiMagnifyingGlassLight className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-[#C2C2C2]" />
                 <input
                   type="text"
+                  name="salesReportCategorySearch"
                   value={searchKeyword}
                   onChange={(event) => setSearchKeyword(event.target.value)}
                   placeholder="Enter the keyword here..."

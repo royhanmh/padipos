@@ -405,6 +405,7 @@ const DashboardPage = () => {
               />
               <div className="relative">
                 <select
+                  name="dashboardChartCategory"
                   value={selectedChartCategory}
                   onChange={(event) => setSelectedChartCategory(event.target.value)}
                   disabled={false}
@@ -561,6 +562,7 @@ const DashboardPage = () => {
                   <PiMagnifyingGlassLight className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-[#C2C2C2]" />
                   <input
                     type="text"
+                    name="dashboardCategorySearch"
                     value={searchKeyword}
                     onChange={(event) => setSearchKeyword(event.target.value)}
                     placeholder="Enter the keyword here..."

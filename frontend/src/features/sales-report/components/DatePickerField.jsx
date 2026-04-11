@@ -219,6 +219,7 @@ const DatePickerField = ({
           <div className="grid grid-cols-[1fr_1fr_auto_auto] gap-2 border-b border-[#F0F0F0] px-3 py-3">
             <div className="relative">
               <select
+                name="calendarMonth"
                 value={viewDate.getMonth()}
                 onChange={handleMonthChange}
                 className="h-8 w-full appearance-none rounded-[10px] border border-[#E2E6ED] bg-white px-2 pr-6 text-xs text-[#595959] outline-none"
@@ -234,6 +235,7 @@ const DatePickerField = ({
 
             <div className="relative">
               <select
+                name="calendarYear"
                 value={viewDate.getFullYear()}
                 onChange={handleYearChange}
                 className="h-8 w-full appearance-none rounded-[10px] border border-[#E2E6ED] bg-white px-2 pr-6 text-xs text-[#595959] outline-none"

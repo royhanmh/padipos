@@ -573,6 +573,7 @@ const KasirCatalogPage = () => {
                   </span>
                   <input
                     type="text"
+                    name="customerName"
                     value={customerName}
                     onChange={(event) => setCustomerName(event.target.value)}
                     placeholder="Customer Name"
@@ -587,6 +588,7 @@ const KasirCatalogPage = () => {
                     </span>
                     <div className="relative">
                       <select
+                        name="tableNumber"
                         value={tableNumber}
                         onChange={(event) => setTableNumber(event.target.value)}
                         className="h-9 w-full appearance-none rounded-[10px] border border-[#D6D6D6] px-3 text-[14px] text-[#2B2B2B] outline-none transition focus:border-[#C2D4FA]"
@@ -783,6 +785,7 @@ const KasirCatalogPage = () => {
                     </div>
                     <input
                       type="text"
+                      name="customNominal"
                       value={customNominal}
                       onChange={(event) => {
                         setSelectedNominal(0);
@@ -875,6 +878,7 @@ const KasirCatalogPage = () => {
                     Add Note
                   </span>
                   <textarea
+                    name="menuNote"
                     value={detailNote}
                     onChange={(event) => setDetailNote(event.target.value)}
                     placeholder="Add note here..."

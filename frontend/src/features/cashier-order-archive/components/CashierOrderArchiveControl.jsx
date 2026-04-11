@@ -98,6 +98,7 @@ const CashierOrderArchiveControl = ({ onRestore }) => {
                   <PiMagnifyingGlassLight className="absolute left-4 top-1/2 -translate-y-1/2 text-[18px] text-[#A6A6A6]" />
                   <input 
                     type="text" 
+                    name="archiveKeyword"
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -108,6 +109,7 @@ const CashierOrderArchiveControl = ({ onRestore }) => {
                 <div className="flex gap-3 max-md:grid max-md:grid-cols-[1fr_auto]">
                   <div className="relative md:w-[180px]">
                     <select 
+                      name="archiveOrderType"
                       value={typeFilter}
                       onChange={(e) => setTypeFilter(e.target.value)}
                       className="h-[46px] w-full appearance-none rounded-[10px] border border-[#E9E9E9] bg-white pl-4 pr-10 text-sm text-[#A6A6A6] outline-none transition focus:border-[#3572EF]"

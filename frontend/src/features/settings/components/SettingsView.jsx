@@ -541,6 +541,7 @@ const SettingsView = ({
                 <input
                   ref={fileInputRef}
                   type="file"
+                  name="profilePicture"
                   accept="image/png,image/jpeg,image/jpg,image/webp"
                   className="hidden"
                   onChange={handlePictureFileChange}
@@ -584,6 +585,7 @@ const SettingsView = ({
                 </span>
                 <input
                   type="email"
+                  name="accountEmail"
                   value={formSettings.account.email}
                   onChange={(event) =>
                     updateAccountField("email", event.target.value)
@@ -598,6 +600,7 @@ const SettingsView = ({
                 </span>
                 <input
                   type="text"
+                  name="accountUsername"
                   value={formSettings.account.username}
                   onChange={(event) =>
                     updateAccountField("username", event.target.value)
@@ -612,6 +615,7 @@ const SettingsView = ({
                 </span>
                 <input
                   type="text"
+                  name="accountRole"
                   value={formSettings.account.role}
                   readOnly
                   className="h-12 w-full rounded-[10px] border border-[#CFCFCF] bg-[#F8F8F8] px-4 text-base text-[#4F4F4F] md:h-13"
@@ -624,6 +628,7 @@ const SettingsView = ({
                 </span>
                 <input
                   type="text"
+                  name="accountStatus"
                   value={formSettings.account.status}
                   readOnly
                   className="h-12 w-full rounded-[10px] border border-[#CFCFCF] bg-[#F8F8F8] px-4 text-base text-[#4F4F4F] md:h-13"
@@ -636,6 +641,7 @@ const SettingsView = ({
                 </span>
                 <div className="relative">
                   <select
+                    name="accountLanguage"
                     value={formSettings.account.language}
                     onChange={(event) =>
                       updateAccountField("language", event.target.value)
@@ -669,6 +675,7 @@ const SettingsView = ({
                 <div className="relative">
                   <input
                     type="password"
+                    name="passwordMasked"
                     value="********"
                     readOnly
                     className="h-12 w-full rounded-[10px] border border-[#CFCFCF] bg-white px-4 pr-11 text-base text-[#404040] md:h-13"
@@ -699,6 +706,7 @@ const SettingsView = ({
                 </span>
                 <div className="relative">
                   <select
+                    name="appearanceMode"
                     value={formSettings.appearance.mode}
                     onChange={(event) =>
                       updateAppearanceField("mode", event.target.value)
@@ -721,6 +729,7 @@ const SettingsView = ({
                 </span>
                 <div className="relative">
                   <select
+                    name="appearanceFontSize"
                     value={formSettings.appearance.fontSize}
                     onChange={(event) =>
                       updateAppearanceField("fontSize", event.target.value)
@@ -743,6 +752,7 @@ const SettingsView = ({
                 </span>
                 <div className="relative">
                   <select
+                    name="appearanceZoom"
                     value={formSettings.appearance.zoom}
                     onChange={(event) =>
                       updateAppearanceField("zoom", event.target.value)
@@ -822,6 +832,7 @@ const SettingsView = ({
                 </span>
                 <input
                   type="password"
+                  name="currentPassword"
                   value={passwordForm.currentPassword}
                   onChange={(event) =>
                     updatePasswordField("currentPassword", event.target.value)
@@ -841,6 +852,7 @@ const SettingsView = ({
                 </span>
                 <input
                   type="password"
+                  name="newPassword"
                   value={passwordForm.newPassword}
                   onChange={(event) =>
                     updatePasswordField("newPassword", event.target.value)
@@ -860,6 +872,7 @@ const SettingsView = ({
                 </span>
                 <input
                   type="password"
+                  name="confirmPassword"
                   value={passwordForm.confirmPassword}
                   onChange={(event) =>
                     updatePasswordField("confirmPassword", event.target.value)

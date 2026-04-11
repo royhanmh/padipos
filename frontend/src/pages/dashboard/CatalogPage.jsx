@@ -461,6 +461,7 @@ const CatalogPage = () => {
       <input
         ref={fileInputRef}
         type="file"
+        name="menuImage"
         accept="image/*"
         className="hidden"
         onChange={handleFileInputChange}
@@ -544,6 +545,7 @@ const CatalogPage = () => {
         <FormField label="Title" error={formErrors.title}>
           <input
             type="text"
+            name="menuTitle"
             value={panelForm.title}
             onChange={(event) => handleFormChange("title", event.target.value)}
             placeholder="Enter title here..."
@@ -554,6 +556,7 @@ const CatalogPage = () => {
         <FormField label="Category">
           <div className="relative">
             <select
+              name="menuCategory"
               value={panelForm.category}
               onChange={(event) => handleFormChange("category", event.target.value)}
               className="h-12 w-full appearance-none rounded-[10px] border border-[#D7D7D7] px-4 text-[16px] text-[#2B2B2B] outline-none transition focus:border-[#C8D8FF] md:px-5 2xl:h-12"
@@ -572,6 +575,7 @@ const CatalogPage = () => {
           <input
             type="text"
             inputMode="numeric"
+            name="menuPrice"
             value={panelForm.price}
             onChange={(event) => handleFormChange("price", event.target.value)}
             placeholder="Enter price here..."
@@ -583,6 +587,7 @@ const CatalogPage = () => {
           <input
             type="text"
             inputMode="numeric"
+            name="menuQuantity"
             value={panelForm.quantity}
             onChange={(event) => handleFormChange("quantity", event.target.value)}
             placeholder="Enter quantity here..."
@@ -592,6 +597,7 @@ const CatalogPage = () => {
 
         <FormField label="Description" error={formErrors.description}>
           <textarea
+            name="menuDescription"
             value={panelForm.description}
             onChange={(event) => handleFormChange("description", event.target.value)}
             rows="4"
