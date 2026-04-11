@@ -140,7 +140,7 @@ const SidebarLayout = ({
                 {isActive && (
                   <span
                     aria-hidden="true"
-                    className="absolute left-1/2 -top-3 h-1 w-16 -translate-x-1/2 rounded-full bg-[#3572EF]"
+                    className="absolute left-1/2 -top-3 h-1 w-9 -translate-x-1/2 rounded-b-full bg-[#3572EF]"
                   />
                 )}
                 {href ? (
