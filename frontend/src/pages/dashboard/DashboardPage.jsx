@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useTransactionsStore } from "../../stores/transactionsStore";
 import {
@@ -17,7 +17,6 @@ import {
   BarChart,
   CartesianGrid,
   Legend,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -239,6 +238,9 @@ const DashboardPage = () => {
   const [startDate, setStartDate] = useState("");
   const [finishDate, setFinishDate] = useState("");
   const [selectedChartCategory, setSelectedChartCategory] = useState("all");
+  const [isChartReady, setIsChartReady] = useState(false);
+  const chartContainerRef = useRef(null);
+  const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
   const [isCompactChart, setIsCompactChart] = useState(() => {
     if (typeof window === "undefined") {
       return false;
@@ -283,6 +285,39 @@ const DashboardPage = () => {
     mediaQuery.addListener(handleChange);
     return () => mediaQuery.removeListener(handleChange);
   }, []);
+
+  useEffect(() => {
+    setIsChartReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isChartReady || !chartContainerRef.current) {
+      return undefined;
+    }
+
+    const target = chartContainerRef.current;
+    const updateSize = () => {
+      const { width, height } = target.getBoundingClientRect();
+      setChartSize({
+        width: Math.max(0, Math.floor(width)),
+        height: Math.max(0, Math.floor(height)),
+      });
+    };
+
+    updateSize();
+
+    if (typeof ResizeObserver !== "function") {
+      window.addEventListener("resize", updateSize);
+      return () => window.removeEventListener("resize", updateSize);
+    }
+
+    const resizeObserver = new ResizeObserver(() => updateSize());
+    resizeObserver.observe(target);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [isChartReady]);
 
   const chartMargin = isCompactChart
     ? { top: 8, right: 5, left: -15, bottom: 0 }
@@ -391,8 +426,11 @@ const DashboardPage = () => {
             </p>
           ) : null}
 
-          <div className="mt-7 h-[400px] min-w-0 w-full max-lg:h-[300px]">
-            {isLoading ? (
+          <div
+            ref={chartContainerRef}
+            className="mt-7 h-[400px] min-h-[280px] min-w-0 w-full max-lg:h-[300px] max-lg:min-h-[240px]"
+          >
+            {isLoading || !isChartReady || chartSize.width <= 0 || chartSize.height <= 0 ? (
               <div className="flex h-full w-full items-end justify-between gap-4 pb-12 px-2 pt-6">
                 {[...Array(7)].map((_, i) => (
                   <div key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-4">
@@ -415,82 +453,82 @@ const DashboardPage = () => {
                 ))}
               </div>
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={filteredOmzetData}
-                  margin={chartMargin}
-                  barCategoryGap={isCompactChart ? 12 : 18}
-                >
-                  <CartesianGrid
-                    stroke="#E8E8E8"
-                    strokeDasharray="4 6"
-                    vertical={false}
-                  />
-                  <XAxis
-                    dataKey="day"
-                    axisLine={false}
-                    tickLine={false}
-                    interval={xAxisInterval}
-                    tick={{ fill: "#9C9C9C", fontSize: chartTickFontSize }}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    width={50}
-                    tick={{ fill: "#9C9C9C", fontSize: chartTickFontSize }}
-                    tickFormatter={formatAxisTick}
-                    domain={[0, (dataMax) => Math.max(300000, Math.ceil(dataMax / 50000) * 50000)]}
-                    ticks={chartTicks}
-                  />
-                  <Tooltip
-                    labelFormatter={(value, payload) => {
-                      if (payload && payload.length > 0) {
-                        return payload[0].payload.fullDate;
-                      }
-                      return value;
-                    }}
-                    formatter={(value) => formatCurrency(value)}
-                    contentStyle={{
-                      borderRadius: "10px",
-                      border: "1px solid #E6EAF2",
-                      boxShadow: "0 10px 25px rgba(25,45,88,0.08)",
-                    }}
-                  />
-                  <Legend
-                    wrapperStyle={{ paddingTop: chartLegendPaddingTop }}
-                    iconType="square"
-                    iconSize={isCompactChart ? 10 : 14}
-                    formatter={(value) => (
-                      <span
-                        className={`text-[#4A4A4A] ${isCompactChart ? "text-xs" : "text-sm"}`}
-                      >
-                        {value}
-                      </span>
-                    )}
-                  />
-                  <Bar
-                    dataKey="food"
-                    name="Food"
-                    fill="#1C49A6"
-                    radius={[3, 3, 0, 0]}
-                    maxBarSize={chartBarSize}
-                  />
-                  <Bar
-                    dataKey="beverage"
-                    name="Beverage"
-                    fill="#3572EF"
-                    radius={[3, 3, 0, 0]}
-                    maxBarSize={chartBarSize}
-                  />
-                  <Bar
-                    dataKey="dessert"
-                    name="Dessert"
-                    fill="#C2D4FA"
-                    radius={[3, 3, 0, 0]}
-                    maxBarSize={chartBarSize}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+              <BarChart
+                width={chartSize.width}
+                height={chartSize.height}
+                data={filteredOmzetData}
+                margin={chartMargin}
+                barCategoryGap={isCompactChart ? 12 : 18}
+              >
+                <CartesianGrid
+                  stroke="#E8E8E8"
+                  strokeDasharray="4 6"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="day"
+                  axisLine={false}
+                  tickLine={false}
+                  interval={xAxisInterval}
+                  tick={{ fill: "#9C9C9C", fontSize: chartTickFontSize }}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  width={50}
+                  tick={{ fill: "#9C9C9C", fontSize: chartTickFontSize }}
+                  tickFormatter={formatAxisTick}
+                  domain={[0, (dataMax) => Math.max(300000, Math.ceil(dataMax / 50000) * 50000)]}
+                  ticks={chartTicks}
+                />
+                <Tooltip
+                  labelFormatter={(value, payload) => {
+                    if (payload && payload.length > 0) {
+                      return payload[0].payload.fullDate;
+                    }
+                    return value;
+                  }}
+                  formatter={(value) => formatCurrency(value)}
+                  contentStyle={{
+                    borderRadius: "10px",
+                    border: "1px solid #E6EAF2",
+                    boxShadow: "0 10px 25px rgba(25,45,88,0.08)",
+                  }}
+                />
+                <Legend
+                  wrapperStyle={{ paddingTop: chartLegendPaddingTop }}
+                  iconType="square"
+                  iconSize={isCompactChart ? 10 : 14}
+                  formatter={(value) => (
+                    <span
+                      className={`text-[#4A4A4A] ${isCompactChart ? "text-xs" : "text-sm"}`}
+                    >
+                      {value}
+                    </span>
+                  )}
+                />
+                <Bar
+                  dataKey="food"
+                  name="Food"
+                  fill="#1C49A6"
+                  radius={[3, 3, 0, 0]}
+                  maxBarSize={chartBarSize}
+                />
+                <Bar
+                  dataKey="beverage"
+                  name="Beverage"
+                  fill="#3572EF"
+                  radius={[3, 3, 0, 0]}
+                  maxBarSize={chartBarSize}
+                />
+                <Bar
+                  dataKey="dessert"
+                  name="Dessert"
+                  fill="#C2D4FA"
+                  radius={[3, 3, 0, 0]}
+                  maxBarSize={chartBarSize}
+                />
+              </BarChart>
             )}
           </div>
         </section>
