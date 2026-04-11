@@ -37,20 +37,20 @@ const AlertBannerComponent = ({
       : VARIANT_CLASSES[variant] ?? VARIANT_CLASSES.success;
   const dismissible = typeof onDismiss === "function";
   const authBodyResponsiveClass = isAuthLayout
-    ? "max-lg:gap-3 max-lg:px-4 max-lg:py-3.5"
+    ? "items-center max-lg:gap-3 max-lg:px-4 max-lg:py-3.5"
     : "";
   const authIconResponsiveClass = isAuthLayout
-    ? "max-lg:mt-0 max-lg:text-[22px]"
+    ? "mt-0 max-lg:text-[22px]"
     : "";
   const authMessageResponsiveClass = isAuthLayout
-    ? "max-lg:mt-0 max-lg:text-[14px] max-lg:leading-5 break-words"
+    ? "mt-0 self-center max-lg:text-[14px] max-lg:leading-5 break-words"
     : "";
   const dismissButtonClass =
     variant === "success" && authSuccessStyle
       ? "text-[#166534] transition hover:text-[#14532D]"
       : "text-[#3F3F3F] transition hover:text-[#151515]";
   const dismissButtonResponsiveClass = isAuthLayout
-    ? "max-lg:-mr-1 max-lg:mt-0.5 max-lg:flex max-lg:h-7 max-lg:w-7 max-lg:items-center max-lg:justify-center"
+    ? "mt-0 self-center max-lg:-mr-1 max-lg:flex max-lg:h-7 max-lg:w-7 max-lg:items-center max-lg:justify-center"
     : "";
 
   return (
