@@ -53,7 +53,7 @@ const desktopItemClassName = (isActive, variant) => {
 const mobileItemClassName = (isActive) =>
   `flex min-h-12 flex-col items-center justify-center gap-1 rounded-[10px] px-2 text-[12px] font-medium transition ${
     isActive
-      ? "bg-[#EEF4FF] text-[#3572EF]"
+      ? "text-[#3572EF]"
       : "text-[#9CA3AF] hover:bg-[#F6F8FC] hover:text-[#5E5E5E]"
   }`;
 
@@ -136,7 +136,13 @@ const SidebarLayout = ({
             };
 
             return (
-              <li key={`mobile-${label}`}>
+              <li key={`mobile-${label}`} className="relative">
+                {isActive && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-1/2 -top-3 h-1 w-16 -translate-x-1/2 rounded-full bg-[#3572EF]"
+                  />
+                )}
                 {href ? (
                   <Link to={href} {...sharedProps}>
                     {icon
