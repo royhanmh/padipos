@@ -175,8 +175,40 @@ const DashboardPage = () => {
     void fetchTransactions();
   }, [fetchTransactions]);
 
+  const todayTransactions = useMemo(() => {
+    const now = new Date();
+    const startOfToday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      0,
+      0,
+      0,
+      0,
+    );
+    const endOfToday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23,
+      59,
+      59,
+      999,
+    );
+
+    return transactions.filter((transaction) => {
+      const createdAt = new Date(transaction.created_at);
+
+      if (Number.isNaN(createdAt.getTime())) {
+        return false;
+      }
+
+      return createdAt >= startOfToday && createdAt <= endOfToday;
+    });
+  }, [transactions]);
+
   const { stats, categoryDetails } = useMemo(() => {
-    let totalOrders = transactions.length;
+    let totalOrders = todayTransactions.length;
     let totalOmzet = 0;
     let allMenuOrders = 0;
     let foodsCount = 0;
@@ -189,7 +221,7 @@ const DashboardPage = () => {
       dessert: {},
     };
 
-    transactions.forEach((tx) => {
+    todayTransactions.forEach((tx) => {
       totalOmzet += tx.total;
 
       tx.items.forEach((item) => {
@@ -231,7 +263,7 @@ const DashboardPage = () => {
     ];
 
     return { stats: computedStats, categoryDetails: computedCategoryDetails };
-  }, [transactions]);
+  }, [todayTransactions]);
 
   const [activeCategory, setActiveCategory] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
