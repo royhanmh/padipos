@@ -92,24 +92,28 @@ const cartKey = (menuId, note) => `${menuId}-${note.trim().toLowerCase()}`;
 
 const KasirCatalogPage = () => {
   const addArchive = useArchiveStore((state) => state.addArchive);
-  const { products: menus, fetchProducts, isLoading } = useProductsStore(
+  const {
+    products: menus,
+    fetchProducts,
+    isLoading,
+  } = useProductsStore(
     useShallow((state) => ({
       products: state.products,
       fetchProducts: state.fetchProducts,
-      isLoading: state.isLoading
-    }))
+      isLoading: state.isLoading,
+    })),
   );
   const { createTransaction, isSubmitting } = useTransactionsStore(
     useShallow((state) => ({
       createTransaction: state.createTransaction,
-      isSubmitting: state.isSubmitting
-    }))
+      isSubmitting: state.isSubmitting,
+    })),
   );
 
   useEffect(() => {
     void fetchProducts();
   }, [fetchProducts]);
-  
+
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchValue, setSearchValue] = useState("");
   const [orderType, setOrderType] = useState(ORDER_TYPE.DINE_IN);
@@ -142,11 +146,12 @@ const KasirCatalogPage = () => {
   const subTotal = useMemo(() => itemsSubtotal(cartItems), [cartItems]);
   const tax = subTotal > 0 ? TAX_AMOUNT : 0;
   const total = subTotal + tax;
-  const explicitNominal = selectedNominal || parseNominalInput(customNominal) || 0;
+  const explicitNominal =
+    selectedNominal || parseNominalInput(customNominal) || 0;
   const isSufficientFunds = explicitNominal === 0 || explicitNominal >= total;
   const amountPaid = explicitNominal || total;
   const isEmpty = cartItems.length === 0;
-  
+
   const totalItemsCount = useMemo(
     () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
     [cartItems],
@@ -154,7 +159,7 @@ const KasirCatalogPage = () => {
 
   const hasIdentity = customerName.trim().length > 0;
   const hasTable = orderType === ORDER_TYPE.TAKE_AWAY || tableNumber !== "";
-  
+
   // The button only greys out if there are zero items in the cart or submitting.
   const canPay = !isEmpty && !isSubmitting;
 
@@ -193,7 +198,9 @@ const KasirCatalogPage = () => {
     setCartItems(order.cartItems || []);
     const nextNominal = order.amountPaid || 0;
     setSelectedNominal(nextNominal);
-    setCustomNominal(nextNominal ? formatNominalInput(String(nextNominal)) : "");
+    setCustomNominal(
+      nextNominal ? formatNominalInput(String(nextNominal)) : "",
+    );
   };
 
   const handleSaveToArchive = () => {
@@ -201,7 +208,7 @@ const KasirCatalogPage = () => {
       alert("Order is empty, nothing to archive.");
       return;
     }
-    
+
     addArchive({
       id: Date.now().toString(),
       orderNumber,
@@ -209,9 +216,9 @@ const KasirCatalogPage = () => {
       customerName,
       tableNumber,
       cartItems,
-      amountPaid: explicitNominal
+      amountPaid: explicitNominal,
     });
-    
+
     setCartItems([]);
     setCustomerName("");
     setTableNumber("");
@@ -222,29 +229,32 @@ const KasirCatalogPage = () => {
 
   const submitPay = async () => {
     if (!canPay) return;
-    
+
     if (!hasIdentity) {
       alert("Please input the Customer Name before proceeding to checkout.");
       return;
     }
-    
+
     if (!hasTable) {
       alert("Please select a Table Number for Dine-in orders.");
       return;
     }
-    
+
     if (!isSufficientFunds) {
-      alert(`Insufficient funds! The customer must pay at least ${formatCurrency(total)}.`);
+      alert(
+        `Insufficient funds! The customer must pay at least ${formatCurrency(total)}.`,
+      );
       return;
     }
 
     const paid = Math.max(amountPaid, total);
-    
+
     try {
       const payload = {
         order_type: orderType,
         customer_name: customerName.trim(),
-        table_number: orderType === ORDER_TYPE.DINE_IN ? Number(tableNumber) : null,
+        table_number:
+          orderType === ORDER_TYPE.DINE_IN ? Number(tableNumber) : null,
         amount_paid: paid,
         items: cartItems.map((item) => ({
           product_uuid: item.menuId,
@@ -337,7 +347,7 @@ const KasirCatalogPage = () => {
         </body>
       </html>
     `;
-    
+
     iframe.contentDocument.open();
     iframe.contentDocument.write(completeHtml);
     iframe.contentDocument.close();
@@ -379,12 +389,14 @@ const KasirCatalogPage = () => {
         searchValue,
         onSearchChange: setSearchValue,
         searchPlaceholder: "Enter the keyword here...",
-        beforeProfile: <CashierOrderArchiveControl onRestore={restoreArchiveOrder} />,
+        beforeProfile: (
+          <CashierOrderArchiveControl onRestore={restoreArchiveOrder} />
+        ),
       }}
     >
       <DocumentTitle title="Katalog Kasir" />
       <section className="relative min-h-full bg-[#F7F7F7] px-6 py-6 max-lg:px-4 max-lg:py-4 xl:px-8 xl:py-7">
-        <div className="grid min-h-0 grid-cols-[minmax(0,1fr)_340px] gap-5 max-lg:grid-cols-1 xl:h-[calc(100vh-120px)] xl:grid-cols-[minmax(0,1fr)_430px]">
+        <div className="grid min-h-0 grid-cols-[minmax(0,1fr)_340px] gap-5 max-lg:grid-cols-1 lg:h-[calc(100vh-120px)] xl:grid-cols-[minmax(0,1fr)_430px]">
           <div className="flex min-h-0 flex-col">
             <div className="grid grid-cols-4 gap-3 max-lg:grid-cols-2 max-lg:gap-2">
               {categories.map((category) => {
@@ -395,10 +407,11 @@ const KasirCatalogPage = () => {
                     key={category.id}
                     type="button"
                     onClick={() => setActiveCategory(category.id)}
-                    className={`flex h-[46px] items-center justify-center gap-2 rounded-[10px] border px-4 text-[15px] font-medium transition ${isActive
+                    className={`flex h-[46px] items-center justify-center gap-2 rounded-[10px] border px-4 text-[15px] font-medium transition ${
+                      isActive
                         ? "border-[#3572EF] bg-[#3572EF] text-white"
                         : "border-[#BEBEBE] text-[#A9A9A9] hover:border-[#C2D4FA] hover:text-[#5E5E5E] bg-white"
-                      }`}
+                    }`}
                   >
                     {Icon ? <Icon className="text-[20px]" /> : null}
                     <span>{category.label}</span>
@@ -408,9 +421,15 @@ const KasirCatalogPage = () => {
             </div>
 
             <div className="mt-4 flex items-center justify-between">
-              <h1 className="text-[22px] font-semibold text-[#181818]">List Menu</h1>
+              <h1 className="text-[22px] font-semibold text-[#181818]">
+                List Menu
+              </h1>
               <p className="text-sm text-[#979797]">
-                Total <span className="font-medium text-[#515151]">{menus.length}</span> Menu
+                Total{" "}
+                <span className="font-medium text-[#515151]">
+                  {menus.length}
+                </span>{" "}
+                Menu
               </p>
             </div>
 
@@ -425,14 +444,16 @@ const KasirCatalogPage = () => {
                 <div className="grid grid-cols-3 gap-4 max-lg:grid-cols-2 xl:grid-cols-4">
                   {filteredMenus.map((menu) => {
                     const category = categoryMap[menu.category];
-                    const isSelected = cartItems.some((item) => item.menuId === menu.uuid);
+                    const isSelected = cartItems.some(
+                      (item) => item.menuId === menu.uuid,
+                    );
                     return (
                       <article
                         key={menu.uuid}
                         role="button"
-                      tabIndex={0}
-                      onClick={() => addToCart(menu)}
-                      onKeyDown={(event) => {
+                        tabIndex={0}
+                        onClick={() => addToCart(menu)}
+                        onKeyDown={(event) => {
                           if (event.key === "Enter" || event.key === " ") {
                             event.preventDefault();
                             addToCart(menu);
@@ -468,9 +489,13 @@ const KasirCatalogPage = () => {
                             <div className="min-w-0">
                               <p className="text-[13px] font-semibold text-[#3572EF] 2xl:text-[14px]">
                                 {formatCurrency(menu.price)}
-                                <span className="ml-1 font-normal text-[#B1B1B1]">/portion</span>
+                                <span className="ml-1 font-normal text-[#B1B1B1]">
+                                  /portion
+                                </span>
                               </p>
-                              <p className="mt-1 text-[12px] text-[#8F8F8F]">Stock {menu.quantity}</p>
+                              <p className="mt-1 text-[12px] text-[#8F8F8F]">
+                                Stock {menu.quantity}
+                              </p>
                             </div>
                             <button
                               type="button"
@@ -501,322 +526,358 @@ const KasirCatalogPage = () => {
           <aside
             className={`transition-all duration-300 lg:block lg:h-full lg:min-h-0 lg:overflow-y-auto lg:rounded-[10px] lg:bg-white lg:px-5 lg:py-5 lg:shadow-[0_12px_30px_rgba(25,45,88,0.04)] ${
               isCartOpen
-                ? "fixed inset-0 z-50 flex flex-col bg-white lg:static lg:bg-transparent"
+                ? "fixed inset-0 z-50 flex flex-col overflow-y-auto overscroll-y-contain bg-white lg:static lg:bg-transparent"
                 : "hidden"
             } lg:block`}
           >
-            <div className="flex-1 min-h-0">
-              <div className="flex h-full min-h-0 flex-col rounded-none bg-white p-6 md:p-8 lg:h-auto lg:min-h-fit lg:rounded-none lg:bg-transparent lg:p-0 lg:shadow-none">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-xl font-semibold text-[#171717]">List Pesanan</h2>
-                <p className="mt-1 text-xs text-[#A2A2A2]">
-                  No Order <span className="font-semibold text-[#8A8A8A]">ORDR#{orderNumber.replace(/[^0-9]/g, '') || '1234567890'}</span>
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  aria-label="Save order"
-                  onClick={handleSaveToArchive}
-                  className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#3572EF] text-[#3572EF] hover:bg-[#F0F5FF] transition"
-                >
-                  <PiBookmarkSimpleLight className="text-[18px]" />
-                </button>
-                <button
-                  type="button"
-                  aria-label="Close cart"
-                  onClick={() => setIsCartOpen(false)}
-                  className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#EDEDED] text-[#5E5E5E] transition lg:hidden"
-                >
-                  <PiXLight className="text-[18px]" />
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setOrderType(ORDER_TYPE.DINE_IN)}
-                className={`h-[42px] rounded-[10px] border text-[14px] font-medium transition ${orderType === ORDER_TYPE.DINE_IN
-                    ? "border-[#3572EF] bg-[#3572EF] text-white"
-                    : "border-[#D6D6D6] bg-white text-[#A8A8A8] hover:border-[#C2D4FA]"
-                  }`}
-              >
-                Dine in
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setOrderType(ORDER_TYPE.TAKE_AWAY);
-                  setTableNumber("");
-                }}
-                className={`h-[42px] rounded-[10px] border text-[14px] font-medium transition ${orderType === ORDER_TYPE.TAKE_AWAY
-                    ? "border-[#3572EF] bg-[#3572EF] text-white"
-                    : "border-[#D6D6D6] bg-white text-[#A8A8A8] hover:border-[#C2D4FA]"
-                  }`}
-              >
-                Take Away
-              </button>
-            </div>
-
-            <div className="mt-4 border-b border-[#EDEDED] pb-4">
-              <div
-                className={`grid gap-3 ${orderType === ORDER_TYPE.DINE_IN
-                    ? "grid-cols-2"
-                    : "grid-cols-1"
-                  }`}
-              >
-                <label className="block">
-                  <span className="mb-1.5 block text-[12px] text-[#5E5E5E]">
-                    Customer Name
-                  </span>
-                  <input
-                    type="text"
-                    name="customerName"
-                    value={customerName}
-                    onChange={(event) => setCustomerName(event.target.value)}
-                    placeholder="Customer Name"
-                    className="h-9 w-full rounded-[10px] border border-[#D6D6D6] px-3 text-[14px] text-[#2B2B2B] placeholder:text-[#BFBFBF] outline-none transition focus:border-[#C2D4FA]"
-                  />
-                </label>
-
-                {orderType === ORDER_TYPE.DINE_IN ? (
-                  <label className="block">
-                    <span className="mb-1.5 block text-[12px] text-[#5E5E5E]">
-                      No.Table
-                    </span>
-                    <div className="relative">
-                      <select
-                        name="tableNumber"
-                        value={tableNumber}
-                        onChange={(event) => setTableNumber(event.target.value)}
-                        className="h-9 w-full appearance-none rounded-[10px] border border-[#D6D6D6] px-3 text-[14px] text-[#2B2B2B] outline-none transition focus:border-[#C2D4FA]"
-                      >
-                        <option value="">Select No.Table</option>
-                        {TABLE_OPTIONS.map((table) => (
-                          <option key={table} value={table}>
-                            {table}
-                          </option>
-                        ))}
-                      </select>
-                      <PiCaretDownLight className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[16px] text-[#A0A0A0]" />
-                    </div>
-                  </label>
-                ) : null}
-              </div>
-            </div>
-
-            {isEmpty ? (
-              <div className="mt-4 flex min-h-0 flex-1 flex-col lg:block">
-                <div className="flex flex-1 items-center justify-center">
-                  <p className="text-[20px] text-[#909090]">No Menu Selected</p>
+            <div className="min-h-0 lg:flex-1 lg:h-full">
+              <div className="flex min-h-0 flex-col rounded-none bg-white p-6 md:p-8 lg:h-full lg:rounded-none lg:bg-transparent lg:p-0 lg:shadow-none">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl font-semibold text-[#171717]">
+                      List Pesanan
+                    </h2>
+                    <p className="mt-1 text-xs text-[#A2A2A2]">
+                      No Order{" "}
+                      <span className="font-semibold text-[#8A8A8A]">
+                        ORDR#
+                        {orderNumber.replace(/[^0-9]/g, "") || "1234567890"}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      aria-label="Save order"
+                      onClick={handleSaveToArchive}
+                      className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#3572EF] text-[#3572EF] hover:bg-[#F0F5FF] transition"
+                    >
+                      <PiBookmarkSimpleLight className="text-[18px]" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Close cart"
+                      onClick={() => setIsCartOpen(false)}
+                      className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#EDEDED] text-[#5E5E5E] transition lg:hidden"
+                    >
+                      <PiXLight className="text-[18px]" />
+                    </button>
+                  </div>
                 </div>
-                <div className="mt-4 border-t border-[#EFEFEF] pt-4">
+
+                <div className="mt-5 grid grid-cols-2 gap-3">
                   <button
                     type="button"
-                    disabled
-                    className="h-11 w-full rounded-[10px] bg-[#B6B6B8] text-[16px] font-medium text-[#ECECEC]"
+                    onClick={() => setOrderType(ORDER_TYPE.DINE_IN)}
+                    className={`h-[42px] rounded-[10px] border text-[14px] font-medium transition ${
+                      orderType === ORDER_TYPE.DINE_IN
+                        ? "border-[#3572EF] bg-[#3572EF] text-white"
+                        : "border-[#D6D6D6] bg-white text-[#A8A8A8] hover:border-[#C2D4FA]"
+                    }`}
                   >
-                    Pay
+                    Dine in
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOrderType(ORDER_TYPE.TAKE_AWAY);
+                      setTableNumber("");
+                    }}
+                    className={`h-[42px] rounded-[10px] border text-[14px] font-medium transition ${
+                      orderType === ORDER_TYPE.TAKE_AWAY
+                        ? "border-[#3572EF] bg-[#3572EF] text-white"
+                        : "border-[#D6D6D6] bg-white text-[#A8A8A8] hover:border-[#C2D4FA]"
+                    }`}
+                  >
+                    Take Away
                   </button>
                 </div>
-              </div>
-            ) : (
-              <div className="mt-4 flex min-h-0 flex-1 flex-col lg:block">
-                <div className="min-h-0 flex-1 overflow-y-auto pr-1 scrollbar-hide lg:flex-none lg:overflow-visible lg:pr-0">
-                  <div className="space-y-5">
-                    {cartItems.map((item) => (
-                      <article key={item.id} className="flex gap-3 relative">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          loading="lazy"
-                          className="h-[60px] w-[60px] shrink-0 rounded-[10px] object-cover"
-                        />
-                        <div className="flex flex-1 flex-col justify-between min-w-0">
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="min-w-0">
-                              <h3 className="line-clamp-1 text-[15px] font-semibold text-[#1D1D1D]">
-                                {item.name}
-                              </h3>
-                              <p className="mt-0.5 text-[14px] font-medium text-[#444444]">
-                                {formatCurrency(item.price)}
-                              </p>
-                            </div>
-                            <button
-                              type="button"
-                              aria-label={`Remove ${item.name}`}
-                              onClick={() =>
-                                setCartItems((prev) =>
-                                  prev.filter((nextItem) => nextItem.id !== item.id),
-                                )
-                              }
-                              className="flex shrink-0 h-[26px] w-[26px] items-center justify-center rounded-[10px] border border-[#FFD4D4] text-[#FF3333] transition hover:bg-[#FFF3F3]"
-                            >
-                              <PiTrashLight className="text-[14px]" />
-                            </button>
-                          </div>
-                          
-                          <div className="mt-1 flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2 min-w-0">
-                              <button
-                                type="button"
-                                aria-label="Add or Edit Note"
-                                onClick={() => {
-                                  const menuLookup = menus.find((m) => m.uuid === item.menuId);
-                                  if (menuLookup) {
-                                    setEditCartItemId(item.id);
-                                    setDetailMenu(menuLookup);
-                                    setDetailNote(item.note || "");
+
+                <div className="mt-4 border-b border-[#EDEDED] pb-4">
+                  <div
+                    className={`grid gap-3 ${
+                      orderType === ORDER_TYPE.DINE_IN
+                        ? "grid-cols-2"
+                        : "grid-cols-1"
+                    }`}
+                  >
+                    <label className="block">
+                      <span className="mb-1.5 block text-[12px] text-[#5E5E5E]">
+                        Customer Name
+                      </span>
+                      <input
+                        type="text"
+                        name="customerName"
+                        value={customerName}
+                        onChange={(event) =>
+                          setCustomerName(event.target.value)
+                        }
+                        placeholder="Customer Name"
+                        className="h-9 w-full rounded-[10px] border border-[#D6D6D6] px-3 text-[14px] text-[#2B2B2B] placeholder:text-[#BFBFBF] outline-none transition focus:border-[#C2D4FA]"
+                      />
+                    </label>
+
+                    {orderType === ORDER_TYPE.DINE_IN ? (
+                      <label className="block">
+                        <span className="mb-1.5 block text-[12px] text-[#5E5E5E]">
+                          No.Table
+                        </span>
+                        <div className="relative">
+                          <select
+                            name="tableNumber"
+                            value={tableNumber}
+                            onChange={(event) =>
+                              setTableNumber(event.target.value)
+                            }
+                            className="h-9 w-full appearance-none rounded-[10px] border border-[#D6D6D6] px-3 text-[14px] text-[#2B2B2B] outline-none transition focus:border-[#C2D4FA]"
+                          >
+                            <option value="">Select No.Table</option>
+                            {TABLE_OPTIONS.map((table) => (
+                              <option key={table} value={table}>
+                                {table}
+                              </option>
+                            ))}
+                          </select>
+                          <PiCaretDownLight className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[16px] text-[#A0A0A0]" />
+                        </div>
+                      </label>
+                    ) : null}
+                  </div>
+                </div>
+
+                {isEmpty ? (
+                  <div className="mt-4">
+                    <div className="flex items-center justify-center py-10">
+                      <p className="text-[20px] text-[#909090]">
+                        No Menu Selected
+                      </p>
+                    </div>
+                    <div className="mt-4 border-t border-[#EFEFEF] pt-4 lg:pt-10">
+                      <button
+                        type="button"
+                        disabled
+                        className="h-11 w-full rounded-[10px] bg-[#B6B6B8] text-[16px] font-medium text-[#ECECEC]"
+                      >
+                        Pay
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-4">
+                    <div className="pr-1 lg:pr-0">
+                      <div className="space-y-5">
+                        {cartItems.map((item) => (
+                          <article
+                            key={item.id}
+                            className="flex gap-3 relative"
+                          >
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              loading="lazy"
+                              className="h-[60px] w-[60px] shrink-0 rounded-[10px] object-cover"
+                            />
+                            <div className="flex flex-1 flex-col justify-between min-w-0">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="min-w-0">
+                                  <h3 className="line-clamp-1 text-[15px] font-semibold text-[#1D1D1D]">
+                                    {item.name}
+                                  </h3>
+                                  <p className="mt-0.5 text-[14px] font-medium text-[#444444]">
+                                    {formatCurrency(item.price)}
+                                  </p>
+                                </div>
+                                <button
+                                  type="button"
+                                  aria-label={`Remove ${item.name}`}
+                                  onClick={() =>
+                                    setCartItems((prev) =>
+                                      prev.filter(
+                                        (nextItem) => nextItem.id !== item.id,
+                                      ),
+                                    )
                                   }
-                                }}
-                                className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[10px] border border-[#3572EF] text-[#3572EF] transition hover:bg-[#F0F5FF]"
-                              >
-                                <PiPencilSimpleLineLight className="text-[14px]" />
-                              </button>
-                              {item.note ? (
-                                <p className="truncate text-[12px] leading-tight text-[#8D8D8D]">
-                                  {item.note}
-                                </p>
-                              ) : null}
+                                  className="flex shrink-0 h-[26px] w-[26px] items-center justify-center rounded-[10px] border border-[#FFD4D4] text-[#FF3333] transition hover:bg-[#FFF3F3]"
+                                >
+                                  <PiTrashLight className="text-[14px]" />
+                                </button>
+                              </div>
+
+                              <div className="mt-1 flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <button
+                                    type="button"
+                                    aria-label="Add or Edit Note"
+                                    onClick={() => {
+                                      const menuLookup = menus.find(
+                                        (m) => m.uuid === item.menuId,
+                                      );
+                                      if (menuLookup) {
+                                        setEditCartItemId(item.id);
+                                        setDetailMenu(menuLookup);
+                                        setDetailNote(item.note || "");
+                                      }
+                                    }}
+                                    className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[10px] border border-[#3572EF] text-[#3572EF] transition hover:bg-[#F0F5FF]"
+                                  >
+                                    <PiPencilSimpleLineLight className="text-[14px]" />
+                                  </button>
+                                  {item.note ? (
+                                    <p className="truncate text-[12px] leading-tight text-[#8D8D8D]">
+                                      {item.note}
+                                    </p>
+                                  ) : null}
+                                </div>
+
+                                <div className="flex shrink-0 items-center gap-2">
+                                  <button
+                                    type="button"
+                                    aria-label="Decrease quantity"
+                                    onClick={() =>
+                                      setCartItems((prev) =>
+                                        prev.map((nextItem) =>
+                                          nextItem.id === item.id
+                                            ? {
+                                                ...nextItem,
+                                                quantity: Math.max(
+                                                  1,
+                                                  nextItem.quantity - 1,
+                                                ),
+                                              }
+                                            : nextItem,
+                                        ),
+                                      )
+                                    }
+                                    className="text-[#BDBDBD] transition hover:text-[#3572EF]"
+                                  >
+                                    <PiMinusCircleLight className="text-[24px]" />
+                                  </button>
+                                  <span className="w-[20px] text-center text-[15px] font-medium text-[#252525]">
+                                    {item.quantity}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    aria-label="Increase quantity"
+                                    onClick={() =>
+                                      setCartItems((prev) =>
+                                        prev.map((nextItem) =>
+                                          nextItem.id === item.id
+                                            ? {
+                                                ...nextItem,
+                                                quantity: nextItem.quantity + 1,
+                                              }
+                                            : nextItem,
+                                        ),
+                                      )
+                                    }
+                                    className="text-[#3572EF] transition hover:text-[#1C61ED]"
+                                  >
+                                    <PiPlusCircleLight className="text-[24px]" />
+                                  </button>
+                                </div>
+                              </div>
                             </div>
-                            
-                            <div className="flex shrink-0 items-center gap-2">
-                              <button
-                                type="button"
-                                aria-label="Decrease quantity"
-                                onClick={() =>
-                                  setCartItems((prev) =>
-                                    prev.map((nextItem) =>
-                                      nextItem.id === item.id
-                                        ? {
-                                          ...nextItem,
-                                          quantity: Math.max(1, nextItem.quantity - 1),
-                                        }
-                                        : nextItem,
-                                    ),
-                                  )
-                                }
-                                className="text-[#BDBDBD] transition hover:text-[#3572EF]"
-                              >
-                                <PiMinusCircleLight className="text-[24px]" />
-                              </button>
-                              <span className="w-[20px] text-center text-[15px] font-medium text-[#252525]">
-                                {item.quantity}
-                              </span>
-                              <button
-                                type="button"
-                                aria-label="Increase quantity"
-                                onClick={() =>
-                                  setCartItems((prev) =>
-                                    prev.map((nextItem) =>
-                                      nextItem.id === item.id
-                                        ? { ...nextItem, quantity: nextItem.quantity + 1 }
-                                        : nextItem,
-                                    ),
-                                  )
-                                }
-                                className="text-[#3572EF] transition hover:text-[#1C61ED]"
-                              >
-                                <PiPlusCircleLight className="text-[24px]" />
-                              </button>
-                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-4 border-t border-[#EFEFEF] pt-4 lg:pt-6">
+                      <div className="relative rounded-[10px] bg-[#F7F7F7] pb-4 pt-4">
+                        <div className="px-5">
+                          <div className="flex items-center justify-between text-[13px] text-[#737373]">
+                            <p>Sub Total</p>
+                            <p>{formatCurrency(itemsSubtotal(cartItems))}</p>
+                          </div>
+                          <div className="mt-2.5 flex items-center justify-between text-[13px] text-[#737373]">
+                            <p>Tax</p>
+                            <p>{formatCurrency(tax)}</p>
                           </div>
                         </div>
-                      </article>
-                    ))}
-                  </div>
-                </div>
 
-                <div className="mt-4 border-t border-[#EFEFEF] pt-4">
-                  <div className="relative rounded-[10px] bg-[#F7F7F7] pb-4 pt-4">
-                    <div className="px-5">
-                      <div className="flex items-center justify-between text-[13px] text-[#737373]">
-                        <p>Sub Total</p>
-                        <p>{formatCurrency(itemsSubtotal(cartItems))}</p>
-                      </div>
-                      <div className="mt-2.5 flex items-center justify-between text-[13px] text-[#737373]">
-                        <p>Tax</p>
-                        <p>{formatCurrency(tax)}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="relative mt-5 mb-1 h-px w-full">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-dashed border-[#DADADA]"></div>
-                      </div>
-                      <div className="absolute -left-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-white"></div>
-                      <div className="absolute -right-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-white"></div>
-                    </div>
+                        <div className="relative mt-5 mb-1 h-px w-full">
+                          <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-dashed border-[#DADADA]"></div>
+                          </div>
+                          <div className="absolute -left-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-white"></div>
+                          <div className="absolute -right-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-white"></div>
+                        </div>
 
-                    <div className="px-5 pt-3">
-                      <div className="flex items-center justify-between">
-                        <p className="text-[16px] text-[#383838]">Total</p>
-                        <p className="text-[24px] font-bold text-[#1F1F1F]">
-                          {formatCurrency(total)}
+                        <div className="px-5 pt-3">
+                          <div className="flex items-center justify-between">
+                            <p className="text-[16px] text-[#383838]">Total</p>
+                            <p className="text-[24px] font-bold text-[#1F1F1F]">
+                              {formatCurrency(total)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <p className="text-[13px] text-[#3D3D3D]">
+                          Select Nominal
                         </p>
+                        <div className="mt-3 grid grid-cols-3 gap-2">
+                          {NOMINAL_OPTIONS.map((nominal) => {
+                            const isActive = selectedNominal === nominal;
+                            return (
+                              <button
+                                key={nominal}
+                                type="button"
+                                onClick={() => {
+                                  setSelectedNominal(nominal);
+                                  setCustomNominal(
+                                    formatNominalInput(String(nominal)),
+                                  );
+                                }}
+                                className={`h-[36px] rounded-[10px] border text-[13px] transition ${
+                                  isActive
+                                    ? "border-[#3572EF] bg-[#3572EF] text-white"
+                                    : "border-[#CCCCCC] text-[#A8A8A8] hover:border-[#3572EF] hover:text-[#3572EF]"
+                                }`}
+                              >
+                                {formatCurrency(nominal)}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <input
+                          type="text"
+                          name="customNominal"
+                          value={customNominal}
+                          onChange={(event) => {
+                            setSelectedNominal(0);
+                            setCustomNominal(
+                              formatNominalInput(event.target.value),
+                            );
+                          }}
+                          placeholder="Enter custom nominal here..."
+                          className="mt-3 h-[36px] w-full border-b border-[#DCDCDC] bg-transparent px-1 text-center text-[13px] text-[#2F2F2F] placeholder:text-[#B3B3B3] outline-none transition focus:border-[#3572EF]"
+                        />
                       </div>
+
+                      <button
+                        type="button"
+                        onClick={submitPay}
+                        disabled={!canPay}
+                        className={`mt-8 h-[44px] w-full rounded-[10px] text-[16px] font-medium transition lg:mt-6 ${
+                          canPay
+                            ? "bg-[#3572EF] text-white hover:brightness-105 shadow-[0_4px_12px_rgba(53,114,239,0.2)]"
+                            : "bg-[#B6B6B8] text-[#ECECEC]"
+                        }`}
+                      >
+                        {isSubmitting ? (
+                          <div className="flex items-center justify-center gap-2">
+                            <LoadingSpinner size="sm" />
+                            <span>Processing...</span>
+                          </div>
+                        ) : (
+                          "Pay"
+                        )}
+                      </button>
                     </div>
                   </div>
-
-                  <div className="mt-4">
-                    <p className="text-[13px] text-[#3D3D3D]">Select Nominal</p>
-                    <div className="mt-3 grid grid-cols-3 gap-2">
-                      {NOMINAL_OPTIONS.map((nominal) => {
-                        const isActive = selectedNominal === nominal;
-                        return (
-                          <button
-                            key={nominal}
-                            type="button"
-                            onClick={() => {
-                              setSelectedNominal(nominal);
-                              setCustomNominal(formatNominalInput(String(nominal)));
-                            }}
-                            className={`h-[36px] rounded-[10px] border text-[13px] transition ${isActive
-                                ? "border-[#3572EF] bg-[#3572EF] text-white"
-                                : "border-[#CCCCCC] text-[#A8A8A8] hover:border-[#3572EF] hover:text-[#3572EF]"
-                              }`}
-                          >
-                            {formatCurrency(nominal)}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <input
-                      type="text"
-                      name="customNominal"
-                      value={customNominal}
-                      onChange={(event) => {
-                        setSelectedNominal(0);
-                        setCustomNominal(formatNominalInput(event.target.value));
-                      }}
-                      placeholder="Enter custom nominal here..."
-                      className="mt-3 h-[36px] w-full border-b border-[#DCDCDC] bg-transparent px-1 text-center text-[13px] text-[#2F2F2F] placeholder:text-[#B3B3B3] outline-none transition focus:border-[#3572EF]"
-                    />
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={submitPay}
-                    disabled={!canPay}
-                    className={`mt-4 h-[44px] w-full rounded-[10px] text-[16px] font-medium transition ${canPay
-                        ? "bg-[#3572EF] text-white hover:brightness-105 shadow-[0_4px_12px_rgba(53,114,239,0.2)]"
-                        : "bg-[#B6B6B8] text-[#ECECEC]"
-                      }`}
-                  >
-                    {isSubmitting ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <LoadingSpinner size="sm" />
-                        <span>Processing...</span>
-                      </div>
-                    ) : (
-                      "Pay"
-                    )}
-                  </button>
-                </div>
-              </div>
-            )}
+                )}
               </div>
             </div>
           </aside>
@@ -869,7 +930,9 @@ const KasirCatalogPage = () => {
 
               <p className="mt-1.5 text-[15px] font-semibold text-[#3572EF]">
                 {formatCurrency(detailMenu.price)}
-                <span className="ml-1 text-[11px] font-normal text-[#9B9B9B]">/portion</span>
+                <span className="ml-1 text-[11px] font-normal text-[#9B9B9B]">
+                  /portion
+                </span>
               </p>
 
               <div className="mt-2.5 border-t border-dashed border-[#CFCFCF] pt-2.5">
@@ -893,24 +956,31 @@ const KasirCatalogPage = () => {
                 onClick={() => {
                   if (!detailNote.trim()) return;
                   if (editCartItemId) {
-                    setCartItems((prev) => 
-                      prev.map((it) => 
-                        it.id === editCartItemId ? { ...it, note: detailNote.trim(), key: cartKey(it.menuId, detailNote.trim()) } : it
-                      )
+                    setCartItems((prev) =>
+                      prev.map((it) =>
+                        it.id === editCartItemId
+                          ? {
+                              ...it,
+                              note: detailNote.trim(),
+                              key: cartKey(it.menuId, detailNote.trim()),
+                            }
+                          : it,
+                      ),
                     );
                   } else {
                     addToCart(detailMenu, detailNote);
                   }
-                  
+
                   setDetailMenu(null);
                   setDetailNote("");
                   setEditCartItemId(null);
                 }}
                 disabled={!detailNote.trim()}
-                className={`mt-3 h-[40px] w-full rounded-[10px] text-[14px] font-medium transition ${detailNote.trim()
+                className={`mt-3 h-[40px] w-full rounded-[10px] text-[14px] font-medium transition ${
+                  detailNote.trim()
                     ? "bg-[#3572EF] text-white hover:bg-[#1C61ED]"
                     : "bg-[#B6B6B8] text-[#ECECEC]"
-                  }`}
+                }`}
               >
                 Submit
               </button>
@@ -946,7 +1016,10 @@ const KasirCatalogPage = () => {
             <div id="receipt-content" className="mx-auto mt-5 w-full">
               <div className="overflow-hidden rounded-t-[10px] bg-[#F3F3F3] px-4 py-4">
                 <p className="text-[11px] text-[#8E8E8E]">
-                  No Order <span className="text-[#666666]">{receiptData.orderNumber}</span>
+                  No Order{" "}
+                  <span className="text-[#666666]">
+                    {receiptData.orderNumber}
+                  </span>
                 </p>
                 <p className="mt-1 text-[11px] text-[#8E8E8E]">
                   Order Date{" "}
@@ -956,7 +1029,9 @@ const KasirCatalogPage = () => {
                 </p>
                 <p className="mt-1 text-[11px] text-[#8E8E8E]">
                   Customer Name{" "}
-                  <span className="text-[#666666]">{receiptData.customerName}</span>
+                  <span className="text-[#666666]">
+                    {receiptData.customerName}
+                  </span>
                 </p>
                 <p className="mt-1.5 text-[12px] text-[#323232]">
                   {receiptData.orderType === ORDER_TYPE.DINE_IN
