@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import { Sequelize } from "sequelize";
 import pg from "pg";
 
-dotenv.config({ override: true });
+dotenv.config({ override: true, quiet: true });
 
 const normalizeDatabaseUrl = (rawUrl) => {
   if (!rawUrl) {
