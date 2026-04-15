@@ -1,6 +1,7 @@
 import cors from "cors";
 import express from "express";
 import { sequelize } from "./models/index.js";
+import { databaseHost } from "./database.js";
 import routes from "./routes/index.js";
 
 const FRONTEND_ORIGIN =
@@ -59,6 +60,18 @@ export const startServer = async () => {
       console.log(`POS Sederhana backend listening on http://localhost:${port}`);
     });
   } catch (error) {
+    const code = error?.parent?.code ?? error?.original?.code;
+    const name = error?.name ?? "";
+
+    if (code === "ENOTFOUND" || name === "SequelizeHostNotFoundError") {
+      console.error(
+        `Error starting server: database host not found (${databaseHost}).`,
+      );
+      console.error(
+        "Check backend/.env DATABASE_URL host and ensure local .env overrides machine-level DATABASE_URL.",
+      );
+    }
+
     console.error("Error starting server:", error);
     process.exit(1);
   }
