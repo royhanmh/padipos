@@ -240,7 +240,7 @@ Base URL (local): `http://localhost:4000/api`
 ### Auth
 
 - `POST /auth/admin/login`
-- `POST /auth/admin/register`
+- `POST /auth/admin/register` - admin only; creates new admin with `status=nonactive`; does not overwrite current auth cookie
 - `POST /auth/cashier/login`
 - `POST /auth/cashier/register`
 - `POST /auth/cashier/request-reset-password`
@@ -264,7 +264,7 @@ Base URL (local): `http://localhost:4000/api`
 - `GET /transactions/:uuid` - authenticated user
 - `POST /transactions` - cashier only
 
-Postman assets are available in [`backend/postman`](./backend/postman).
+Postman assets are available in [`backend/postman`](./backend/postman). The Auth collection includes `Admin Login (Actor)`, `Create Admin (Admin Only, Inactive)`, and negative access tests for unauthenticated/cashier admin creation.
 
 ## Testing
 

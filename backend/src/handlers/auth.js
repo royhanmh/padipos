@@ -197,14 +197,12 @@ export const registerAdminHandler = async (req, res, next) => {
       username: value.username,
       email: value.email,
       password: hashedPassword,
+      status: "nonactive",
       image_profile: value.image_profile || null,
     });
 
-    const token = generateToken({ uuid: admin.uuid, role: "admin" });
-    setAuthCookie(res, token);
-
     res.status(201).json({
-      message: "Admin registered successfully.",
+      message: "Admin created successfully. Account is pending activation.",
       user: buildAdminResponse(admin),
     });
   } catch (error) {

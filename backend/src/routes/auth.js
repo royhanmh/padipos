@@ -12,12 +12,13 @@ import {
   updateMePasswordHandler,
 } from "../handlers/index.js";
 import { authenticate } from "../middlewares/authenticate.js";
+import { authorize } from "../middlewares/authorize.js";
 
 const router = express.Router();
 
 // Admin auth
 router.post("/admin/login", loginAdminHandler);
-router.post("/admin/register", registerAdminHandler);
+router.post("/admin/register", authenticate, authorize("admin"), registerAdminHandler);
 
 // Cashier auth
 router.post("/cashier/login", loginCashierHandler);
