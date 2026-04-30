@@ -99,6 +99,7 @@ Development seed credentials are available after running the database seed:
 | --- | --- | --- |
 | Admin | `admin@possederhana.com` | `admin123` |
 | Cashier | `kasir@possederhana.com` | `kasir123` |
+| Cashier | `kasir2@possederhana.com` | `kasir2123` |
 
 These credentials are intended for **local/demo use only**.
 
@@ -133,9 +134,15 @@ Create environment files for backend and frontend before running the app.
 
 ```bash
 cd ../backend
+npm run db:upload:product-images
 npm run db:migrate
 npm run db:seed:all
 ```
+
+Notes:
+- `npm run db:upload:product-images` is one-time preparation to upload per-product images to Cloudinary.
+- Put local source files at `backend/src/db/assets/product-images/<slug>.jpg|jpeg|png|webp` (slug follows `productImageMap.js`).
+- Transaction seed assigns ownership alternately between `kasir@possederhana.com` and `kasir2@possederhana.com`.
 
 ## Usage
 

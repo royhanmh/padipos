@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
-
-const PRODUCT_IMAGE = "/images/food.png";
+import {
+  buildCloudinaryImageUrl,
+  getProductImagePublicId,
+} from "../data/productImageMap.js";
 
 const PRODUCTS = [
   {
@@ -153,7 +155,7 @@ export default {
       "product",
       PRODUCTS.map((product) => ({
         uuid: randomUUID(),
-        image: PRODUCT_IMAGE,
+        image: buildCloudinaryImageUrl(getProductImagePublicId(product.title)),
         title: product.title,
         description: product.description,
         price: product.price,

@@ -18,11 +18,21 @@ const DEFAULT_CASHIER = {
   image_profile: null,
 };
 
+const SECOND_CASHIER = {
+  uuid: "d57f7fbe-c679-4567-8ec0-3c8529701127",
+  username: "Kasir POS 2",
+  email: "kasir2@possederhana.com",
+  password: "kasir2123",
+  status: "active",
+  image_profile: null,
+};
+
 export default {
   async up(queryInterface) {
     const timestamp = new Date();
     const adminPassword = await bcrypt.hash(DEFAULT_ADMIN.password, 10);
     const cashierPassword = await bcrypt.hash(DEFAULT_CASHIER.password, 10);
+    const secondCashierPassword = await bcrypt.hash(SECOND_CASHIER.password, 10);
 
     await queryInterface.bulkInsert("admin", [
       {
@@ -50,6 +60,17 @@ export default {
         updated_at: timestamp,
         deleted_at: null,
       },
+      {
+        uuid: SECOND_CASHIER.uuid,
+        username: SECOND_CASHIER.username,
+        email: SECOND_CASHIER.email,
+        password: secondCashierPassword,
+        status: SECOND_CASHIER.status,
+        image_profile: SECOND_CASHIER.image_profile,
+        created_at: timestamp,
+        updated_at: timestamp,
+        deleted_at: null,
+      },
     ]);
   },
 
@@ -62,7 +83,7 @@ export default {
 
     await queryInterface.bulkDelete("cashier", {
       email: {
-        [Sequelize.Op.in]: [DEFAULT_CASHIER.email],
+        [Sequelize.Op.in]: [DEFAULT_CASHIER.email, SECOND_CASHIER.email],
       },
     });
   },

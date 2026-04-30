@@ -2,9 +2,11 @@ import { randomUUID } from "node:crypto";
 import { QueryTypes } from "sequelize";
 
 const TAX_AMOUNT = 5000;
-const SEEDED_CASHIER_EMAIL = "kasir@possederhana.com";
+const SEEDED_CASHIER_EMAILS = ["kasir@possederhana.com", "kasir2@possederhana.com"];
 const ORDER_NUMBER_START = 910000;
-const ORDER_NUMBER_END = 910099;
+const ORDER_NUMBER_END = 910999;
+const DATE_RANGE_START = "2026-04-12";
+const DATE_RANGE_END = "2026-05-05";
 
 const FOOD_TITLES = [
   "Nasi Goreng Kampung",
@@ -60,10 +62,9 @@ const ITEM_NOTES = [
   "Tanpa kuah terpisah",
 ];
 
-const getDateAtOffset = (dayOffset, hour, minute) => {
-  const date = new Date();
+const getDateAt = (baseDate, hour, minute) => {
+  const date = new Date(baseDate);
   date.setHours(hour, minute, 0, 0);
-  date.setDate(date.getDate() - dayOffset);
   return date;
 };
 
@@ -73,6 +74,23 @@ const getAmountPaid = (total, index) => {
 };
 
 const getFromList = (items, index) => items[index % items.length];
+
+const toUtcDate = (dateString) => new Date(`${dateString}T00:00:00.000Z`);
+
+const buildDateRange = (start, end) => {
+  const dates = [];
+  const current = toUtcDate(start);
+  const endDate = toUtcDate(end);
+
+  while (current <= endDate) {
+    dates.push(new Date(current));
+    current.setUTCDate(current.getUTCDate() + 1);
+  }
+
+  return dates;
+};
+
+const getDailyTransactionCount = (dayIndex) => 5 + (dayIndex % 6);
 
 const buildItem = (product, quantity, note = null) => ({
   product_id: product.id,
@@ -168,16 +186,16 @@ const selectItemsForSecondaryOrder = (dayOffset, productsByTitle) => {
 export default {
   async up(queryInterface) {
     const cashiers = await queryInterface.sequelize.query(
-      'SELECT "id" FROM "cashier" WHERE "email" = :email LIMIT 1;',
+      'SELECT "id", "email" FROM "cashier" WHERE "email" IN (:emails) ORDER BY "email" ASC;',
       {
-        replacements: { email: SEEDED_CASHIER_EMAIL },
+        replacements: { emails: SEEDED_CASHIER_EMAILS },
         type: QueryTypes.SELECT,
       },
     );
 
-    if (cashiers.length === 0) {
+    if (cashiers.length !== SEEDED_CASHIER_EMAILS.length) {
       throw new Error(
-        `Cashier with email ${SEEDED_CASHIER_EMAIL} must exist before seeding transactions.`,
+        `Cashiers ${SEEDED_CASHIER_EMAILS.join(", ")} must exist before seeding transactions.`,
       );
     }
 
@@ -208,7 +226,7 @@ export default {
     const transactionItems = [];
     let orderNumber = ORDER_NUMBER_START;
     let transactionIndex = 0;
-    const cashierId = cashiers[0].id;
+    const cashierIds = cashiers.map((cashier) => cashier.id);
 
     const insertTransaction = async ({
       createdAt,
@@ -260,7 +278,7 @@ export default {
         {
           replacements: {
             uuid: randomUUID(),
-            cashierId,
+            cashierId: cashierIds[transactionIndex % cashierIds.length],
             orderType,
             customerName,
             tableNumber,
@@ -306,30 +324,29 @@ export default {
       transactionIndex += 1;
     };
 
-    for (let dayOffset = 29; dayOffset >= 0; dayOffset -= 1) {
-      const primaryOrderType = dayOffset % 2 === 0 ? "dine-in" : "take-away";
-      const primaryTableNumber =
-        primaryOrderType === "dine-in" ? (dayOffset % 12) + 1 : null;
+    const dateRange = buildDateRange(DATE_RANGE_START, DATE_RANGE_END);
 
-      await insertTransaction({
-        createdAt: getDateAtOffset(dayOffset, 10 + (dayOffset % 4), 15),
-        orderType: primaryOrderType,
-        customerName: getFromList(CUSTOMER_NAMES, dayOffset),
-        tableNumber: primaryTableNumber,
-        items: selectItemsForPrimaryOrder(dayOffset, productsByTitle),
-      });
+    for (let dayIndex = 0; dayIndex < dateRange.length; dayIndex += 1) {
+      const baseDate = dateRange[dayIndex];
+      const transactionsPerDay = getDailyTransactionCount(dayIndex);
 
-      if (dayOffset % 2 === 0) {
-        const secondaryOrderType = dayOffset % 3 === 0 ? "take-away" : "dine-in";
-        const secondaryTableNumber =
-          secondaryOrderType === "dine-in" ? ((dayOffset + 5) % 12) + 1 : null;
+      for (let txIndex = 0; txIndex < transactionsPerDay; txIndex += 1) {
+        const seedIndex = dayIndex * 10 + txIndex;
+        const orderType = seedIndex % 2 === 0 ? "dine-in" : "take-away";
+        const tableNumber = orderType === "dine-in" ? (seedIndex % 12) + 1 : null;
+        const hour = 9 + Math.floor((txIndex * 2) / 3);
+        const minute = (10 + txIndex * 11) % 60;
+        const items =
+          txIndex % 2 === 0
+            ? selectItemsForPrimaryOrder(seedIndex, productsByTitle)
+            : selectItemsForSecondaryOrder(seedIndex, productsByTitle);
 
         await insertTransaction({
-          createdAt: getDateAtOffset(dayOffset, 17 + (dayOffset % 3), 40),
-          orderType: secondaryOrderType,
-          customerName: getFromList(CUSTOMER_NAMES, dayOffset + 5),
-          tableNumber: secondaryTableNumber,
-          items: selectItemsForSecondaryOrder(dayOffset, productsByTitle),
+          createdAt: getDateAt(baseDate, hour, minute),
+          orderType,
+          customerName: getFromList(CUSTOMER_NAMES, seedIndex),
+          tableNumber,
+          items,
         });
       }
     }
