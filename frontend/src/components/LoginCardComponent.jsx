@@ -16,10 +16,10 @@ const LoginCardComponent = ({
           src={logoSrc}
           alt={logoAlt}
         />
-        <h1 className="mb-2.5 text-4xl font-semibold text-[#2B2B2B] max-lg:text-3xl">
+        <h1 className="mb-2.5 text-4xl font-semibold text-[#2B2B2B] max-lg:text-[34px]">
           {title}
         </h1>
-        <p className="text-[17px] text-[#919191] max-lg:text-base">{subtitle}</p>
+        <p className="text-[19px] text-[#919191] max-lg:text-[16px]">{subtitle}</p>
       </div>
 
       <div className="mt-14 px-6 max-lg:mt-9 max-lg:px-3">

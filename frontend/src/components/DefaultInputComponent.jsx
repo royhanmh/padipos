@@ -10,7 +10,7 @@ const DefaultInputComponent = ({
   onChange,
   helpText,
   error,
-  helpTextClassName = "mt-1.5 text-xs text-[#919191] md:mt-2 md:text-sm",
+  helpTextClassName = "mt-1.5 text-[14px] text-[#919191] md:mt-2 md:text-[15px]",
   ...rest
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -19,7 +19,7 @@ const DefaultInputComponent = ({
   return (
     <div className="mb-5 flex flex-col">
       {label ? (
-        <label htmlFor={id} className="mb-1.5 text-sm text-[#5E5E5E]">
+        <label htmlFor={id} className="mb-1.5 text-[15px] text-[#5E5E5E]">
           {label}
         </label>
       ) : null}
@@ -30,7 +30,7 @@ const DefaultInputComponent = ({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className={`h-12 w-full rounded-[10px] border bg-white px-4 pr-11 text-sm text-[#2B2B2B] placeholder:text-[#ABABAB] outline-none transition duration-200 focus:ring-2 md:h-13 md:px-5 md:pr-12 md:text-base ${
+          className={`h-12 w-full rounded-[10px] border bg-white px-4 pr-11 text-[15px] text-[#2B2B2B] placeholder:text-[#ABABAB] outline-none transition duration-200 focus:ring-2 md:h-13 md:px-5 md:pr-12 md:text-[18px] ${
             error
               ? "border-[#F04438] focus:border-[#F04438] focus:ring-[#FEE4E2]"
               : "border-[#D7D7D7] focus:border-[#C2D4FA] focus:ring-[#C2D4FA]"
@@ -53,7 +53,7 @@ const DefaultInputComponent = ({
           </button>
         ) : null}
       </div>
-      {error ? <p className="mt-1.5 text-xs text-[#F04438] md:mt-2 md:text-sm">{error}</p> : null}
+      {error ? <p className="mt-1.5 text-[14px] text-[#F04438] md:mt-2 md:text-[15px]">{error}</p> : null}
       {helpText ? <p className={helpTextClassName}>{helpText}</p> : null}
     </div>
   );
