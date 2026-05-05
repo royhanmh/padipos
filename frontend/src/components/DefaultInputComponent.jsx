@@ -30,7 +30,7 @@ const DefaultInputComponent = ({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className={`h-12 w-full rounded-[10px] border bg-white px-4 pr-11 text-[15px] text-[#2B2B2B] placeholder:text-[#ABABAB] outline-none transition duration-200 focus:ring-2 md:h-13 md:px-5 md:pr-12 md:text-[18px] ${
+          className={`h-13 w-full rounded-[10px] border bg-white px-4 pr-11 text-[15px] text-[#2B2B2B] placeholder:text-[#ABABAB] outline-none transition duration-200 focus:ring-2 md:h-14 md:px-5 md:pr-12 md:text-[18px] ${
             error
               ? "border-[#F04438] focus:border-[#F04438] focus:ring-[#FEE4E2]"
               : "border-[#D7D7D7] focus:border-[#C2D4FA] focus:ring-[#C2D4FA]"
@@ -46,9 +46,9 @@ const DefaultInputComponent = ({
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? (
-              <AiOutlineEye className="h-5 w-5 md:h-6 md:w-6" />
+              <AiOutlineEye className="h-6 w-6 md:h-7 md:w-7" />
             ) : (
-              <AiOutlineEyeInvisible className="h-5 w-5 md:h-6 md:w-6" />
+              <AiOutlineEyeInvisible className="h-6 w-6 md:h-7 md:w-7" />
             )}
           </button>
         ) : null}
