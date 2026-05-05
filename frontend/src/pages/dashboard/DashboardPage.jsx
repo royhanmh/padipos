@@ -47,6 +47,7 @@ const CHART_CATEGORY_OPTIONS = [
   { value: "beverage", label: "Beverages" },
   { value: "dessert", label: "Desserts" },
 ];
+const MAX_CHART_RANGE_DAYS = 7;
 
 const toDateAtStartOfDay = (value) => {
   if (!value) {
@@ -62,6 +63,25 @@ const toDateAtEndOfDay = (value) => {
   }
 
   return new Date(`${value}T23:59:59`);
+};
+
+const toDateValueString = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const getInclusiveDaySpan = (startValue, finishValue) => {
+  const start = toDateAtStartOfDay(startValue);
+  const finish = toDateAtStartOfDay(finishValue);
+
+  if (!start || !finish) {
+    return 0;
+  }
+
+  const diffMs = finish.getTime() - start.getTime();
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
 };
 
 const createDateRangeMap = (start, finish) => {
@@ -311,6 +331,7 @@ const DashboardPage = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [startDate, setStartDate] = useState("");
   const [finishDate, setFinishDate] = useState("");
+  const [chartRangeHint, setChartRangeHint] = useState("");
   const [selectedChartCategory, setSelectedChartCategory] = useState("all");
   const chartContainerRef = useRef(null);
   const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
@@ -345,6 +366,54 @@ const DashboardPage = () => {
 
     return toDateAtStartOfDay(startDate) > toDateAtEndOfDay(finishDate);
   }, [finishDate, startDate]);
+
+  const handleStartDateChange = (nextStartDate) => {
+    setStartDate(nextStartDate);
+
+    if (!nextStartDate || !finishDate) {
+      setChartRangeHint("");
+      return;
+    }
+
+    const span = getInclusiveDaySpan(nextStartDate, finishDate);
+    if (span > MAX_CHART_RANGE_DAYS) {
+      const adjustedFinish = toDateAtStartOfDay(nextStartDate);
+      adjustedFinish.setDate(
+        adjustedFinish.getDate() + (MAX_CHART_RANGE_DAYS - 1),
+      );
+      setFinishDate(toDateValueString(adjustedFinish));
+      setChartRangeHint(
+        `Date range limited to ${MAX_CHART_RANGE_DAYS} days for chart readability.`,
+      );
+      return;
+    }
+
+    setChartRangeHint("");
+  };
+
+  const handleFinishDateChange = (nextFinishDate) => {
+    setFinishDate(nextFinishDate);
+
+    if (!startDate || !nextFinishDate) {
+      setChartRangeHint("");
+      return;
+    }
+
+    const span = getInclusiveDaySpan(startDate, nextFinishDate);
+    if (span > MAX_CHART_RANGE_DAYS) {
+      const adjustedStart = toDateAtStartOfDay(nextFinishDate);
+      adjustedStart.setDate(
+        adjustedStart.getDate() - (MAX_CHART_RANGE_DAYS - 1),
+      );
+      setStartDate(toDateValueString(adjustedStart));
+      setChartRangeHint(
+        `Date range limited to ${MAX_CHART_RANGE_DAYS} days for chart readability.`,
+      );
+      return;
+    }
+
+    setChartRangeHint("");
+  };
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 1023px)");
@@ -461,7 +530,7 @@ const DashboardPage = () => {
             <div className="grid grid-cols-2 gap-4 max-lg:grid-cols-1 xl:grid-cols-3">
               <DatePickerField
                 value={startDate}
-                onChange={setStartDate}
+                onChange={handleStartDateChange}
                 disabled={false}
                 placeholder="Start date"
                 triggerClassName="min-w-52 border-[#E9E9E9] px-5 text-base text-[#535353] max-lg:min-w-0 max-lg:px-4 max-lg:text-sm md:h-12 md:px-5"
@@ -469,7 +538,7 @@ const DashboardPage = () => {
               />
               <DatePickerField
                 value={finishDate}
-                onChange={setFinishDate}
+                onChange={handleFinishDateChange}
                 disabled={false}
                 placeholder="Finish date"
                 triggerClassName="min-w-52 border-[#E9E9E9] px-5 text-base text-[#535353] max-lg:min-w-0 max-lg:px-4 max-lg:text-sm md:h-12 md:px-5"
@@ -499,6 +568,9 @@ const DashboardPage = () => {
             <p className="mt-3 text-sm text-[#B42318]">
               Finish date must be the same as or after start date.
             </p>
+          ) : null}
+          {!isInvalidDateRange && chartRangeHint ? (
+            <p className="mt-3 text-sm text-[#5E5E5E]">{chartRangeHint}</p>
           ) : null}
 
           <div
