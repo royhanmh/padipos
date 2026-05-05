@@ -74,7 +74,11 @@ const createDateRangeMap = (start, finish) => {
     end = new Date(finish);
   } else {
     const today = new Date();
-    current = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6);
+    current = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() - 6,
+    );
     end = today;
   }
 
@@ -102,7 +106,13 @@ const createDateRangeMap = (start, finish) => {
       day: "numeric",
     });
 
-    dayMap[dateKey] = { day: label, fullDate, food: 0, beverage: 0, dessert: 0 };
+    dayMap[dateKey] = {
+      day: label,
+      fullDate,
+      food: 0,
+      beverage: 0,
+      dessert: 0,
+    };
     date.setDate(date.getDate() + 1);
   }
 
@@ -168,7 +178,7 @@ const DashboardPage = () => {
       transactions: state.transactions,
       isLoading: state.isLoading,
       fetchTransactions: state.fetchTransactions,
-    }))
+    })),
   );
 
   useEffect(() => {
@@ -227,7 +237,7 @@ const DashboardPage = () => {
       tx.items.forEach((item) => {
         allMenuOrders += item.quantity;
         const cat = item.product_category;
-        
+
         if (cat === "food") foodsCount += item.quantity;
         if (cat === "beverage") beveragesCount += item.quantity;
         if (cat === "dessert") dessertsCount += item.quantity;
@@ -240,26 +250,58 @@ const DashboardPage = () => {
     });
 
     const formatCatData = (catKey, title) => {
-      const items = Object.keys(categoryItemSales[catKey]).map(name => ({
-        name,
-        totalSales: categoryItemSales[catKey][name]
-      })).sort((a,b) => b.totalSales - a.totalSales);
+      const items = Object.keys(categoryItemSales[catKey])
+        .map((name) => ({
+          name,
+          totalSales: categoryItemSales[catKey][name],
+        }))
+        .sort((a, b) => b.totalSales - a.totalSales);
       return { title, items };
     };
 
     const computedCategoryDetails = {
       food: formatCatData("food", "Foods"),
       beverage: formatCatData("beverage", "Beverages"),
-      dessert: formatCatData("dessert", "Desserts")
+      dessert: formatCatData("dessert", "Desserts"),
     };
 
     const computedStats = [
-      { label: "Total Orders", value: String(totalOrders), icon: PiReceiptLight },
-      { label: "Total Omzet", value: formatCurrency(totalOmzet), icon: PiCoinsLight },
-      { label: "All Menu Orders", value: String(allMenuOrders), icon: PiNotebookLight },
-      { label: "Foods", value: String(foodsCount), icon: PiBowlFoodLight, accent: true, categoryKey: "food" },
-      { label: "Beverages", value: String(beveragesCount), icon: PiCoffeeLight, accent: true, categoryKey: "beverage" },
-      { label: "Desserts", value: String(dessertsCount), icon: PiCookieLight, accent: true, categoryKey: "dessert" }
+      {
+        label: "Total Orders",
+        value: String(totalOrders),
+        icon: PiReceiptLight,
+      },
+      {
+        label: "Total Omzet",
+        value: formatCurrency(totalOmzet),
+        icon: PiCoinsLight,
+      },
+      {
+        label: "All Menu Orders",
+        value: String(allMenuOrders),
+        icon: PiNotebookLight,
+      },
+      {
+        label: "Foods",
+        value: String(foodsCount),
+        icon: PiBowlFoodLight,
+        accent: true,
+        categoryKey: "food",
+      },
+      {
+        label: "Beverages",
+        value: String(beveragesCount),
+        icon: PiCoffeeLight,
+        accent: true,
+        categoryKey: "beverage",
+      },
+      {
+        label: "Desserts",
+        value: String(dessertsCount),
+        icon: PiCookieLight,
+        accent: true,
+        categoryKey: "dessert",
+      },
     ];
 
     return { stats: computedStats, categoryDetails: computedCategoryDetails };
@@ -353,7 +395,10 @@ const DashboardPage = () => {
   const chartTickFontSize = isCompactChart ? 10 : 12;
   const chartBarSize = isCompactChart ? 16 : 22;
   const chartLegendPaddingTop = isCompactChart ? "10px" : "18px";
-  const baseOmzetData = useMemo(() => buildOmzetData(transactions), [transactions]);
+  const baseOmzetData = useMemo(
+    () => buildOmzetData(transactions),
+    [transactions],
+  );
   const filteredOmzetData = useMemo(() => {
     if (isInvalidDateRange) {
       return baseOmzetData;
@@ -434,7 +479,9 @@ const DashboardPage = () => {
                 <select
                   name="dashboardChartCategory"
                   value={selectedChartCategory}
-                  onChange={(event) => setSelectedChartCategory(event.target.value)}
+                  onChange={(event) =>
+                    setSelectedChartCategory(event.target.value)
+                  }
                   disabled={false}
                   className="h-12 min-w-52 w-full appearance-none rounded-[10px] border border-[#E9E9E9] bg-white px-5 pr-10 text-base text-[#535353] outline-none transition focus:border-[#C7D6FF] max-lg:min-w-0 max-lg:px-4 max-lg:text-sm md:h-12 md:px-5"
                 >
@@ -461,7 +508,10 @@ const DashboardPage = () => {
             {isLoading || chartSize.width <= 0 || chartSize.height <= 0 ? (
               <div className="flex h-full w-full items-end justify-between gap-4 pb-12 px-2 pt-6">
                 {[...Array(7)].map((_, i) => (
-                  <div key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-4">
+                  <div
+                    key={i}
+                    className="flex h-full flex-1 flex-col items-center justify-end gap-4"
+                  >
                     <div className="flex w-full items-end justify-center gap-1.5">
                       <div
                         className="w-[16%] animate-pulse rounded-t-[10px] bg-[#F0F0F0]"
@@ -506,7 +556,11 @@ const DashboardPage = () => {
                   width={50}
                   tick={{ fill: "#9C9C9C", fontSize: chartTickFontSize }}
                   tickFormatter={formatAxisTick}
-                  domain={[0, (dataMax) => Math.max(300000, Math.ceil(dataMax / 50000) * 50000)]}
+                  domain={[
+                    0,
+                    (dataMax) =>
+                      Math.max(300000, Math.ceil(dataMax / 50000) * 50000),
+                  ]}
                   ticks={chartTicks}
                 />
                 <Tooltip
@@ -625,4 +679,3 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
-

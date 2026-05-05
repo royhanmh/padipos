@@ -534,10 +534,10 @@ const KasirCatalogPage = () => {
               <div className="flex min-h-0 flex-col rounded-none bg-white p-6 md:p-8 lg:h-full lg:rounded-none lg:bg-transparent lg:p-0 lg:shadow-none">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-xl font-semibold text-[#171717]">
+                    <h2 className="text-2xl font-semibold text-[#171717]">
                       List Pesanan
                     </h2>
-                    <p className="mt-1 text-xs text-[#A2A2A2]">
+                    <p className="mt-1 text-xl text-[#A2A2A2]">
                       No Order{" "}
                       <span className="font-semibold text-[#8A8A8A]">
                         ORDR#
@@ -550,7 +550,7 @@ const KasirCatalogPage = () => {
                       type="button"
                       aria-label="Save order"
                       onClick={handleSaveToArchive}
-                      className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#3572EF] text-[#3572EF] hover:bg-[#F0F5FF] transition"
+                      className="flex h-12 w-9 items-center justify-center rounded-[10px] border border-[#3572EF] text-[#3572EF] hover:bg-[#F0F5FF] transition"
                     >
                       <PiBookmarkSimpleLight className="text-[18px]" />
                     </button>
@@ -613,7 +613,7 @@ const KasirCatalogPage = () => {
                           setCustomerName(event.target.value)
                         }
                         placeholder="Customer Name"
-                        className="h-9 w-full rounded-[10px] border border-[#D6D6D6] px-3 text-[14px] text-[#2B2B2B] placeholder:text-[#BFBFBF] outline-none transition focus:border-[#C2D4FA]"
+                        className="h-12 w-full rounded-[10px] border border-[#D6D6D6] px-3 text-[14px] text-[#2B2B2B] placeholder:text-[#BFBFBF] outline-none transition focus:border-[#C2D4FA]"
                       />
                     </label>
 
@@ -629,7 +629,7 @@ const KasirCatalogPage = () => {
                             onChange={(event) =>
                               setTableNumber(event.target.value)
                             }
-                            className="h-9 w-full appearance-none rounded-[10px] border border-[#D6D6D6] px-3 text-[14px] text-[#2B2B2B] outline-none transition focus:border-[#C2D4FA]"
+                            className="h-12 w-full appearance-none rounded-[10px] border border-[#D6D6D6] px-3 text-[14px] text-[#2B2B2B] outline-none transition focus:border-[#C2D4FA]"
                           >
                             <option value="">Select No.Table</option>
                             {TABLE_OPTIONS.map((table) => (
@@ -656,7 +656,7 @@ const KasirCatalogPage = () => {
                       <button
                         type="button"
                         disabled
-                        className="h-11 w-full rounded-[10px] bg-[#B6B6B8] text-[16px] font-medium text-[#ECECEC]"
+                        className="h-16 w-full rounded-[10px] bg-[#B6B6B8] text-[16px] font-medium text-[#ECECEC]"
                       >
                         Pay
                       </button>
@@ -750,7 +750,7 @@ const KasirCatalogPage = () => {
                                     }
                                     className="text-[#BDBDBD] transition hover:text-[#3572EF]"
                                   >
-                                    <PiMinusCircleLight className="text-[24px]" />
+                                    <PiMinusCircleLight className="text-[22px]" />
                                   </button>
                                   <span className="w-[20px] text-center text-[15px] font-medium text-[#252525]">
                                     {item.quantity}
@@ -772,7 +772,7 @@ const KasirCatalogPage = () => {
                                     }
                                     className="text-[#3572EF] transition hover:text-[#1C61ED]"
                                   >
-                                    <PiPlusCircleLight className="text-[24px]" />
+                                    <PiPlusCircleLight className="text-[22px]" />
                                   </button>
                                 </div>
                               </div>
@@ -806,7 +806,7 @@ const KasirCatalogPage = () => {
                         <div className="px-5 pt-3">
                           <div className="flex items-center justify-between">
                             <p className="text-[16px] text-[#383838]">Total</p>
-                            <p className="text-[24px] font-bold text-[#1F1F1F]">
+                            <p className="text-[22px] font-bold text-[#1F1F1F]">
                               {formatCurrency(total)}
                             </p>
                           </div>
@@ -1119,7 +1119,7 @@ const KasirCatalogPage = () => {
             onClick={() => setIsCartOpen(true)}
             className="relative flex h-14 w-14 items-center justify-center rounded-full bg-[#3572EF] text-white shadow-[0_12px_28px_rgba(53,114,239,0.35)] transition active:scale-95"
           >
-            <PiShoppingCartSimpleLight className="text-[28px]" />
+            <PiShoppingCartSimpleLight className="text-[25px]" />
             {totalItemsCount > 0 && (
               <span className="absolute -right-1 -top-1 flex h-6 min-w-[24px] items-center justify-center rounded-full border-2 border-white bg-[#FF3333] px-1 text-[12px] font-bold text-white shadow-sm">
                 {totalItemsCount}

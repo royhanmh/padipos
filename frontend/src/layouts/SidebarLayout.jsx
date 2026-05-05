@@ -84,7 +84,7 @@ const SidebarLayout = ({
         </div>
 
         <nav className="mt-6 flex flex-1 flex-col items-center justify-between">
-          <ul className="flex w-full flex-col items-center gap-4">
+          <ul className="flex w-full flex-col items-center gap-10">
             {items.map(({ id, icon, label, href }) => {
               const isActive = id === activeItem;
               const sharedProps = {

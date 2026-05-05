@@ -1,4 +1,8 @@
 @import "tailwindcss";
+html {
+  font-size: 70%;
+}
+
 @font-face {
   font-family: "Roboto";
   src: url("/fonts/Roboto-VariableFont_wdth,wght.ttf") format("truetype");
@@ -9,6 +13,7 @@
 body {
   font-family: "Roboto", sans-serif;
   font-weight: 400;
+  font-size: 1.2rem;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */

@@ -45,7 +45,9 @@ const categoryOptions = [
   },
 ];
 
-const selectableCategories = categoryOptions.filter((category) => category.id !== "all");
+const selectableCategories = categoryOptions.filter(
+  (category) => category.id !== "all",
+);
 
 const categoryMap = categoryOptions.reduce((collection, category) => {
   collection[category.id] = category;
@@ -146,13 +148,15 @@ const FormField = ({ label, children, error }) => {
 
 const ReadOnlyField = ({ label, value, multiline = false }) => {
   const sharedClassName =
-    "w-full rounded-[10px] border border-[#D7D7D7] bg-white px-4 text-[15px] text-[#2B2B2B] md:px-5 md:text-[16px]";
+    "w-full rounded-[10px] border border-[#D7D7D7] bg-white px-4 text-[15px] text-[#2B2B2B] md:px-5 md:text-[12px]";
 
   return (
     <div>
       <p className="mb-2.5 text-base font-medium text-[#4A4A4A]">{label}</p>
       {multiline ? (
-        <div className={`${sharedClassName} min-h-28 py-4 leading-8 md:leading-9`}>
+        <div
+          className={`${sharedClassName} min-h-28 py-4 leading-8 md:leading-9`}
+        >
           {value}
         </div>
       ) : (
@@ -179,7 +183,9 @@ const PanelFrame = ({ title, actions, mobileCloseAction, children }) => {
               <PiXLight className="text-[22px]" />
             </button>
           ) : null}
-          <h2 className="min-w-0 text-[20px] font-semibold text-[#161616]">{title}</h2>
+          <h2 className="min-w-0 text-[20px] font-semibold text-[#161616]">
+            {title}
+          </h2>
         </div>
         <div className="flex items-center gap-3">{actions}</div>
       </div>
@@ -236,12 +242,15 @@ const CatalogPage = () => {
     const normalizedSearch = searchValue.trim().toLowerCase();
 
     return menus.filter((menu) => {
-      const matchesCategory = activeCategory === "all" || menu.category === activeCategory;
+      const matchesCategory =
+        activeCategory === "all" || menu.category === activeCategory;
       const matchesSearch =
         normalizedSearch.length === 0 ||
         menu.title.toLowerCase().includes(normalizedSearch) ||
         menu.description.toLowerCase().includes(normalizedSearch) ||
-        categoryMap[menu.category]?.label.toLowerCase().includes(normalizedSearch);
+        categoryMap[menu.category]?.label
+          .toLowerCase()
+          .includes(normalizedSearch);
 
       return matchesCategory && matchesSearch;
     });
@@ -406,7 +415,10 @@ const CatalogPage = () => {
     }
 
     try {
-      const updatedMenu = await updateProduct(selectedMenu.uuid, buildPayload());
+      const updatedMenu = await updateProduct(
+        selectedMenu.uuid,
+        buildPayload(),
+      );
       setSelectedMenuUuid(updatedMenu.uuid);
       setPanelMode(PANEL_MODE.DETAIL);
       setFormErrors({});
@@ -497,7 +509,7 @@ const CatalogPage = () => {
             />
           ) : (
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-[#D8DDEA] text-[#373737]">
-              <PiUploadSimpleLight className="text-[30px]" />
+              <PiUploadSimpleLight className="text-[27px]" />
             </div>
           )}
           <p className="mt-5 text-base text-[#2C2C2C]">
@@ -534,7 +546,7 @@ const CatalogPage = () => {
           onClick={resetToEmptyPanel}
           className="text-[#3F3F3F] transition hover:text-[#151515]"
         >
-          <PiXLight className="text-[26px]" />
+          <PiXLight className="text-[23px]" />
         </button>
       }
     >
@@ -548,7 +560,7 @@ const CatalogPage = () => {
             value={panelForm.title}
             onChange={(event) => handleFormChange("title", event.target.value)}
             placeholder="Enter title here..."
-            className="h-12 w-full rounded-[10px] border border-[#D7D7D7] px-4 text-[16px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5 2xl:h-12"
+            className="h-12 w-full rounded-[10px] border border-[#D7D7D7] px-4 text-[12px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5 2xl:h-12"
           />
         </FormField>
 
@@ -557,8 +569,10 @@ const CatalogPage = () => {
             <select
               name="menuCategory"
               value={panelForm.category}
-              onChange={(event) => handleFormChange("category", event.target.value)}
-              className="h-12 w-full appearance-none rounded-[10px] border border-[#D7D7D7] px-4 text-[16px] text-[#2B2B2B] outline-none transition focus:border-[#C8D8FF] md:px-5 2xl:h-12"
+              onChange={(event) =>
+                handleFormChange("category", event.target.value)
+              }
+              className="h-12 w-full appearance-none rounded-[10px] border border-[#D7D7D7] px-4 text-[12px] text-[#2B2B2B] outline-none transition focus:border-[#C8D8FF] md:px-5 2xl:h-12"
             >
               {selectableCategories.map((category) => (
                 <option key={category.id} value={category.id}>
@@ -578,7 +592,7 @@ const CatalogPage = () => {
             value={panelForm.price}
             onChange={(event) => handleFormChange("price", event.target.value)}
             placeholder="Enter price here..."
-            className="h-12 w-full rounded-[10px] border border-[#D7D7D7] px-4 text-[16px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5 2xl:h-12"
+            className="h-12 w-full rounded-[10px] border border-[#D7D7D7] px-4 text-[12px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5 2xl:h-12"
           />
         </FormField>
 
@@ -588,9 +602,11 @@ const CatalogPage = () => {
             inputMode="numeric"
             name="menuQuantity"
             value={panelForm.quantity}
-            onChange={(event) => handleFormChange("quantity", event.target.value)}
+            onChange={(event) =>
+              handleFormChange("quantity", event.target.value)
+            }
             placeholder="Enter quantity here..."
-            className="h-12 w-full rounded-[10px] border border-[#D7D7D7] px-4 text-[16px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5 2xl:h-12"
+            className="h-12 w-full rounded-[10px] border border-[#D7D7D7] px-4 text-[12px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5 2xl:h-12"
           />
         </FormField>
 
@@ -598,10 +614,12 @@ const CatalogPage = () => {
           <textarea
             name="menuDescription"
             value={panelForm.description}
-            onChange={(event) => handleFormChange("description", event.target.value)}
+            onChange={(event) =>
+              handleFormChange("description", event.target.value)
+            }
             rows="4"
             placeholder="Add description here..."
-            className="w-full rounded-[10px] border border-[#D7D7D7] px-4 py-3.5 text-[16px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5"
+            className="w-full rounded-[10px] border border-[#D7D7D7] px-4 py-3.5 text-[12px] text-[#2B2B2B] outline-none transition placeholder:text-[#C3C3C3] focus:border-[#C8D8FF] md:px-5"
           />
         </FormField>
 
@@ -663,18 +681,30 @@ const CatalogPage = () => {
           <ReadOnlyField label="Title" value={selectedMenu.title} />
 
           <div>
-            <p className="mb-2.5 text-base font-medium text-[#4A4A4A]">Category</p>
-            <div className="relative flex h-12 items-center rounded-[10px] border border-[#D7D7D7] bg-white px-4 text-[16px] text-[#2B2B2B] md:px-5 2xl:h-12">
+            <p className="mb-2.5 text-base font-medium text-[#4A4A4A]">
+              Category
+            </p>
+            <div className="relative flex h-12 items-center rounded-[10px] border border-[#D7D7D7] bg-white px-4 text-[12px] text-[#2B2B2B] md:px-5 2xl:h-12">
               {categoryMap[selectedMenu.category]?.shortLabel}
               <PiCaretDownLight className="absolute right-4 text-[22px] text-[#A8A8A8]" />
             </div>
           </div>
 
-          <ReadOnlyField label="Price" value={formatPriceInput(String(selectedMenu.price))} />
+          <ReadOnlyField
+            label="Price"
+            value={formatPriceInput(String(selectedMenu.price))}
+          />
 
-          <ReadOnlyField label="Quantity" value={String(selectedMenu.quantity)} />
+          <ReadOnlyField
+            label="Quantity"
+            value={String(selectedMenu.quantity)}
+          />
 
-          <ReadOnlyField label="Description" value={selectedMenu.description} multiline />
+          <ReadOnlyField
+            label="Description"
+            value={selectedMenu.description}
+            multiline
+          />
         </div>
       </PanelFrame>
     );
@@ -695,7 +725,7 @@ const CatalogPage = () => {
       }
     >
       <div className="flex flex-1 items-center justify-center px-6 text-center text-[#A2A2A2]">
-        <p className="text-[26px] font-medium 2xl:text-[28px]">Add Menu here</p>
+        <p className="text-[23px] font-medium 2xl:text-[25px]">Add Menu here</p>
       </div>
     </PanelFrame>
   );
@@ -710,7 +740,9 @@ const CatalogPage = () => {
     }
 
     if (panelMode === PANEL_MODE.EDIT) {
-      return selectedMenu ? renderMenuForm({ title: "Edit Menu", isEdit: true }) : renderEmptyPanel();
+      return selectedMenu
+        ? renderMenuForm({ title: "Edit Menu", isEdit: true })
+        : renderEmptyPanel();
     }
 
     return renderEmptyPanel();
@@ -739,10 +771,11 @@ const CatalogPage = () => {
                     key={category.id}
                     type="button"
                     onClick={() => setActiveCategory(category.id)}
-                    className={`flex h-[46px] items-center justify-center gap-2 rounded-[10px] border px-4 text-[15px] font-medium transition ${isActive
+                    className={`flex h-[46px] items-center justify-center gap-2 rounded-[10px] border px-4 text-[15px] font-medium transition ${
+                      isActive
                         ? "border-[#3572EF] bg-[#3572EF] text-white"
                         : "border-[#BEBEBE] bg-white text-[#A9A9A9] hover:border-[#C2D4FA] hover:text-[#5E5E5E]"
-                      }`}
+                    }`}
                   >
                     {Icon ? <Icon className="text-[20px]" /> : null}
                     <span>{category.label}</span>
@@ -752,9 +785,15 @@ const CatalogPage = () => {
             </div>
 
             <div className="mt-4 flex items-center justify-between">
-              <h1 className="text-[22px] font-semibold text-[#181818]">List Menu</h1>
+              <h1 className="text-[22px] font-semibold text-[#181818]">
+                List Menu
+              </h1>
               <p className="text-sm text-[#979797]">
-                Total <span className="font-medium text-[#515151]">{menus.length}</span> Menu
+                Total{" "}
+                <span className="font-medium text-[#515151]">
+                  {menus.length}
+                </span>{" "}
+                Menu
               </p>
             </div>
 
@@ -783,17 +822,18 @@ const CatalogPage = () => {
                             handleSelectMenu(menu.uuid);
                           }
                         }}
-                        className={`flex min-h-[208px] cursor-pointer flex-col rounded-[10px] border bg-white p-3 shadow-[0_8px_24px_rgba(25,45,88,0.05)] transition 2xl:min-h-[214px] ${isSelected
+                        className={`flex min-h-[208px] cursor-pointer flex-col rounded-[10px] border bg-white p-3 shadow-[0_8px_24px_rgba(25,45,88,0.05)] transition 2xl:min-h-[214px] ${
+                          isSelected
                             ? "border-[#3572EF] shadow-[0_14px_36px_rgba(53,114,239,0.18)]"
                             : "border-transparent hover:-translate-y-0.5 hover:border-[#DCE5FF]"
-                          }`}
+                        }`}
                       >
                         <div className="relative overflow-hidden rounded-[10px]">
                           <img
                             src={menu.image}
                             alt={menu.title}
                             loading="lazy"
-                            className="h-[116px] w-full object-cover 2xl:h-[120px]"
+                            className="h-[112px] w-full object-cover 2xl:h-[120px]"
                           />
                           <span className="absolute right-2.5 top-2.5 rounded-full bg-[#3572EF] px-3.5 py-1.5 text-sm font-medium text-white shadow-[0_8px_18px_rgba(53,114,239,0.24)]">
                             {category?.shortLabel ?? "Menu"}
@@ -812,9 +852,13 @@ const CatalogPage = () => {
                             <div className="min-w-0">
                               <p className="text-[13px] font-semibold text-[#3572EF] 2xl:text-[14px]">
                                 {formatCurrency(menu.price)}
-                                <span className="ml-1 font-normal text-[#B1B1B1]">/portion</span>
+                                <span className="ml-1 font-normal text-[#B1B1B1]">
+                                  /portion
+                                </span>
                               </p>
-                              <p className="mt-1 text-[12px] text-[#8F8F8F]">Stock {menu.quantity}</p>
+                              <p className="mt-1 text-[12px] text-[#8F8F8F]">
+                                Stock {menu.quantity}
+                              </p>
                             </div>
                             <button
                               type="button"
@@ -823,12 +867,13 @@ const CatalogPage = () => {
                                 event.stopPropagation();
                                 handleSelectMenu(menu.uuid);
                               }}
-                              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition 2xl:h-8 2xl:w-8 ${isSelected
+                              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition 2xl:h-8 2xl:w-8 ${
+                                isSelected
                                   ? "border-[#3572EF] bg-[#3572EF] text-white"
                                   : "border-[#D8DDEA] text-[#6A6A6A] hover:border-[#B6C7FF] hover:text-[#3572EF]"
-                                }`}
+                              }`}
                             >
-                              <PiArrowUpRightLight className="text-[14px] 2xl:text-[16px]" />
+                              <PiArrowUpRightLight className="text-[14px] 2xl:text-[12px]" />
                             </button>
                           </div>
                         </div>
@@ -840,7 +885,9 @@ const CatalogPage = () => {
                 <div className="flex min-h-84 items-center justify-center rounded-[10px] border border-dashed border-[#D7DDEA] bg-white px-7 text-center">
                   <div>
                     <p className="text-2xl font-semibold text-[#2A2A2A]">
-                      {requestError ? "Products could not be loaded" : "No menu matched your filters"}
+                      {requestError
+                        ? "Products could not be loaded"
+                        : "No menu matched your filters"}
                     </p>
                     <p className="mt-3 text-base text-[#9D9D9D]">
                       {requestError
@@ -878,10 +925,10 @@ const CatalogPage = () => {
               </div>
             ) : null}
 
-            <div 
+            <div
               className={`transition-all duration-300 lg:static lg:flex lg:flex-col lg:h-full lg:min-h-0 ${
-                isPanelOpen 
-                  ? "fixed inset-0 z-50 flex flex-col bg-white lg:bg-transparent" 
+                isPanelOpen
+                  ? "fixed inset-0 z-50 flex flex-col bg-white lg:bg-transparent"
                   : "hidden lg:flex"
               }`}
             >
@@ -900,7 +947,7 @@ const CatalogPage = () => {
             className="fixed bottom-24 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#3572EF] text-white shadow-[0_12px_28px_rgba(53,114,239,0.36)] transition hover:brightness-105 active:scale-95 lg:hidden"
             aria-label="Add Menu"
           >
-            <PiPlusLight className="text-[28px]" />
+            <PiPlusLight className="text-[25px]" />
           </button>
         )}
 
@@ -913,12 +960,12 @@ const CatalogPage = () => {
               aria-labelledby="delete-menu-title"
             >
               <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[10px] border-2 border-[#FF3333] text-[#FF3333]">
-                <PiTrashLight className="text-[40px]" />
+                <PiTrashLight className="text-[36px]" />
               </div>
 
               <h3
                 id="delete-menu-title"
-                className="mx-auto mt-7 max-w-[340px] text-[30px] font-semibold leading-[1.35] tracking-[-0.03em] text-[#121212]"
+                className="mx-auto mt-7 max-w-[340px] text-[27px] font-semibold leading-[1.35] tracking-[-0.03em] text-[#121212]"
               >
                 Are you sure want to delete this file?
               </h3>

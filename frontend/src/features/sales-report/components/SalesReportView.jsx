@@ -329,7 +329,7 @@ const SalesReportView = ({
     >
       <section className="min-h-full bg-[#F7F7F7] px-6 py-6 max-lg:px-4 max-lg:py-4 xl:px-8 xl:py-7">
         <div className="flex items-center justify-between gap-3 max-lg:flex-col max-lg:items-start">
-          <h1 className="text-[28px] font-semibold tracking-[-0.03em] text-[#111111] max-lg:text-[26px]">
+          <h1 className="text-[25px] font-semibold tracking-[-0.03em] text-[#111111] max-lg:text-[23px]">
             {pageTitle}
           </h1>
           <p className="text-base text-[#666666]">{formatTodayLabel()}</p>
@@ -463,7 +463,7 @@ const SalesReportView = ({
                               onClick={() => setSelectedOrder(order)}
                               className="text-[#3572EF] transition hover:text-[#1255DE]"
                             >
-                              <PiArrowUpRightLight className="inline text-[26px]" />
+                              <PiArrowUpRightLight className="inline text-[23px]" />
                             </button>
                           </td>
                         </tr>
@@ -518,7 +518,7 @@ const SalesReportView = ({
                         onClick={() => setSelectedOrder(order)}
                         className="text-[#3572EF] transition hover:text-[#1255DE]"
                       >
-                        <PiArrowUpRightLight className="text-[24px]" />
+                        <PiArrowUpRightLight className="text-[22px]" />
                       </button>
                     </div>
 
@@ -602,10 +602,10 @@ const SalesReportView = ({
               onClick={closeDetailModal}
               className="absolute right-6 top-6 text-[#4A4A4A] transition hover:text-[#1B1B1B] max-lg:right-3 max-lg:top-3"
             >
-              <PiXLight className="text-[26px] max-lg:text-[20px]" />
+              <PiXLight className="text-[23px] max-lg:text-[20px]" />
             </button>
 
-            <h2 className="pt-4 text-center text-[36px] font-semibold tracking-[-0.03em] text-[#111111] max-lg:pt-1 max-lg:text-[22px]">
+            <h2 className="pt-4 text-center text-[32px] font-semibold tracking-[-0.03em] text-[#111111] max-lg:pt-1 max-lg:text-[22px]">
               Transaction Detail
             </h2>
 
@@ -663,7 +663,7 @@ const SalesReportView = ({
                 />
                 <div className="flex items-center justify-between">
                   <p className="text-[18px] text-[#2F2F2F] max-lg:text-[14px]">Total</p>
-                  <p className="text-[24px] font-semibold text-[#272727] max-lg:text-[18px]">{formatCurrency(selectedOrder.total)}</p>
+                  <p className="text-[22px] font-semibold text-[#272727] max-lg:text-[18px]">{formatCurrency(selectedOrder.total)}</p>
                 </div>
 
                 <div className="mt-3 flex items-center justify-between text-base text-[#585858] max-lg:mt-2 max-lg:text-[12px]">
@@ -697,7 +697,7 @@ const SalesReportView = ({
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-[#EFEFEF] px-5 py-4">
-              <h3 className="text-[34px] font-semibold tracking-[-0.03em] text-[#212121] max-lg:text-[32px]">
+              <h3 className="text-[30px] font-semibold tracking-[-0.03em] text-[#212121] max-lg:text-[28px]">
                 {activeDetail.title}
               </h3>
               <button

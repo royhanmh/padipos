@@ -57,13 +57,13 @@ const TopbarLayout = ({
               src={profile.image ?? defaultProfile.image}
               alt="User profile"
               loading="lazy"
-              className="h-11 w-11 rounded-full object-cover max-lg:h-10 max-lg:w-10"
+              className="h-11 w-11 rounded-full object-cover max-lg:h-10 max-lg:w-10 mx-2"
             />
             <div className="min-w-max max-lg:hidden">
-              <p className="text-[15px] font-medium text-[#202020]">
+              <p className="text-[12px] font-medium text-[#202020]">
                 {profile.name ?? defaultProfile.name}
               </p>
-              <p className="text-[13px] text-[#9C9C9C]">
+              <p className="text-[10px] text-[#9C9C9C]">
                 {profile.role ?? defaultProfile.role}
               </p>
             </div>
